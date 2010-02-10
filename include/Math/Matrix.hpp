@@ -22,8 +22,8 @@ namespace sgl {
 #endif
 namespace math {
 
-template<typename T>
-class Matrix<T, 1, 1> {};
+template<typename T, INSTRUCTION_SET is>
+class Matrix<T, 1, 1, is> {};
 
 // ===================================== SSE ===================================== //
 #ifdef SIMPLE_GL_USE_SSE
