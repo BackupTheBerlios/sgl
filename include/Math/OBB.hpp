@@ -1,0 +1,4 @@
+#ifndef GRAPHICS_MATH_OBB_H
+#define GRAPHICS_MATH_OBB_H
+
+#endif // GRAPHICS_MATH_OBB_H

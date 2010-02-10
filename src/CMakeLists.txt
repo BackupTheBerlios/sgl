@@ -1,0 +1,238 @@
+# list headers
+SET ( TARGET_HEADER_PATH ${PROJECT_SOURCE_DIR}/include )
+SET ( TARGET_INTERFACE_HEADERS
+	${TARGET_HEADER_PATH}/Buffer.h
+ 	${TARGET_HEADER_PATH}/BlendState.h
+	${TARGET_HEADER_PATH}/Config.h
+ 	${TARGET_HEADER_PATH}/DepthStencilState.h
+	${TARGET_HEADER_PATH}/Device.h
+	${TARGET_HEADER_PATH}/DeviceTraits.h
+	${TARGET_HEADER_PATH}/FFPProgram.h
+	${TARGET_HEADER_PATH}/Font.h
+	${TARGET_HEADER_PATH}/FormatConversion.h
+	${TARGET_HEADER_PATH}/Image.h
+	${TARGET_HEADER_PATH}/IndexBuffer.h
+	${TARGET_HEADER_PATH}/Query.h
+	${TARGET_HEADER_PATH}/Program.h
+ 	${TARGET_HEADER_PATH}/RasterizerState.h
+	${TARGET_HEADER_PATH}/RenderTarget.h
+	${TARGET_HEADER_PATH}/Resource.h
+ 	${TARGET_HEADER_PATH}/SamplerState.h
+	${TARGET_HEADER_PATH}/Shader.h
+	${TARGET_HEADER_PATH}/State.h
+	${TARGET_HEADER_PATH}/Texture.h
+	${TARGET_HEADER_PATH}/Texture1D.h
+	${TARGET_HEADER_PATH}/Texture2D.h
+	${TARGET_HEADER_PATH}/Texture3D.h
+	${TARGET_HEADER_PATH}/TextureBuffer.h
+	${TARGET_HEADER_PATH}/TextureCube.h
+	${TARGET_HEADER_PATH}/Uniform.h
+	${TARGET_HEADER_PATH}/UniformBuffer.h
+	${TARGET_HEADER_PATH}/View.h
+	${TARGET_HEADER_PATH}/VertexBuffer.h
+	${TARGET_HEADER_PATH}/VertexLayout.h
+)
+
+SET ( TARGET_MATH_HEADERS
+	${TARGET_HEADER_PATH}/Math/AABB.hpp
+	${TARGET_HEADER_PATH}/Math/Base.hpp
+    ${TARGET_HEADER_PATH}/Math/Containers.hpp
+	${TARGET_HEADER_PATH}/Math/Frustum.hpp
+	${TARGET_HEADER_PATH}/Math/Intersection.hpp
+	${TARGET_HEADER_PATH}/Math/Matrix.hpp
+	${TARGET_HEADER_PATH}/Math/MatrixFunctions.hpp
+	${TARGET_HEADER_PATH}/Math/Plane.hpp
+	${TARGET_HEADER_PATH}/Math/Ray.hpp
+	${TARGET_HEADER_PATH}/Math/Utility.hpp
+	${TARGET_HEADER_PATH}/Math/Vector.hpp
+	${TARGET_HEADER_PATH}/Math/Quaternion.hpp
+)
+
+SET ( TARGET_GL_HEADERS
+	${TARGET_HEADER_PATH}/GL/GLBlendState.h
+	${TARGET_HEADER_PATH}/GL/GLBuffer.h
+	${TARGET_HEADER_PATH}/GL/GLCommon.h
+  	${TARGET_HEADER_PATH}/GL/GLDepthStencilState.h
+	${TARGET_HEADER_PATH}/GL/GLDevice.h
+	${TARGET_HEADER_PATH}/GL/GLDeviceTraits.h
+	${TARGET_HEADER_PATH}/GL/GLFont.h
+	${TARGET_HEADER_PATH}/GL/GLFFPProgram.h
+	${TARGET_HEADER_PATH}/GL/GLFFPUniform.h
+	${TARGET_HEADER_PATH}/GL/GLIndexBuffer.h
+	${TARGET_HEADER_PATH}/GL/GLProgram.h
+	#${TARGET_HEADER_PATH}/GL/GLQuery.h
+	${TARGET_HEADER_PATH}/GL/GLShader.h
+  	${TARGET_HEADER_PATH}/GL/GLRasterizerState.h
+	${TARGET_HEADER_PATH}/GL/GLRenderTarget.h
+   	${TARGET_HEADER_PATH}/GL/GLSamplerState.h
+	${TARGET_HEADER_PATH}/GL/GLTexture.h
+	#${TARGET_HEADER_PATH}/GL/GLTexture1D.h
+	${TARGET_HEADER_PATH}/GL/GLTexture2D.h
+	${TARGET_HEADER_PATH}/GL/GLTexture3D.h
+	#${TARGET_HEADER_PATH}/GL/GLTextureBuffer.h
+	${TARGET_HEADER_PATH}/GL/GLTextureCube.h
+	${TARGET_HEADER_PATH}/GL/GLUniform.h
+	#${TARGET_HEADER_PATH}/GL/GLUniformBuffer.h
+	${TARGET_HEADER_PATH}/GL/GLUtility.h
+	${TARGET_HEADER_PATH}/GL/GLVertexBuffer.h
+	${TARGET_HEADER_PATH}/GL/GLVertexLayout.h
+)
+
+SET ( TARGET_UTILITY_HEADERS
+	${TARGET_HEADER_PATH}/Utility/Aligned.h
+    ${TARGET_HEADER_PATH}/Utility/Containers.hpp
+	${TARGET_HEADER_PATH}/Utility/DLLInterface.h
+	${TARGET_HEADER_PATH}/Utility/Error.h
+	${TARGET_HEADER_PATH}/Utility/Referenced.h
+)
+
+SET ( TARGET_UTILITY_FX_HEADERS
+	${TARGET_HEADER_PATH}/Utility/FX/ShaderUtility.h
+)
+
+# list sources
+SET ( TARGET_SOURCES
+    Device.cpp
+)
+
+SET ( TARGET_GL_SOURCES
+    GL/GLBlendState.cpp
+    GL/GLCommon.cpp
+    GL/GLDepthStencilState.cpp
+    GL/GLDevice.cpp
+    GL/GLDeviceTraits.cpp
+    GL/GLFont.cpp
+    GL/GLFFPProgram.cpp
+    GL/GLFFPUniform.cpp
+    GL/GLIndexBuffer.cpp
+    GL/GLProgram.cpp
+    #GL/GLQuery.cpp
+    GL/GLRasterizerState.cpp
+    GL/GLRenderTarget.cpp
+    GL/GLSamplerState.cpp
+    GL/GLShader.cpp
+    #GL/GLStreamOut.cpp
+    GL/GLTexture.cpp
+    #GL/GLTexture1D.cpp
+    GL/GLTexture2D.cpp
+    GL/GLTexture3D.cpp
+	#GL/GLTextureBuffer.cpp
+    GL/GLTextureCube.cpp
+    GL/GLUniform.cpp
+    #GL/GLUniformBuffer.cpp
+    GL/GLVertexBuffer.cpp
+    #GL/GLVBORenderTarget.cpp
+    GL/GLVertexLayout.cpp
+)
+
+SET ( TARGET_UTILITY_SOURCES
+    Utility/Error.cpp
+    Utility/Referenced.cpp
+)
+
+# additional includes
+INCLUDE_DIRECTORIES (
+    ${OPENGL_INCLUDE_DIR}
+    ${GLEW_INCLUDE_DIR}
+)
+
+IF (SIMPLE_GL_USE_DEVIL)
+    # additional includes
+    INCLUDE_DIRECTORIES (
+        ${DevIL_INCLUDE_DIR}
+    )
+	
+	# additional sources
+	LIST( APPEND TARGET_UTILITY_HEADERS
+		${TARGET_HEADER_PATH}/Utility/IlImage.h
+	)
+	
+	LIST( APPEND TARGET_UTILITY_SOURCES
+		Utility/IlImage.cpp
+	)
+ENDIF (SIMPLE_GL_USE_DEVIL)
+
+# group headers
+SOURCE_GROUP( headers\\interfaces FILES 	${TARGET_INTERFACE_HEADERS} )
+SOURCE_GROUP( headers\\Math FILES 			${TARGET_MATH_HEADERS} )
+SOURCE_GROUP( headers\\GL FILES 			${TARGET_GL_HEADERS} )
+SOURCE_GROUP( headers\\Utility FILES 		${TARGET_UTILITY_HEADERS} )
+SOURCE_GROUP( headers\\Utility\\FX FILES 	${TARGET_UTILITY_FX_HEADERS} )
+
+# group sources
+SOURCE_GROUP( sources FILES 				${TARGET_SOURCES} )
+SOURCE_GROUP( sources\\GL FILES 			${TARGET_GL_SOURCES} )
+SOURCE_GROUP( sources\\Utility FILES 		${TARGET_UTILITY_SOURCES} )
+
+SET ( TARGET_HEADERS
+	${TARGET_INTERFACE_HEADERS}
+	${TARGET_MATH_HEADERS}
+	${TARGET_GL_HEADERS}
+	${TARGET_UTILITY_HEADERS}
+	${TARGET_UTILITY_FX_HEADERS}
+)
+
+LIST( APPEND TARGET_SOURCES 
+    ${TARGET_GL_SOURCES} 
+	${TARGET_UTILITY_SOURCES}
+)
+
+# list definitions
+ADD_DEFINITIONS (
+    -DGL_GLEXT_PROTOTYPES
+)
+
+IF (BUILD_SHARED_LIBS)
+	ADD_DEFINITIONS ( -DSGL_EXPORT )
+ENDIF (BUILD_SHARED_LIBS)
+
+ADD_LIBRARY ( ${TARGET_UNIX_NAME} SHARED ${TARGET_HEADERS} ${TARGET_SOURCES} ${TARGET_OPTIONS} )
+
+# link libraries
+TARGET_LINK_LIBRARIES ( ${TARGET_UNIX_NAME}
+    ${OPENGL_LIBRARIES}
+    ${GLEW_LIBRARY}
+)
+
+IF (SIMPLE_GL_USE_DEVIL)
+    TARGET_LINK_LIBRARIES ( ${TARGET_UNIX_NAME}
+        ${DevIL_LIBRARIES}
+    )
+ENDIF(SIMPLE_GL_USE_DEVIL)
+	
+# install
+SET( TARGET_PUBLIC_HEADERS ${TARGET_INTERFACE_HEADERS} ${TARGET_UNIVERSAL_HEADERS})
+SET_TARGET_PROPERTIES( ${TARGET_UNIX_NAME}
+	PROPERTIES  FRAMEWORK               TRUE
+                PUBLIC_HEADER           "${TARGET_PUBLIC_HEADERS}"
+)
+
+# install
+INSTALL (
+	TARGETS         ${TARGET_UNIX_NAME}
+	RUNTIME         DESTINATION ${INSTALL_BINDIR}
+	LIBRARY         DESTINATION ${INSTALL_LIBDIR}
+	ARCHIVE         DESTINATION ${INSTALL_ARCHIVEDIR}
+	PUBLIC_HEADER   DESTINATION ${INSTALL_INCDIR}/sgl
+)
+
+INSTALL (
+	FILES       ${TARGET_MATH_HEADERS}
+	DESTINATION ${INSTALL_INCDIR}/sgl/Math
+)
+
+INSTALL (
+	FILES       ${TARGET_UTILITY_HEADERS}
+	DESTINATION ${INSTALL_INCDIR}/sgl/Utility
+)
+
+INSTALL (
+	FILES       ${TARGET_UTILITY_FX_HEADERS}
+	DESTINATION ${INSTALL_INCDIR}/sgl/Utility/FX
+)
+
+INSTALL (
+	FILES       ${TARGET_GL_HEADERS}
+	DESTINATION ${INSTALL_INCDIR}/sgl/GL
+)
+
