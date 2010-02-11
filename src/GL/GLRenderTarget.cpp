@@ -25,6 +25,7 @@ namespace sgl {
 
 GLRenderTarget::GLRenderTarget(GLDevice* _device) :
     device(_device),
+    dirty(true),
     useDepthStencilRenderbuffer(false),
     fbo(0),
     dsRenderBuffer(0),
@@ -56,7 +57,8 @@ SGL_HRESULT GLRenderTarget::SetDepthStencil( bool             toggle,
     }
 #endif
 
-    dirty = useDepthStencilRenderbuffer && (dsRenderBufferAttachment.format != format || dsRenderBufferAttachment.samples != samples);
+    dirty                            = true;
+    useDepthStencilRenderbuffer      = toggle;
     dsRenderBufferAttachment.format  = format;
     dsRenderBufferAttachment.samples = samples;
 
@@ -146,11 +148,16 @@ SGL_HRESULT GLRenderTarget::Dirty(bool force)
     GLuint oldFBO               = GuardedBind(fbo);
     size_t maxAttachmentWidth   = 0;
     size_t maxAttachmentHeight  = 0;
+    bool   fillDrawBuffers      = drawBuffers.empty();
     for(size_t i = 0; i<attachments.size(); ++i)
     {
         const GLRenderTarget::attachment& attachment = attachments[i];
         if (attachment.glTarget)
         {
+            if (fillDrawBuffers) {
+                drawBuffers.push_back(GL_COLOR_ATTACHMENT0 + i);
+            }
+
             // get size
             maxAttachmentHeight = std::max(maxAttachmentHeight, attachment.width);
             maxAttachmentWidth  = std::max(maxAttachmentHeight, attachment.height);
@@ -244,7 +251,11 @@ SGL_HRESULT GLRenderTarget::Dirty(bool force)
 
         glBindRenderbuffer(GL_RENDERBUFFER, 0);
         glFramebufferRenderbuffer( GL_FRAMEBUFFER,
-                                   GL_DEPTH_STENCIL_ATTACHMENT, 
+                                   GL_DEPTH_ATTACHMENT, 
+                                   GL_RENDERBUFFER, 
+                                   dsRenderBuffer );
+        glFramebufferRenderbuffer( GL_FRAMEBUFFER,
+                                   GL_STENCIL_ATTACHMENT, 
                                    GL_RENDERBUFFER, 
                                    dsRenderBuffer );
     

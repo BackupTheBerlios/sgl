@@ -27,6 +27,15 @@ class Program :
 	public Resource
 {
 public:
+    struct ATTRIBUTE
+    {
+        unsigned            index;
+        unsigned            size;
+        const char*         name;
+        sgl::SCALAR_TYPE    type;
+    };
+
+public:
     /** Attach shader to the program. Program becames dirty.
      * @return Result of the operation. Could be EInvalidCall if the shader is invalid
      */
@@ -102,7 +111,13 @@ public:
      * @param name - name of the attribute.
      * @return location of the attribute or -1 if not found.
      */
-    virtual int SGL_DLLCALL GetAttributeLocation(const char* name) = 0;
+    virtual int         SGL_DLLCALL AttributeLocation(const char* name) const = 0;
+
+    /** Get number of attributes used by the program. */
+    virtual unsigned    SGL_DLLCALL NumAttributes() const = 0;
+
+    /** Get definition of the i'th program attribute. */
+    virtual ATTRIBUTE   SGL_DLLCALL Attribute(unsigned index) const = 0;
 
     /** Create int uniform */
     virtual UniformI*               SGL_DLLCALL GetUniformI(const char* name) = 0;

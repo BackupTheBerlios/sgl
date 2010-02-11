@@ -40,7 +40,9 @@ public:
 
     /* Attributes */
     SGL_HRESULT         SGL_DLLCALL BindAttributeLocation(const char* name, unsigned index);
-    int                 SGL_DLLCALL GetAttributeLocation(const char* name)  { return -1; }
+    int                 SGL_DLLCALL AttributeLocation(const char* name) const { return -1; }
+    unsigned            SGL_DLLCALL NumAttributes() const                     { return 0; }
+    ATTRIBUTE           SGL_DLLCALL Attribute(unsigned index) const           { sglSetError(SGLERR_INVALID_CALL, "FFP program doesn't have generic attributes"); return ATTRIBUTE(); }
 
     /* Standart uniforms */
     Uniform4x4F*        SGL_DLLCALL GetModelViewMatrixUniform() const       { return modelViewMatrixUniform.get(); }

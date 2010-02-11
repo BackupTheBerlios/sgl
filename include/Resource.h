@@ -13,6 +13,7 @@ enum SCALAR_TYPE
 {
     UNKNOWN,
     BIT,
+    BOOL,
     BYTE,
 	UBYTE,
     SHORT,
@@ -20,6 +21,7 @@ enum SCALAR_TYPE
     INT,
     UINT,
 	FLOAT,
+    DOUBLE,
     __NUMBER_OF_SCALAR_TYPES__
 };
 
@@ -42,6 +44,7 @@ static const scalar_type_desc SCALAR_TYPE_TRAITS[] =
 {
     {0},
     {1},
+    {8},
     {8},
     {8},
     {16},

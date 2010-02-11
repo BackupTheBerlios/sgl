@@ -9,14 +9,10 @@ class GLTypeTraits
 {
 public:
     /** Get size of the gl type.
-     * @param - could be one of the following: 
-     * GL_FLOAT, GL_FLOAT_VEC2, GL_FLOAT_VEC3, GL_FLOAT_VEC4, GL_INT,
-	 * GL_INT_VEC2, GL_INT_VEC3, GL_INT_VEC4, GL_BOOL, GL_BOOL_VEC2, GL_BOOL_VEC3,
-	 * GL_BOOL_VEC4, GL_FLOAT_MAT2, GL_FLOAT_MAT3, GL_FLOAT_MAT4, GL_FLOAT_MAT2x3,
-	 * GL_FLOAT_MAT2x4, GL_FLOAT_MAT3x2, GL_FLOAT_MAT3x4, GL_FLOAT_MAT4x2, GL_FLOAT_MAT4x3
-     * @param return size of the value of specified type. 0 if value type is invalid.
+     * @param - opengl type param.
+     * @param return size of the value of specified type. 0 if provided type is invalid
      */ 
-    static inline unsigned int GetSize(GLenum type)
+    static inline unsigned int Size(GLenum type)
     {
         switch(type)
         {
@@ -67,6 +63,51 @@ public:
         }
 
         return 0;
+    }
+
+    /** Convert OpenGL type to sgl.
+     * @param - opengl type param.
+     * @return corresponding sgl type or __NUMBER_OF_SCALAR_TYPES__ if can't map type.
+     */ 
+    static SCALAR_TYPE Type(GLenum type)
+    {
+        switch(type)
+        {
+        case GL_BITMAP:
+            return BIT;
+
+        case GL_BOOL:
+            return BOOL;
+
+        case GL_BYTE:
+            return BYTE;
+
+        case GL_UNSIGNED_BYTE:
+            return UBYTE;
+
+        case GL_SHORT:
+            return SHORT;
+
+        case GL_UNSIGNED_SHORT:
+            return USHORT;
+
+        case GL_INT:
+            return INT;
+
+        case GL_UNSIGNED_INT:
+            return UINT;
+
+        case GL_FLOAT:
+            return FLOAT;
+
+        case GL_DOUBLE:
+            return DOUBLE;
+
+        default:
+            return __NUMBER_OF_SCALAR_TYPES__;
+        }
+
+        return __NUMBER_OF_SCALAR_TYPES__;
     }
 };
 

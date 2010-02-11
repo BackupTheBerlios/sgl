@@ -280,11 +280,13 @@ SGL_HRESULT GLProgram::Dirty(bool force)
  	                              &numShaders, 
  	                              &attachedShaders[0] );
         }
+        std::sort( attachedShaders.begin(), attachedShaders.end() );
 
         std::vector<GLuint> programShaders( shaders.size() );
         for (size_t i = 0; i<shaders.size(); ++i) {
             programShaders[i] = shaders[i]->shader;
         }
+        std::sort( programShaders.begin(), programShaders.end() );
 
         std::vector<GLuint> forDetaching;
         std::set_difference( attachedShaders.begin(), 
@@ -388,6 +390,38 @@ SGL_HRESULT GLProgram::Dirty(bool force)
         }
     }
 
+    // enumerate attributes
+    {
+        int numAttributes;
+        glGetProgramiv(glProgram, GL_ACTIVE_ATTRIBUTES, &numAttributes);
+        attributes.resize(numAttributes);
+
+        GLsizei maxNameLength;
+        glGetProgramiv(glProgram, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &maxNameLength);
+
+        for (int i = 0; i<numAttributes; ++i)
+        {
+            attributes[i].name.resize(maxNameLength);
+
+            GLsizei nameLength;
+            GLenum  type;
+            GLint   size;
+            glGetActiveAttrib( glProgram,
+ 	                           i, 
+ 	                           maxNameLength, 
+ 	                           &nameLength, 
+ 	                           &size, 
+ 	                           &type, 
+ 	                           &attributes[i].name[0] );
+
+            // bind type
+            attributes[i].name.resize(nameLength);
+            attributes[i].size = size;
+            attributes[i].type = GLTypeTraits::Type(type);
+        }
+	
+    }
+
     dirty = false;
 	return SGL_OK;
 }
@@ -470,17 +504,23 @@ SGL_HRESULT SGL_DLLCALL GLProgram::BindAttributeLocation(const char* name, unsig
     return SGL_OK;
 }
 
-int SGL_DLLCALL GLProgram::GetAttributeLocation(const char* name)
+int SGL_DLLCALL GLProgram::AttributeLocation(const char* name) const
 {
     int location = glGetAttribLocation(glProgram, name);
+    return location;
+}
+
+Program::ATTRIBUTE SGL_DLLCALL GLProgram::Attribute(unsigned index) const
+{
 #ifndef SGL_NO_STATUS_CHECK
-    GLuint err = glGetError();
-    if (GL_NO_ERROR != err) {
-        EInvalidCall( (std::string("Can't bind attribute: ") + name).c_str() );
+    if (index >= attributes.size() ) 
+    {
+        sglSetError(SGLERR_INVALID_CALL, "FFP program doesn't have generic attributes");
+        return ATTRIBUTE();   
     }
 #endif
 
-    return location;
+    return attributes[index].to_ATTRIBUTE();
 }
 
 // Uniforms

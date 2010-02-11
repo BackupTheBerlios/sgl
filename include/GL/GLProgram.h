@@ -22,6 +22,27 @@ friend class GLSamplerUniform;
 private:
     typedef scoped_ptr<AbstractUniform>         uniform_ptr;
     typedef std::vector< ref_ptr<GLShader> >    shader_vector;
+    
+    struct attribute
+    {
+        unsigned            index;
+        unsigned            size;
+        std::string         name;
+        sgl::SCALAR_TYPE    type;
+
+        // convert to ATTRIBUTE
+        ATTRIBUTE to_ATTRIBUTE() const
+        {
+            ATTRIBUTE attr;
+            attr.index = index;
+            attr.size  = size;
+            attr.name  = name.c_str();
+            attr.type  = type;
+            return attr;
+        }
+    };
+    typedef std::vector<attribute>              attribute_vector;
+
 
 private:
     AbstractUniform* CreateUniform( GLProgram*  program,
@@ -47,9 +68,13 @@ public:
     SGL_HRESULT     SGL_DLLCALL Bind() const;
     void            SGL_DLLCALL Unbind() const;
 
-    // Geometry shaders
+    // Attributes
     SGL_HRESULT     SGL_DLLCALL BindAttributeLocation(const char* name, unsigned index);
-    int             SGL_DLLCALL GetAttributeLocation(const char* name);
+    int             SGL_DLLCALL AttributeLocation(const char* name) const;
+    unsigned        SGL_DLLCALL NumAttributes() const { return attributes.size(); }
+    ATTRIBUTE       SGL_DLLCALL Attribute(unsigned index) const;
+
+    // Geometry shaders
     void            SGL_DLLCALL SetGeometryNumVerticesOut(unsigned int maxNumVertices);
     void            SGL_DLLCALL SetGeometryInputType(PRIMITIVE_TYPE inputType);
     void            SGL_DLLCALL SetGeometryOutputType(PRIMITIVE_TYPE outputType);
@@ -91,6 +116,7 @@ public:
 private:
     ref_ptr<GLDevice>   device;
     shader_vector       shaders;
+    attribute_vector    attributes;
     uniform_ptr*        uniforms;
 
     // geometry shaders
