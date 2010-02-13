@@ -38,6 +38,5 @@ void GLVertexBuffer::Unbind() const
     {
         glBindBufferARB(GL_ARRAY_BUFFER, 0);
 	    device->SetVertexBuffer(0);
-        device->SetVertexLayout(0);
     }
 }

@@ -290,7 +290,7 @@ SGL_HRESULT GLTexture2D::Bind(unsigned int _stage) const
 
 void GLTexture2D::Unbind() const
 {
-    if ( stage > 0 && device->CurrentTexture(stage) == this ) 
+    if ( stage >= 0 && device->CurrentTexture(stage) == this ) 
     {
         glActiveTexture(GL_TEXTURE0 + stage);
         glBindTexture(glTarget, 0);

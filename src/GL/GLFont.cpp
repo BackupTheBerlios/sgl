@@ -139,6 +139,7 @@ SGL_HRESULT GLFont::Bind(int width, int height) const
 
 void GLFont::Unbind() const
 {
+    vbo->Unbind();
     texture->Unbind();
     pDevice->PopState(State::DEPTH_STENCIL_STATE);
     pDevice->PopState(State::BLEND_STATE);
@@ -179,6 +180,4 @@ void GLFont::Print(float x, float y, const char* str) const
 			modelViewMatrixUniform->Set( modelViewMatrixUniform->Value() * make_translation(static_cast<float>(charWidth), 0.0f, 0.0f) );
 		}
 	}
-
-    vbo->Unbind();
 }

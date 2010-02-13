@@ -394,14 +394,14 @@ SGL_HRESULT GLProgram::Dirty(bool force)
     {
         int numAttributes;
         glGetProgramiv(glProgram, GL_ACTIVE_ATTRIBUTES, &numAttributes);
-        attributes.resize(numAttributes);
 
         GLsizei maxNameLength;
         glGetProgramiv(glProgram, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &maxNameLength);
 
         for (int i = 0; i<numAttributes; ++i)
         {
-            attributes[i].name.resize(maxNameLength);
+            attribute attr;
+            attr.name.resize(maxNameLength);
 
             GLsizei nameLength;
             GLenum  type;
@@ -412,12 +412,17 @@ SGL_HRESULT GLProgram::Dirty(bool force)
  	                           &nameLength, 
  	                           &size, 
  	                           &type, 
- 	                           &attributes[i].name[0] );
+ 	                           &attr.name[0] );
 
-            // bind type
-            attributes[i].name.resize(nameLength);
-            attributes[i].size = size;
-            attributes[i].type = GLTypeTraits::Type(type);
+            if (attr.name.substr(0, 3) != "gl_") 
+            {
+                // bind type
+                attr.name.resize(nameLength);
+                attr.index = glGetAttribLocation( glProgram, attr.name.c_str() );
+                attr.size  = size;
+                attr.type  = GLTypeTraits::Type(type);
+                attributes.push_back(attr);
+            }
         }
 	
     }

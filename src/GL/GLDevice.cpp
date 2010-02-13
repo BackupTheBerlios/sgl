@@ -826,31 +826,26 @@ void SGL_DLLCALL GLDevice::PushState(State::TYPE type)
     {
         case State::BLEND_STATE:
         {
-            BlendState* state = new GLBlendState( this, static_cast<const GLBlendState&>(*currentBlendState).Desc() );
-            stateStack[State::BLEND_STATE].push( ref_ptr<BlendState>(state) );
+            stateStack[State::BLEND_STATE].push(currentBlendState);
             break;
         }
 
         case State::DEPTH_STENCIL_STATE:
         {
-            DepthStencilState* state = new GLDepthStencilState( this, static_cast<const GLDepthStencilState&>(*currentDepthStencilState).Desc() );
-            stateStack[State::DEPTH_STENCIL_STATE].push( ref_ptr<DepthStencilState>(state) );
+            stateStack[State::DEPTH_STENCIL_STATE].push(currentDepthStencilState);
             break;
         }
 
         case State::RASTERIZER_STATE:
         {
-            RasterizerState* state = new GLRasterizerState( this, static_cast<const GLRasterizerState&>(*currentRasterizerState).Desc() );
-            stateStack[State::RASTERIZER_STATE].push( ref_ptr<RasterizerState>(state) );
+            stateStack[State::RASTERIZER_STATE].push(currentRasterizerState);
             break;
         }
 
         case State::SAMPLER_STATE:
         {
-            for(size_t i = 0; i<8; ++i) 
-            {
-                SamplerState* state = new GLSamplerState( this, currentSamplerState[i]->Desc() );
-                stateStack[State::SAMPLER_STATE + i].push( ref_ptr<SamplerState>(state) );
+            for(size_t i = 0; i<8; ++i) {
+                stateStack[State::SAMPLER_STATE + i].push(currentSamplerState[i]);
             }
             break;
         }
@@ -875,21 +870,21 @@ SGL_HRESULT SGL_DLLCALL GLDevice::PopState(State::TYPE type)
     {
         case State::BLEND_STATE:
         {
-            static_cast<GLBlendState&>( *stateStack[State::BLEND_STATE].top() ).Bind();
+            static_cast<const GLBlendState&>( *stateStack[State::BLEND_STATE].top() ).Bind();
             stateStack[State::BLEND_STATE].pop();
             break;
         }
 
         case State::DEPTH_STENCIL_STATE:
         {
-            static_cast<GLDepthStencilState&>( *stateStack[State::DEPTH_STENCIL_STATE].top() ).Bind();
+            static_cast<const GLDepthStencilState&>( *stateStack[State::DEPTH_STENCIL_STATE].top() ).Bind();
             stateStack[State::DEPTH_STENCIL_STATE].pop();
             break;
         }
 
         case State::RASTERIZER_STATE:
         {
-            static_cast<GLRasterizerState&>( *stateStack[State::RASTERIZER_STATE].top() ).Bind();
+            static_cast<const GLRasterizerState&>( *stateStack[State::RASTERIZER_STATE].top() ).Bind();
             stateStack[State::RASTERIZER_STATE].pop();
             break;
         }
@@ -898,7 +893,7 @@ SGL_HRESULT SGL_DLLCALL GLDevice::PopState(State::TYPE type)
         {
             for(size_t i = 0; i<8; ++i) 
             {
-                static_cast<GLSamplerState&>( *stateStack[State::SAMPLER_STATE + i].top() ).Bind(i);
+                static_cast<const GLSamplerState&>( *stateStack[State::SAMPLER_STATE + i].top() ).Bind(i);
                 stateStack[State::SAMPLER_STATE + i].pop();
             }
             break;

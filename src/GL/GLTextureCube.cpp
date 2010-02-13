@@ -214,13 +214,13 @@ SGL_HRESULT GLTextureCube::BindSamplerState(SamplerState* _samplerState)
 
         glTexParameteri( glTarget, GL_TEXTURE_MIN_FILTER,           BIND_TEXTURE_MIN_FILTER[ (desc.filter[0] << 1) | (desc.filter[2]) ] );
         glTexParameteri( glTarget, GL_TEXTURE_MAG_FILTER,           BIND_TEXTURE_FILTER[ desc.filter[1] ] );
-        glTexParameterf( glTarget, GL_TEXTURE_MIN_LOD,              desc.minLod );
-        glTexParameterf( glTarget, GL_TEXTURE_MAX_LOD,              desc.maxLod );
-        glTexParameterf( glTarget, GL_TEXTURE_LOD_BIAS,             desc.lodBias );
+        //glTexParameterf( glTarget, GL_TEXTURE_MIN_LOD,              desc.minLod );
+        //glTexParameterf( glTarget, GL_TEXTURE_MAX_LOD,              desc.maxLod );
+        //glTexParameterf( glTarget, GL_TEXTURE_LOD_BIAS,             desc.lodBias );
         glTexParameteri( glTarget, GL_TEXTURE_WRAP_S,               BIND_TEXTURE_CLAMP[ desc.wrapping[0] ] );
         glTexParameteri( glTarget, GL_TEXTURE_WRAP_T,               BIND_TEXTURE_CLAMP[ desc.wrapping[1] ] );
         glTexParameteri( glTarget, GL_TEXTURE_WRAP_R,               BIND_TEXTURE_CLAMP[ desc.wrapping[2] ] );
-        glTexParameteri( glTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT,   desc.maxAnisotropy);
+        //glTexParameteri( glTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT,   desc.maxAnisotropy);
     }
 
     return SGL_OK;
@@ -261,7 +261,7 @@ SGL_HRESULT GLTextureCube::Bind(unsigned int _stage) const
 
 void GLTextureCube::Unbind() const
 {
-    if ( stage > 0 && device->CurrentTexture(stage) == this ) 
+    if ( stage >= 0 && device->CurrentTexture(stage) == this ) 
     {
         glActiveTexture(GL_TEXTURE0 + stage);
         glBindTexture(glTarget, 0);

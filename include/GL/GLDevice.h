@@ -29,7 +29,7 @@ class GLDevice :
 	public ReferencedImpl<Device>
 {
 protected:
-    typedef std::stack< ref_ptr<State> >    state_stack;
+    typedef std::stack< ref_ptr<const State> >  state_stack;
 
 public:
     GLDevice(const Device::VIDEO_DESC& desc);
