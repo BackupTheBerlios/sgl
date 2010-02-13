@@ -192,7 +192,7 @@ SGL_HRESULT GLTextureCube::GenerateMipmap()
     }
 #endif // SGL_NO_STATUS_CHECK
 
-    glGenerateMipmap(glTarget);
+    glGenerateMipmapEXT(glTarget);
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
