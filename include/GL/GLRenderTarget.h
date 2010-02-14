@@ -77,6 +77,30 @@ private:
     };
     typedef std::vector<attachment>     attachment_vector;
 
+    struct guarded_binding :
+        public ReferencedImpl<Referenced>
+    {
+        guarded_binding(const GLDevice* device, const GLRenderTarget* target)
+        {
+            assert(device && target);
+            if (device->CurrentRenderTarget() != target)
+            {
+                renderTarget.reset( static_cast<const GLRenderTarget*>( device->CurrentRenderTarget() ) );
+                target->Bind();
+            }
+        }
+
+        ~guarded_binding()
+        {
+            if (renderTarget) {
+                renderTarget->Bind();
+            }
+        }
+
+        ref_ptr<const GLRenderTarget> renderTarget;
+    };
+    typedef ref_ptr<guarded_binding>    guarded_binding_ptr;
+
 public:
     GLRenderTarget(GLDevice* device);
     ~GLRenderTarget();

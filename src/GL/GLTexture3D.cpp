@@ -20,7 +20,7 @@ GLTexture3D::GLTexture3D(GLDevice* device, const DESC& desc) :
     bool   compressed  = Texture::FORMAT_TRAITS[format].compressed;
 
     // save previous state & bind texture
-    guarded_texture_ptr guardedTexture = GuardedBind(0);
+    guarded_binding_ptr guardedTexture( new guarded_binding(device, this, 0) );
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
@@ -82,7 +82,7 @@ GLTexture3D::GLTexture3D(GLDevice* device, const DESC_MS& desc) :
     bool   compressed  = Texture::FORMAT_TRAITS[format].compressed;
 
     // save previous state & bind texture
-    guarded_texture_ptr guardedTexture = GuardedBind(0);
+    guarded_binding_ptr guardedTexture( new guarded_binding(device.get(), this, 0) );
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
@@ -124,7 +124,7 @@ SGL_HRESULT GLTexture3D::SetSubImage( unsigned int  mipmap,
     bool   compressed  = Texture::FORMAT_TRAITS[format].compressed;
 
     // save previous state & bind texture
-    guarded_texture_ptr guardedTexture = GuardedBind(0);
+    guarded_binding_ptr guardedTexture( new guarded_binding(device.get(), this, 0) );
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
@@ -186,7 +186,7 @@ SGL_HRESULT GLTexture3D::GetImage( unsigned int  mipmap,
     bool   compressed  = Texture::FORMAT_TRAITS[format].compressed;
 
     // save previous state & bind texture
-    guarded_texture_ptr guardedTexture = GuardedBind(0);
+    guarded_binding_ptr guardedTexture( new guarded_binding(device.get(), this, 0) );
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
@@ -222,7 +222,7 @@ SGL_HRESULT GLTexture3D::GetImage( unsigned int  mipmap,
 
 SGL_HRESULT GLTexture3D::GenerateMipmap()
 {
-    guarded_texture_ptr guardedTexture = GuardedBind(0);
+    guarded_binding_ptr guardedTexture( new guarded_binding(device.get(), this, 0) );
 
 #ifndef SGL_NO_STATUS_CHECK
     GLenum glError = glGetError();

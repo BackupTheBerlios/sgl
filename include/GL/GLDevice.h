@@ -29,7 +29,7 @@ class GLDevice :
 	public ReferencedImpl<Device>
 {
 protected:
-    typedef std::stack< ref_ptr<const State> >  state_stack;
+    typedef std::stack<const State*>    state_stack;
 
 public:
     GLDevice(const Device::VIDEO_DESC& desc);
@@ -43,14 +43,14 @@ public:
     const BlendState*           SGL_DLLCALL CurrentBlendState() const                       { return currentBlendState; }
     const DepthStencilState*    SGL_DLLCALL CurrentDepthStencilState() const                { return currentDepthStencilState; }
     const RasterizerState*      SGL_DLLCALL CurrentRasterizerState() const                  { return currentRasterizerState; }
-    const SamplerState*         SGL_DLLCALL CurrentSamplerState(unsigned int stage) const   { return currentSamplerState[stage].get(); }
-    const Texture*              SGL_DLLCALL CurrentTexture(unsigned int stage) const        { return currentTexture[stage].get(); }
-    const VertexBuffer*         SGL_DLLCALL CurrentVertexBuffer() const                     { return currentVertexBuffer.get(); }
-    const VertexLayout*         SGL_DLLCALL CurrentVertexLayout() const                     { return currentVertexLayout.get(); }
-    const IndexBuffer*          SGL_DLLCALL CurrentIndexBuffer() const                      { return currentIndexBuffer.get(); }
+    const SamplerState*         SGL_DLLCALL CurrentSamplerState(unsigned int stage) const   { return currentSamplerState[stage]; }
+    const Texture*              SGL_DLLCALL CurrentTexture(unsigned int stage) const        { return currentTexture[stage]; }
+    const VertexBuffer*         SGL_DLLCALL CurrentVertexBuffer() const                     { return currentVertexBuffer; }
+    const VertexLayout*         SGL_DLLCALL CurrentVertexLayout() const                     { return currentVertexLayout; }
+    const IndexBuffer*          SGL_DLLCALL CurrentIndexBuffer() const                      { return currentIndexBuffer; }
     IndexBuffer::INDEX_TYPE     SGL_DLLCALL CurrentIndexFormat() const                      { return currentIndexFormat; }
-    const Program*              SGL_DLLCALL CurrentProgram() const                          { return currentProgram.get(); }
-    const RenderTarget*         SGL_DLLCALL CurrentRenderTarget() const                     { return currentRenderTarget.get(); }
+    const Program*              SGL_DLLCALL CurrentProgram() const                          { return currentProgram; }
+    const RenderTarget*         SGL_DLLCALL CurrentRenderTarget() const                     { return currentRenderTarget; }
 
     void                        SGL_DLLCALL SetBlendState(const BlendState* blendState);
     void                        SGL_DLLCALL SetDepthStencilState(const DepthStencilState* depthStencilState);
@@ -140,6 +140,14 @@ public:
     Font*               SGL_DLLCALL CreateFont();
     RenderTarget*       SGL_DLLCALL CreateRenderTarget();
 
+    // ============================ RETRIEVE ============================ //
+
+    SGL_HRESULT         SGL_DLLCALL CopyTexture2D( Texture2D*     texture,
+                                                   unsigned       level,
+                                                   unsigned       offsetx,
+                                                   unsigned       offsety,
+                                                   unsigned       width,
+                                                   unsigned       height ) const;
 protected:
 	virtual ~GLDevice();
 
@@ -148,20 +156,20 @@ private:
 
 protected:
     // current state
-    ref_ptr<const RenderTarget>         currentRenderTarget;
-    ref_ptr<const Program>              currentProgram;
-    ref_ptr<const IndexBuffer>          currentIndexBuffer;
-    ref_ptr<const VertexBuffer>         currentVertexBuffer;
-    ref_ptr<const VertexLayout>         currentVertexLayout;
-    ref_ptr<const Texture>              currentTexture[NUM_TEXTURE_STAGES];
-    ref_ptr<const BlendState>           currentBlendState;
-    ref_ptr<const DepthStencilState>    currentDepthStencilState;
-    ref_ptr<const RasterizerState>      currentRasterizerState;
-    ref_ptr<const SamplerState>         currentSamplerState[NUM_TEXTURE_STAGES];
-    IndexBuffer::INDEX_TYPE             currentIndexFormat;
-    GLuint                              glIndexType;
-    GLsizei                             glIndexSize;
-    sgl::rectangle                      viewport;
+    const RenderTarget*         currentRenderTarget;
+    const Program*              currentProgram;
+    const IndexBuffer*          currentIndexBuffer;
+    const VertexBuffer*         currentVertexBuffer;
+    const VertexLayout*         currentVertexLayout;
+    const Texture*              currentTexture[NUM_TEXTURE_STAGES];
+    const BlendState*           currentBlendState;
+    const DepthStencilState*    currentDepthStencilState;
+    const RasterizerState*      currentRasterizerState;
+    const SamplerState*         currentSamplerState[NUM_TEXTURE_STAGES];
+    IndexBuffer::INDEX_TYPE     currentIndexFormat;
+    GLuint                      glIndexType;
+    GLsizei                     glIndexSize;
+    sgl::rectangle              viewport;
 
     // states
     state_stack                 stateStack[State::__NUMBER_OF_STATES_WITH_SAMPLERS__];

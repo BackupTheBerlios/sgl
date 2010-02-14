@@ -342,9 +342,11 @@ unsigned int GLRenderTarget::DrawBuffers(unsigned int* targets) const
 
 SGL_HRESULT GLRenderTarget::Bind() const
 {
+#ifndef SGL_NO_STATUS_CHECK
     if (dirty) {
         return EInvalidCall("GLRenderTarget::Bind failed. Render target is dirty.");
     }
+#endif
 
     // bind buffer
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);

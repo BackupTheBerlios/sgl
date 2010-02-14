@@ -399,6 +399,19 @@ GLDevice::GLDevice(const Device::VIDEO_DESC& desc)
 
 SGL_HRESULT GLDevice::InitOpenGL()
 {
+    // defaults
+    currentRenderTarget         = 0;
+    currentProgram              = 0;
+    currentIndexBuffer          = 0;
+    currentVertexBuffer         = 0;
+    currentVertexLayout         = 0;
+    currentBlendState           = 0;
+    currentDepthStencilState    = 0;
+    currentRasterizerState      = 0;
+    
+    std::fill(currentTexture,      currentTexture      + NUM_TEXTURE_STAGES, (Texture*)0);
+    std::fill(currentSamplerState, currentSamplerState + NUM_TEXTURE_STAGES, (SamplerState*)0);
+
     // init extensions
     static bool glewInitialized = false;
     if (!glewInitialized)
@@ -591,17 +604,17 @@ Image* GLDevice::CreateImage()
 // internal binders
 void GLDevice::SetBlendState(const BlendState* blendState)
 {
-    currentBlendState.reset(blendState);
+    currentBlendState = blendState;
 }
 
 void GLDevice::SetDepthStencilState(const DepthStencilState* depthStencilState)
 {
-    currentDepthStencilState.reset(depthStencilState);
+    currentDepthStencilState = depthStencilState;
 }
 
 void GLDevice::SetRasterizerState(const RasterizerState* rasterizerState)
 {
-    currentRasterizerState.reset(rasterizerState);
+    currentRasterizerState = rasterizerState;
 }
 
 void GLDevice::SetSamplerState(unsigned int stage, const SamplerState* samplerState)
@@ -610,33 +623,33 @@ void GLDevice::SetSamplerState(unsigned int stage, const SamplerState* samplerSt
     if (currentSamplerState[stage] != samplerState && currentTexture[stage]) 
     {
         // rebind state to the texture
-        currentSamplerState[stage].reset(samplerState);
+        currentSamplerState[stage] = samplerState;
         currentTexture[stage]->Bind(stage);
     }
     else {
-        currentSamplerState[stage].reset(samplerState);
+        currentSamplerState[stage] = samplerState;
     }
 }
 
 void GLDevice::SetTexture(unsigned int stage, const Texture* texture)
 {
     assert(stage < NUM_TEXTURE_STAGES);
-    currentTexture[stage].reset(texture);
+    currentTexture[stage] = texture;
 }
 
 void GLDevice::SetVertexBuffer(const VertexBuffer* vertexBuffer)
 {
-    currentVertexBuffer.reset(vertexBuffer);
+    currentVertexBuffer = vertexBuffer;
 }
 
 void GLDevice::SetVertexLayout(const VertexLayout* vertexLayout)
 {
-    currentVertexLayout.reset(vertexLayout);
+    currentVertexLayout = vertexLayout;
 }
 
 void GLDevice::SetIndexBuffer(const IndexBuffer* indexBuffer, IndexBuffer::INDEX_TYPE type)
 {
-    currentIndexBuffer.reset(indexBuffer);
+    currentIndexBuffer = indexBuffer;
     currentIndexFormat = type;
     glIndexType        = BIND_GL_INDEX_TYPE[type];
     glIndexSize        = BIND_GL_INDEX_SIZE[type];
@@ -644,12 +657,12 @@ void GLDevice::SetIndexBuffer(const IndexBuffer* indexBuffer, IndexBuffer::INDEX
 
 void GLDevice::SetProgram(const Program* program)
 {
-    currentProgram.reset(program);
+    currentProgram = program;
 }
 
 void GLDevice::SetRenderTarget(const RenderTarget* renderTarget)
 {
-    currentRenderTarget.reset(renderTarget);
+    currentRenderTarget = renderTarget;
 }
 
 // ============================ DRAW ============================ //
@@ -944,10 +957,40 @@ int GLDevice::ClearStencil() const
 }
 
 
-RenderTarget* SGL_DLLCALL GLDevice::CreateRenderTarget()
+RenderTarget* GLDevice::CreateRenderTarget()
 {
     return new GLRenderTarget(this);
 }
+
+SGL_HRESULT GLDevice::CopyTexture2D( Texture2D*     texture,
+                                     unsigned       level,
+                                     unsigned       offsetx,
+                                     unsigned       offsety,
+                                     unsigned       width,
+                                     unsigned       height ) const
+{
+#ifndef SGL_NO_STATUS_CHECK
+    if (!texture) {
+        return EInvalidCall("GLDevice::CopyTexture2D failed. Texture is NULL.");
+    }
+#endif
+
+    GLTexture2D*                     glTexture = static_cast<GLTexture2D*>(texture);
+    GLTexture2D::guarded_binding_ptr texBinding( new GLTexture2D::guarded_binding(this, glTexture, 0) );
+    {
+        glCopyTexSubImage2D(glTexture->glTarget, level, offsetx, offsety, 0, 0, width, height); 
+
+    #ifndef SGL_NO_STATUS_CHECK
+        GLenum error = glGetError();
+        if ( error != GL_NO_ERROR ) {
+            return CheckGLError("GLDevice::CopyTexture2D failed: ", error);
+        }
+    #endif
+    }
+
+    return SGL_OK;
+}
+
 /*
 VBORenderTarget* SGL_DLLCALL GLDevice::CreateVBORenderTarget() const
 {

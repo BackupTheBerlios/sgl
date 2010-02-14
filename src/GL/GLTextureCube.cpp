@@ -23,7 +23,7 @@ GLTextureCubeSide::GLTextureCubeSide( GLTextureCube*            texture,
     bool   compressed  = Texture::FORMAT_TRAITS[format].compressed;
 
     // save previous state & bind texture
-    guarded_texture_ptr guardedTexture = GuardedBind(0);
+    GLTexture<TextureCube>::guarded_binding_ptr guardedTexture( new GLTexture<TextureCube>::guarded_binding(device, texture, 0) );
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
@@ -78,7 +78,7 @@ SGL_HRESULT GLTextureCubeSide::SetSubImage( unsigned int  mipmap,
     bool   compressed  = Texture::FORMAT_TRAITS[format].compressed;
 
     // save previous state & bind texture
-    guarded_texture_ptr guardedTexture = GuardedBind(0);
+    guarded_binding_ptr guardedTexture( new guarded_binding(device.get(), this, 0) );
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
@@ -135,7 +135,7 @@ SGL_HRESULT GLTextureCubeSide::GetImage( unsigned int  mipmap,
     bool   compressed  = Texture::FORMAT_TRAITS[format].compressed;
 
     // save previous state & bind texture
-    guarded_texture_ptr guardedTexture = GuardedBind(0);
+    guarded_binding_ptr guardedTexture( new guarded_binding(device.get(), this, 0) );
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
@@ -183,7 +183,7 @@ GLTextureCube::GLTextureCube( GLDevice*    device,
 
 SGL_HRESULT GLTextureCube::GenerateMipmap()
 {
-    guarded_texture_ptr guardedTexture = GuardedBind(0);
+    guarded_binding_ptr guardedTexture( new guarded_binding(device.get(), this, 0) );
 
 #ifndef SGL_NO_STATUS_CHECK
     GLenum glError = glGetError();
@@ -209,7 +209,7 @@ SGL_HRESULT GLTextureCube::BindSamplerState(SamplerState* _samplerState)
 
     if (samplerState)
     {
-        guarded_texture_ptr       guardedTexture = GuardedBind(0);
+        guarded_binding_ptr       guardedTexture( new guarded_binding(device.get(), this, 0) );
         const SamplerState::DESC& desc           = samplerState->Desc();
 
         glTexParameteri( glTarget, GL_TEXTURE_MIN_FILTER,           BIND_TEXTURE_MIN_FILTER[ (desc.filter[0] << 1) | (desc.filter[2]) ] );

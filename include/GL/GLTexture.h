@@ -45,27 +45,37 @@ template<typename Interface>
 class GLTexture :
     public ReferencedImpl<Interface>
 {
+friend class GLDevice;
 friend class GLRenderTarget;
-protected:
-    struct guarded_texture :
+public:
+    struct guarded_binding :
         public ReferencedImpl<Referenced>
     {
-        guarded_texture(const Texture* _texture, unsigned int _stage) :
-            texture(_texture),
-            stage(_stage)
-        {}
+        guarded_binding( const GLDevice*    device,
+                         const GLTexture*   target, 
+                         unsigned int       stage_) :
+            stage(stage_),
+            texture(0)
+        {
+            assert(device && target);
+            if ( device->CurrentTexture(stage) != target )
+            {
+                texture = device->CurrentTexture(stage);
+                target->Bind(stage);
+            }
+        }
 
-        ~guarded_texture()
+        ~guarded_binding()
         {
             if (texture) {
                 texture->Bind(stage);
             }
         }
 
-        int                     stage;
-        ref_ptr<const Texture>  texture;
+        int             stage;
+        const Texture*  texture;
     };
-    typedef ref_ptr<guarded_texture> guarded_texture_ptr;
+    typedef ref_ptr<guarded_binding>    guarded_binding_ptr;
 
 public:
     GLTexture(  GLDevice*   _device, 
@@ -82,26 +92,26 @@ public:
         }
     }
 
-protected:
-    ~GLTexture()
-    {
-        if (generateTexture) {
-            glDeleteTextures(1, &glTexture);
-        }
-    }
-
-    guarded_texture_ptr GuardedBind(unsigned int stage) const
+    guarded_binding_ptr GuardedBind(unsigned int stage) const
     { 
         if ( device->CurrentTexture(stage) != this )
         {
-            guarded_texture_ptr guardedTexture( new guarded_texture(device->CurrentTexture(stage), stage) ); 
+            guarded_binding_ptr guardedTexture( new guarded_texture(device->CurrentTexture(stage), stage) ); 
             
             glActiveTexture(GL_TEXTURE0 + stage);
             glBindTexture(glTarget, glTexture);
             return guardedTexture;
         }
 
-        return guarded_texture_ptr();
+        return guarded_binding();
+    }
+
+protected:
+    ~GLTexture()
+    {
+        if (generateTexture) {
+            glDeleteTextures(1, &glTexture);
+        }
     }
 
 protected:

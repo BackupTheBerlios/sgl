@@ -79,6 +79,41 @@ public:
      */
     //virtual SGL_HRESULT SGL_DLLCALL TakeScreenshot(Image* image) const = 0;
 
+    // ============================ STATE ============================ //
+    
+    /** Retrieve current device blend state. */
+    virtual const BlendState*           SGL_DLLCALL CurrentBlendState() const = 0;
+
+    /** Retrieve current device depth-stencil state. */
+    virtual const DepthStencilState*    SGL_DLLCALL CurrentDepthStencilState() const = 0;
+
+    /** Retrieve current device rasterizer state. */
+    virtual const RasterizerState*      SGL_DLLCALL CurrentRasterizerState() const = 0;
+
+    /** Retrieve current device sampler state. */
+    virtual const SamplerState*         SGL_DLLCALL CurrentSamplerState(unsigned int stage) const = 0;
+
+    /** Retrieve bound texture. */
+    virtual const Texture*              SGL_DLLCALL CurrentTexture(unsigned int stage) const = 0;
+
+    /** Retrieve bound vertex buffer. */
+    virtual const VertexBuffer*         SGL_DLLCALL CurrentVertexBuffer() const = 0;
+
+    /** Retrieve bound vertex layout.*/
+    virtual const VertexLayout*         SGL_DLLCALL CurrentVertexLayout() const = 0;
+
+    /** Retrieve bound index buffer. */
+    virtual const IndexBuffer*          SGL_DLLCALL CurrentIndexBuffer() const = 0;
+
+    /** Retrieve index type ofbound index buffer. */
+    virtual IndexBuffer::INDEX_TYPE     SGL_DLLCALL CurrentIndexFormat() const = 0;
+
+    /** Retrieve active shader program. */
+    virtual const Program*              SGL_DLLCALL CurrentProgram() const = 0;
+
+    /** Retrieve active render target. */
+    virtual const RenderTarget*         SGL_DLLCALL CurrentRenderTarget() const = 0;
+
     // ============================ DRAW ============================ //
 
     /** Draw vertices. Doesn't perform any checks.
@@ -254,6 +289,25 @@ public:
      */
     virtual SGL_HRESULT     SGL_DLLCALL Sync() const = 0;
 
+    // ============================ RETRIEVE ============================ //
+
+    /** Copy content of color attachment or depth stencil attachment ot the texture.
+     * Content for copying is determined by the texture format, region for copying is
+     * determined by the viewport.
+     * @param texture - target texture.
+     * @param level - texture mip level where to copy.
+     * @param offsetx - x offset in the texture.
+     * @param offsety - y offset in the texture.
+     * @param width - width ofof the texture region where to copy.
+     * @param height - height of the texture region where to copy.
+     * @return result of the operation. Can be SGLERR_INVALID_CALL.
+     */
+    virtual SGL_HRESULT SGL_DLLCALL CopyTexture2D( Texture2D*     texture,
+                                                   unsigned       level,
+                                                   unsigned       offsetx,
+                                                   unsigned       offsety,
+                                                   unsigned       width,
+                                                   unsigned       height ) const = 0;
     virtual ~Device() {}
 };
 
