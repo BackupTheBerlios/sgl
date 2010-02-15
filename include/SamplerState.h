@@ -23,6 +23,7 @@ public:
     /** filter modes */
     enum FILTER
     {
+        NONE,       /// Actual for mip filtering, NONE means no mipmaping
         NEAREST,
         LINEAR,
         __NUMBER_OF_FILTERS__
