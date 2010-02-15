@@ -189,6 +189,7 @@ const GLenum sgl::BIND_GL_FORMAT_PIXEL_TYPE[] =
 const GLenum sgl::BIND_TEXTURE_FILTER[] =
 {
     GL_NEAREST,
+    GL_NEAREST,
     GL_LINEAR
 };
 

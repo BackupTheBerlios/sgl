@@ -238,7 +238,7 @@ SGL_HRESULT GLTexture2D::BindSamplerState(sgl::SamplerState* _samplerState)
         const SamplerState::DESC& desc = samplerState->Desc();
         if (numSamples == 0) 
         {
-            glTexParameteri( glTarget, GL_TEXTURE_MIN_FILTER,       BIND_TEXTURE_MIN_FILTER[ (desc.filter[2] << 1) | (desc.filter[0]) ] );
+            glTexParameteri( glTarget, GL_TEXTURE_MIN_FILTER,       BIND_TEXTURE_MIN_FILTER[ desc.filter[2] * 3 + desc.filter[0] ] );
             glTexParameteri( glTarget, GL_TEXTURE_MAG_FILTER,       BIND_TEXTURE_FILTER[ desc.filter[1] ] );
             //glTexParameterf( glTarget, GL_TEXTURE_MIN_LOD,          desc.minLod );
             //glTexParameterf( glTarget, GL_TEXTURE_MAX_LOD,          desc.maxLod );
