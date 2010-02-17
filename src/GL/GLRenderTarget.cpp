@@ -305,8 +305,14 @@ SGL_HRESULT GLRenderTarget::SetDrawBuffers(unsigned int numTargets, unsigned int
                     std::bind1st(std::plus<int>(), GL_COLOR_ATTACHMENT0) );
 
     // setup to openGL
-    if ( device->CurrentRenderTarget() == this ) {
-        glDrawBuffers(numTargets, &drawBuffers[0]);
+    if ( device->CurrentRenderTarget() == this ) 
+    {
+        if ( drawBuffers.empty() ) {
+            glDrawBuffer(GL_NONE);
+        }
+        else {
+            glDrawBuffers(drawBuffers.size(), &drawBuffers[0]);
+        }
     }
 
     return SGL_OK;
@@ -350,7 +356,12 @@ SGL_HRESULT GLRenderTarget::Bind() const
 
     // bind buffer
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-    glDrawBuffers(drawBuffers.size(), &drawBuffers[0]);
+    if ( drawBuffers.empty() ) {
+        glDrawBuffer(GL_NONE);
+    }
+    else {
+        glDrawBuffers(drawBuffers.size(), &drawBuffers[0]);
+    }
     glReadBuffer(readBuffer);
     device->SetRenderTarget(this);
 
