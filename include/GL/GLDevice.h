@@ -25,6 +25,7 @@
 namespace sgl {
 
 /* GLDevice class wraps gl functions */
+template<DEVICE_VERSION deviceVersion>
 class GLDevice :
 	public ReferencedImpl<Device>
 {
@@ -67,8 +68,6 @@ public:
     SGL_HRESULT                 SGL_DLLCALL TakeScreenshot(Image* image) const;
 
     // ============================ DRAW ============================ //
-
-    SGL_HRESULT         SGL_DLLCALL DirtyVertexLayout();
 
     void                SGL_DLLCALL Draw( PRIMITIVE_TYPE primType, 
                                           unsigned       firstVertex, 

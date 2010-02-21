@@ -10,7 +10,7 @@ class GLDepthStencilState :
     public ReferencedImpl<DepthStencilState>
 {
 public:
-    GLDepthStencilState(sgl::GLDevice* device, const DESC& desc);
+    GLDepthStencilState(sgl::Device* device, const DESC& desc);
     ~GLDepthStencilState();
 
     // Override State
@@ -20,7 +20,7 @@ public:
     const DESC& SGL_DLLCALL Desc() const { return desc; }
 
 private:
-    ref_ptr<GLDevice>   device;
+    ref_ptr<Device>     device;
 
     // setup display list
     GLuint              bindDisplayList;

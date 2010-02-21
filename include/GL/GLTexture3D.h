@@ -10,8 +10,8 @@ class GLTexture3D :
     public GLTexture<Texture3D>
 {
 public:
-    GLTexture3D(GLDevice* device, const DESC& desc);
-    GLTexture3D(GLDevice* device, const DESC_MS& desc);
+    GLTexture3D(Device* device, const DESC& desc);
+    GLTexture3D(Device* device, const DESC_MS& desc);
 
     // Override Texture2
     TYPE            SGL_DLLCALL Type() const        { return TEXTURE_3D; }

@@ -9,7 +9,7 @@ class GLRasterizerState :
     public ReferencedImpl<RasterizerState>
 {
 public:
-    GLRasterizerState(sgl::GLDevice* device, const DESC& desc);
+    GLRasterizerState(sgl::Device* device, const DESC& desc);
     ~GLRasterizerState();
 
     // Override RasterizerState
@@ -20,7 +20,7 @@ public:
     void SGL_DLLCALL SetScissorRectangle(const math::Vector4i& rect);
 
 private:
-    ref_ptr<GLDevice>   device;
+    ref_ptr<Device>     device;
 
     // setup display list
     GLuint              bindDisplayList;

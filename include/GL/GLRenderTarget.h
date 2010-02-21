@@ -12,7 +12,6 @@ namespace sgl {
 class GLRenderTarget :
     public ReferencedImpl<RenderTarget>
 {
-friend class GLDevice;
 private:
     typedef std::vector<GLuint> GLuint_vector;
 
@@ -80,7 +79,7 @@ private:
     struct guarded_binding :
         public ReferencedImpl<Referenced>
     {
-        guarded_binding(const GLDevice* device, const GLRenderTarget* target)
+        guarded_binding(const Device* device, const GLRenderTarget* target)
         {
             assert(device && target);
             if (device->CurrentRenderTarget() != target)
@@ -102,7 +101,7 @@ private:
     typedef ref_ptr<guarded_binding>    guarded_binding_ptr;
 
 public:
-    GLRenderTarget(GLDevice* device);
+    GLRenderTarget(Device* device);
     ~GLRenderTarget();
 
     // Override RenderTarget
@@ -159,7 +158,7 @@ public:
 
 private:
     // device
-    ref_ptr<GLDevice>   device;
+    ref_ptr<Device>     device;
 
     // settings
     bool                dirty;

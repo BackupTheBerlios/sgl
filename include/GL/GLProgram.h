@@ -114,7 +114,7 @@ public:
     SamplerUniformCube* SGL_DLLCALL GetSamplerUniformCube(const char* name);
 
 private:
-    ref_ptr<GLDevice>   device;
+    ref_ptr<Device>     device;
     shader_vector       shaders;
     attribute_vector    attributes;
     uniform_ptr*        uniforms;

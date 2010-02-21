@@ -56,7 +56,7 @@ class GLTextureCube :
 {
 friend class GLTextureCubeSide;
 public:
-    GLTextureCube( GLDevice*    device,
+    GLTextureCube( Device*      device,
                    const DESC&  desc );
 
     // Override TextureCube

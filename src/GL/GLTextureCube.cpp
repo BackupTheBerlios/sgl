@@ -171,8 +171,8 @@ SGL_HRESULT GLTextureCubeSide::GetImage( unsigned int  mipmap,
 
 //================================= GLTextureCube =================================//
 
-GLTextureCube::GLTextureCube( GLDevice*    device,
-                              const DESC&  desc ) :
+GLTextureCube::GLTextureCube( Device*       device,
+                              const DESC&   desc ) :
     GLTexture<TextureCube>(device, GL_TEXTURE_CUBE_MAP)
 {
     // create sides
@@ -255,7 +255,7 @@ SGL_HRESULT GLTextureCube::Bind(unsigned int _stage) const
         glTexParameteri( glTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT,   desc.maxAnisotropy);
     }
 */
-    device->SetTexture(stage, this);
+    static_cast< GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>* >(device.get())->SetTexture(stage, this);
     return SGL_OK;
 }
 
@@ -266,7 +266,7 @@ void GLTextureCube::Unbind() const
         glActiveTexture(GL_TEXTURE0 + stage);
         glBindTexture(glTarget, 0);
         glDisable(glTarget);
-        device->SetTexture(stage, 0);
+        static_cast< GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>* >(device.get())->SetTexture(stage, 0);
         stage = -1;
     }
 }

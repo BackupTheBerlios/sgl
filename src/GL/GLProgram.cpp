@@ -25,7 +25,7 @@ struct uniform_desc
 
 // program
 GLProgram::GLProgram(Device* _device) :
-    device( static_cast<GLDevice*>(_device) ),
+    device(_device),
     uniforms(0),
     numVerticesOut(3),
     inputType(TRIANGLES),
@@ -452,7 +452,7 @@ SGL_HRESULT GLProgram::Bind() const
     if (device->CurrentProgram() != this) 
     {
         glUseProgram(glProgram);
-        device->SetProgram(this);
+        static_cast< GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>* >(device.get())->SetProgram(this);
     }
 
 	return SGL_OK;
@@ -463,7 +463,7 @@ void GLProgram::Unbind() const
     if ( device->CurrentProgram() == this )
     {
         glUseProgram(0);
-        device->SetProgram(0);
+        static_cast< GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>* >(device.get())->SetProgram(0);
     }
 }
 

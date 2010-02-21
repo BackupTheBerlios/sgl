@@ -3,7 +3,7 @@
 
 namespace sgl {
 
-GLTexture2D::GLTexture2D(GLDevice* device, const DESC& desc) :
+GLTexture2D::GLTexture2D(Device* device, const DESC& desc) :
     GLTexture<Texture2D>(device, GL_TEXTURE_2D),
     format(desc.format),
     width(desc.width),
@@ -60,7 +60,7 @@ GLTexture2D::GLTexture2D(GLDevice* device, const DESC& desc) :
 #endif // SGL_NO_STATUS_CHECK
 }
 
-GLTexture2D::GLTexture2D(GLDevice* device, const DESC_MS& desc) :
+GLTexture2D::GLTexture2D(Device* device, const DESC_MS& desc) :
     GLTexture<Texture2D>(device, GL_TEXTURE_2D_MULTISAMPLE),
     format(desc.format),
     width(desc.width),
@@ -284,7 +284,7 @@ SGL_HRESULT GLTexture2D::Bind(unsigned int _stage) const
         glTexParameteri( glTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT,   desc.maxAnisotropy);
     }
 */
-    device->SetTexture(stage, this);
+    static_cast< GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>* >(device.get())->SetTexture(stage, this);
     return SGL_OK;
 }
 
@@ -295,7 +295,7 @@ void GLTexture2D::Unbind() const
         glActiveTexture(GL_TEXTURE0 + stage);
         glBindTexture(glTarget, 0);
         glDisable(glTarget);
-        device->SetTexture(stage, 0);
+        static_cast< GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>* >(device.get())->SetTexture(stage, 0);
         stage = -1;
     }
 }

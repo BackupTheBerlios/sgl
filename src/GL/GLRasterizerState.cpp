@@ -20,8 +20,8 @@ namespace {
 
 } // anonymous namespace
 
-GLRasterizerState::GLRasterizerState( sgl::GLDevice* _device, 
-                                      const DESC&    _desc ) :
+GLRasterizerState::GLRasterizerState( sgl::Device*  _device, 
+                                      const DESC&   _desc ) :
     device(_device),
     desc(_desc),
     scissorRect(0, 0, 0, 0)
@@ -64,5 +64,5 @@ void GLRasterizerState::SetScissorRectangle(const math::Vector4i& rect)
 void GLRasterizerState::Bind() const
 {
     glCallList(bindDisplayList);
-    device->SetRasterizerState(this);
+    static_cast< GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>* >(device.get())->SetRasterizerState(this);
 }

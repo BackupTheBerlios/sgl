@@ -4,7 +4,7 @@
 
 using namespace sgl;
 
-GLIndexBuffer::GLIndexBuffer(GLDevice* device) :
+GLIndexBuffer::GLIndexBuffer(Device* device) :
     GLBuffer<IndexBuffer>(device, GL_ELEMENT_ARRAY_BUFFER)
 {
 }
@@ -18,7 +18,7 @@ void GLIndexBuffer::Bind(INDEX_TYPE format) const
     if (device->CurrentIndexBuffer() != this || device->CurrentIndexFormat() != format)
     {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glBuffer);
-        device->SetIndexBuffer(this, format);
+        static_cast< GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>* >(device.get())->SetIndexBuffer(this, format);
     }
 }
 
@@ -27,6 +27,6 @@ void GLIndexBuffer::Unbind() const
     if ( device->CurrentIndexBuffer() == this ) 
     {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-        device->SetIndexBuffer(0, UINT_8);
+        static_cast< GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>* >(device.get())->SetIndexBuffer(0, UINT_8);
     }
 }

@@ -10,8 +10,8 @@ class GLTexture2D :
     public GLTexture<Texture2D>
 {
 public:
-    GLTexture2D(GLDevice* device, const DESC& desc);
-    GLTexture2D(GLDevice* device, const DESC_MS& desc);
+    GLTexture2D(Device* device, const DESC& desc);
+    GLTexture2D(Device* device, const DESC_MS& desc);
 
     // Override Texture2
     TYPE            SGL_DLLCALL Type() const        { return TEXTURE_2D; }

@@ -29,7 +29,7 @@ class GLBuffer :
     public ReferencedImpl<Interface>
 {
 protected:
-    GLBuffer( GLDevice* _device,
+    GLBuffer( Device*   _device,
               GLuint    _glTarget ) :
         device(_device),
         glTarget(_glTarget),
@@ -131,7 +131,7 @@ public:
     unsigned int SGL_DLLCALL Size() const { return dataSize; }
 
 protected:
-    ref_ptr<GLDevice>   device;
+    ref_ptr<Device>     device;
 
     // data
     GLuint              glTarget;

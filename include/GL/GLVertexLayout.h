@@ -12,7 +12,7 @@ class GLVertexLayout:
     public ReferencedImpl<VertexLayout>
 {
 public:
-	GLVertexLayout( GLDevice*       device, 
+	GLVertexLayout( Device*         device, 
                     unsigned int    numElements, 
                     const ELEMENT*  elements );
     ~GLVertexLayout();
@@ -25,7 +25,7 @@ public:
     void            SGL_DLLCALL Unbind() const;
 
 private:
-    ref_ptr<GLDevice>       device;
+    ref_ptr<Device>         device;
 	std::vector<ELEMENT>	elements;
 };
 

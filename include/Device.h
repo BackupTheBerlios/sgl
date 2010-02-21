@@ -25,18 +25,42 @@
 
 #ifdef WIN32
 #   pragma push_macro("CreateFont")
-#   pragma push_macro("DEVICE_TYPE")
 #   undef CreateFont
-#   undef DEVICE_TYPE
 #endif
 
 // sgl - simple graphics library
 namespace sgl {
 
 /// Device type according to the library used for rendering
-enum DEVICE_TYPE
+enum DEVICE_VERSION
 {
-    OPENGL_DEVICE
+    DV_OPENGL_1_4_FFP,
+    DV_OPENGL_2_1_MIXED,
+    DV_OPENGL_2_1_PROGRAMMABLE,
+    DV_OPENGL_3_0_MIXED,
+    DV_OPENGL_3_0_PROGRAMMABLE,
+    DV_OPENGL_3_2
+};
+
+enum PIPELINE_TYPE
+{
+    PT_FIXED,
+    PT_PROGRAMMABLE
+};
+
+template <DEVICE_VERSION deviceType>
+struct device_traits;
+
+template<>
+struct device_traits<DV_OPENGL_2_1_MIXED>
+{
+    static const PIPELINE_TYPE pipeline = PT_PROGRAMMABLE;
+};
+
+template<>
+struct device_traits<DV_OPENGL_2_1_PROGRAMMABLE>
+{
+    static const PIPELINE_TYPE pipeline = PT_PROGRAMMABLE;
 };
 
 /** Device class wraps graphics functions */
@@ -318,12 +342,12 @@ public:
  * @param desc - description of the device video mode.
  * @return fresh and hot device.
  */
-extern "C" SGL_DLLEXPORT sgl::Device* SGL_DLLCALL sglCreateDevice(sgl::DEVICE_TYPE devType, const sgl::Device::VIDEO_DESC& desc);
+extern "C" SGL_DLLEXPORT sgl::Device* SGL_DLLCALL sglCreateDevice(sgl::DEVICE_VERSION devType, const sgl::Device::VIDEO_DESC& desc);
 
 /** Create device for rendering and grab context from current window.
  * @param devType - device type(OPENGL_DEVICE).
  * @return fresh and hot device.
  */
-extern "C" SGL_DLLEXPORT sgl::Device* SGL_DLLCALL sglCreateDeviceFromCurrent(sgl::DEVICE_TYPE devType);
+extern "C" SGL_DLLEXPORT sgl::Device* SGL_DLLCALL sglCreateDeviceFromCurrent(sgl::DEVICE_VERSION devType);
 
 #endif // SIMPLE_GL_DEVICE_H

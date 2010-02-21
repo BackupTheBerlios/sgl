@@ -105,7 +105,11 @@ void CreateCommonScene()
 
     // create font
     font.reset( device->CreateFont() );
-	font->LoadFromFile("data/Fonts/font.png");
+    {
+        sgl::Image* image = device->CreateImage();
+        image->LoadFromFile("data/Fonts/font.png");
+	    font->SetTexture( image->CreateTexture2D() );
+    }
 
     // empty keys
     fill(keys, keys + SDLK_LAST, false);
@@ -241,7 +245,7 @@ void CreateScene()
     }
 
     // grab current context for rendering
-    device.reset( sglCreateDeviceFromCurrent(OPENGL_DEVICE) );
+    device.reset( sglCreateDeviceFromCurrent(DV_OPENGL_2_1_MIXED) );
 
     // Setup error handler
     errorHandler.reset( new PrintErrorHandler() );

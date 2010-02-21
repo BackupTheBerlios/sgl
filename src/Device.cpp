@@ -3,12 +3,20 @@
 
 using namespace sgl;
 
-extern "C" SGL_DLLEXPORT sgl::Device* SGL_DLLCALL sglCreateDevice(sgl::DEVICE_TYPE devType, const Device::VIDEO_DESC& desc)
+extern "C" SGL_DLLEXPORT sgl::Device* SGL_DLLCALL sglCreateDevice(sgl::DEVICE_VERSION deviceVersion, const Device::VIDEO_DESC& desc)
 {
     try
     {
-        if (devType == OPENGL_DEVICE) {
-            return new GLDevice(desc);
+        switch (deviceVersion)
+        {
+        case DV_OPENGL_2_1_MIXED:
+            return new GLDevice<DV_OPENGL_2_1_MIXED>(desc);
+
+        case DV_OPENGL_2_1_PROGRAMMABLE:
+            return new GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>(desc);
+            
+        default:
+            return 0;
         }
     }
     catch(gl_error&) 
@@ -20,12 +28,20 @@ extern "C" SGL_DLLEXPORT sgl::Device* SGL_DLLCALL sglCreateDevice(sgl::DEVICE_TY
     return 0;
 }
 
-extern "C" SGL_DLLEXPORT sgl::Device* SGL_DLLCALL sglCreateDeviceFromCurrent(sgl::DEVICE_TYPE devType)
+extern "C" SGL_DLLEXPORT sgl::Device* SGL_DLLCALL sglCreateDeviceFromCurrent(sgl::DEVICE_VERSION deviceVersion)
 {
     try
     {
-        if (devType == OPENGL_DEVICE) {
-            return new GLDevice();
+        switch (deviceVersion)
+        {
+        case DV_OPENGL_2_1_MIXED:
+            return new GLDevice<DV_OPENGL_2_1_MIXED>();
+
+        case DV_OPENGL_2_1_PROGRAMMABLE:
+            return new GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>();
+            
+        default:
+            return 0;
         }
     }
     catch(gl_error&) 

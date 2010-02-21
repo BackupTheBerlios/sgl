@@ -23,7 +23,7 @@ namespace {
 
 namespace sgl {
 
-GLRenderTarget::GLRenderTarget(GLDevice* _device) :
+GLRenderTarget::GLRenderTarget(Device* _device) :
     device(_device),
     dirty(true),
     useDepthStencilRenderbuffer(false),
@@ -363,7 +363,7 @@ SGL_HRESULT GLRenderTarget::Bind() const
         glDrawBuffers(drawBuffers.size(), &drawBuffers[0]);
     }
     glReadBuffer(readBuffer);
-    device->SetRenderTarget(this);
+    static_cast< GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>* >(device.get())->SetRenderTarget(this);
 
     return SGL_OK;
 }
@@ -375,7 +375,7 @@ void GLRenderTarget::Unbind() const
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glDrawBuffer(GL_BACK);
         glReadBuffer(GL_BACK);
-        device->SetRenderTarget(0);
+        static_cast< GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>* >(device.get())->SetRenderTarget(0);
     }
 }
 

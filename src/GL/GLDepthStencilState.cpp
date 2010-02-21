@@ -30,8 +30,8 @@ namespace {
 
 } // anonymous namespace
 
-GLDepthStencilState::GLDepthStencilState( sgl::GLDevice* _device, 
-                                          const DESC&    _desc ) :
+GLDepthStencilState::GLDepthStencilState( sgl::Device*  _device, 
+                                          const DESC&   _desc ) :
     device(_device),
     desc(_desc)
 {
@@ -82,5 +82,5 @@ GLDepthStencilState::~GLDepthStencilState()
 void GLDepthStencilState::Bind() const
 {
     glCallList(bindDisplayList);
-    device->SetDepthStencilState(this);
+    static_cast< GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>* >(device.get())->SetDepthStencilState(this);
 }

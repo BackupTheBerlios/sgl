@@ -9,22 +9,19 @@ namespace sgl {
 class GLShader :
     public ResourceImpl<Shader>
 {
-friend class GLDevice;
 friend class GLProgram;
 public:
+    GLShader( Device*       _device, 
+              const DESC&   desc );
+    ~GLShader();
+
     // Override Shader
     TYPE        SGL_DLLCALL Type() const            { return type; }
     const char* SGL_DLLCALL Source() const          { return source.c_str(); }
     const char* SGL_DLLCALL CompilationLog() const  { return compilationLog.c_str(); }
  
-    ~GLShader();
-
 protected:
-    GLShader( GLDevice*     _device, 
-              const DESC&   desc );
-
-protected:
-    ref_ptr<GLDevice>    device;
+    ref_ptr<Device>     device;
 
     // data
     TYPE                type;

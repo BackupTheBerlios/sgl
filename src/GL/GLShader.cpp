@@ -13,8 +13,8 @@ GLenum SHADER_TYPE_BINDINGS[] =
     GL_GEOMETRY_SHADER_EXT
 };
 
-GLShader::GLShader( GLDevice*     _device, 
-                    const DESC&   desc ) :
+GLShader::GLShader( Device*     _device, 
+                    const DESC& desc ) :
     device(_device),
     type(desc.type)
 {

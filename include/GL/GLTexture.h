@@ -45,13 +45,12 @@ template<typename Interface>
 class GLTexture :
     public ReferencedImpl<Interface>
 {
-friend class GLDevice;
 friend class GLRenderTarget;
 public:
     struct guarded_binding :
         public ReferencedImpl<Referenced>
     {
-        guarded_binding( const GLDevice*    device,
+        guarded_binding( const Device*      device,
                          const GLTexture*   target, 
                          unsigned int       stage_) :
             stage(stage_),
@@ -78,7 +77,7 @@ public:
     typedef ref_ptr<guarded_binding>    guarded_binding_ptr;
 
 public:
-    GLTexture(  GLDevice*   _device, 
+    GLTexture(  Device*     _device, 
                 GLuint      _glTarget,
                 bool        _generateTexture = true ) :
         device(_device),
@@ -106,6 +105,9 @@ public:
         return guarded_binding();
     }
 
+    GLuint GLTarget() const         { return glTarget; }
+    GLuint GLTextureHandle() const  { return glTexture; }
+
 protected:
     ~GLTexture()
     {
@@ -116,7 +118,7 @@ protected:
 
 protected:
     // resource
-    ref_ptr<GLDevice>               device;
+    ref_ptr<Device>                 device;
 
     // OpenGL
     GLuint                          glTarget;

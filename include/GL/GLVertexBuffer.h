@@ -10,7 +10,7 @@ class GLVertexBuffer :
     public GLBuffer<VertexBuffer>
 {
 public:
-    GLVertexBuffer(GLDevice* device);
+    GLVertexBuffer(Device* device);
     ~GLVertexBuffer();
 
     // Override VertexBufferView

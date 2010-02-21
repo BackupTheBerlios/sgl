@@ -11,11 +11,9 @@ namespace sgl {
 class GLDeviceTraits :
 	public ReferencedImpl<DeviceTraits>
 {
-friend class GLDevice;
-private:
+public:
     GLDeviceTraits(Device* _device);
 
-public:
     // Override DeviceTraits
     int  SGL_DLLCALL ShaderModel() const { return shaderModel; }
     unsigned int SGL_DLLCALL NumberOfVertexTextureUnits() const { return numVertexTIU; }

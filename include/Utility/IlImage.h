@@ -9,8 +9,7 @@ namespace sgl {
 class IlImage :
     public ReferencedImpl<Image>
 {
-friend class GLDevice;
-protected:
+public:
     IlImage(Device* _device) :
         device(_device),
         width(0),
@@ -18,9 +17,7 @@ protected:
         depth(0),
         format(Texture::UNKNOWN)
     {}
-
-public:
-    virtual ~IlImage();
+    ~IlImage();
 
     // Creation
     SGL_HRESULT SGL_DLLCALL LoadFromFile(const char* fileName);

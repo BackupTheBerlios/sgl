@@ -26,9 +26,7 @@
 #   include <GL/wglew.h>
 
 #   pragma push_macro("CreateFont")
-#   pragma push_macro("DEVICE_TYPE")
 #   undef CreateFont
-#   undef DEVICE_TYPE
 #endif // WIN32
 
 #ifdef __linux__
@@ -198,7 +196,8 @@ void GLDevice::CreateWindow( unsigned     width,
         return EInvalidCall( (string("Can't set video mode: ") + SDL_GetError()).c_str() );
     }
 */
-GLDevice::GLDevice() :
+template<DEVICE_VERSION deviceVersion>
+GLDevice<deviceVersion>::GLDevice() :
     makeCleanup(false)
 {
 #ifdef SIMPLE_GL_USE_DEVIL
@@ -252,7 +251,8 @@ GLDevice::GLDevice() :
     InitOpenGL();
 }
 
-GLDevice::GLDevice(const Device::VIDEO_DESC& desc)
+template<DEVICE_VERSION deviceVersion>
+GLDevice<deviceVersion>::GLDevice(const Device::VIDEO_DESC& desc)
 {
 #ifdef SIMPLE_GL_USE_DEVIL
     // init image library
@@ -397,7 +397,8 @@ GLDevice::GLDevice(const Device::VIDEO_DESC& desc)
     InitOpenGL();
 }
 
-SGL_HRESULT GLDevice::InitOpenGL()
+template<DEVICE_VERSION deviceVersion>
+SGL_HRESULT GLDevice<deviceVersion>::InitOpenGL()
 {
     // defaults
     currentRenderTarget         = 0;
@@ -465,23 +466,6 @@ SGL_HRESULT GLDevice::InitOpenGL()
         rasterizerState->Bind();
     }
 
-    // create sampler states
-    {
-        SamplerState::DESC desc;
-        desc.filter[0] = SamplerState::NEAREST;
-        desc.filter[1] = SamplerState::NEAREST;
-        desc.filter[2] = SamplerState::NEAREST;
-
-        desc.wrapping[0] = SamplerState::CLAMP;
-        desc.wrapping[1] = SamplerState::CLAMP;
-        desc.wrapping[2] = SamplerState::CLAMP;
-
-        GLSamplerState* samplerState = new GLSamplerState(this, desc);
-        for(int stage = 0; stage<NUM_TEXTURE_STAGES; ++stage) {
-            samplerState->Bind(stage);
-        }
-    }
-
     // create unqie objects
     deviceTraits.reset( new GLDeviceTraits(this) );
     ffpProgram.reset( new GLFFPProgram(this) );
@@ -498,7 +482,8 @@ SGL_HRESULT GLDevice::InitOpenGL()
     return SGL_OK;
 }
 
-GLDevice::~GLDevice()
+template<DEVICE_VERSION deviceVersion>
+GLDevice<deviceVersion>::~GLDevice()
 {
     // clean up
     if (makeCleanup)
@@ -517,18 +502,21 @@ GLDevice::~GLDevice()
     }
 }
 
-SGL_HRESULT GLDevice::Sync() const
+template<DEVICE_VERSION deviceVersion>
+SGL_HRESULT GLDevice<deviceVersion>::Sync() const
 {
     glFinish();
     return SGL_OK;
 }
 
-rectangle GLDevice::Viewport() const
+template<DEVICE_VERSION deviceVersion>
+rectangle GLDevice<deviceVersion>::Viewport() const
 {
     return viewport;
 }
 
-void GLDevice::SetViewport(const rectangle& vp)
+template<DEVICE_VERSION deviceVersion>
+void GLDevice<deviceVersion>::SetViewport(const rectangle& vp)
 {
     if (viewport != vp)
     {
@@ -538,7 +526,8 @@ void GLDevice::SetViewport(const rectangle& vp)
 }
 
 // misc
-SGL_HRESULT GLDevice::TakeScreenshot(Image* image) const
+template<DEVICE_VERSION deviceVersion>
+SGL_HRESULT GLDevice<deviceVersion>::TakeScreenshot(Image* image) const
 {
 #ifndef SGL_NO_STATUS_CHECK
     if (!image) {
@@ -561,7 +550,8 @@ SGL_HRESULT GLDevice::TakeScreenshot(Image* image) const
 }
 
 // create
-Shader* SGL_DLLCALL GLDevice::CreateShader(const Shader::DESC& desc)
+template<DEVICE_VERSION deviceVersion>
+Shader* GLDevice<deviceVersion>::CreateShader(const Shader::DESC& desc)
 {
     try 
     {
@@ -574,7 +564,8 @@ Shader* SGL_DLLCALL GLDevice::CreateShader(const Shader::DESC& desc)
     }
 }
 
-Program* SGL_DLLCALL GLDevice::CreateProgram()
+template<DEVICE_VERSION deviceVersion>
+Program* GLDevice<deviceVersion>::CreateProgram()
 {
     try 
     {
@@ -587,12 +578,14 @@ Program* SGL_DLLCALL GLDevice::CreateProgram()
     }
 }
 
-sgl::Font* SGL_DLLCALL GLDevice::CreateFont()
+template<DEVICE_VERSION deviceVersion>
+sgl::Font* GLDevice<deviceVersion>::CreateFont()
 {
-    return new GLFont( const_cast<GLDevice*>(this) );
+    return new GLFont< device_traits<deviceVersion>::pipeline >( const_cast<GLDevice*>(this) );
 }
 
-Image* GLDevice::CreateImage()
+template<DEVICE_VERSION deviceVersion>
+Image* GLDevice<deviceVersion>::CreateImage()
 {
 #ifdef SIMPLE_GL_USE_DEVIL
     return new IlImage( const_cast<GLDevice*>(this) );
@@ -602,22 +595,26 @@ Image* GLDevice::CreateImage()
 }
 
 // internal binders
-void GLDevice::SetBlendState(const BlendState* blendState)
+template<DEVICE_VERSION deviceVersion>
+void GLDevice<deviceVersion>::SetBlendState(const BlendState* blendState)
 {
     currentBlendState = blendState;
 }
 
-void GLDevice::SetDepthStencilState(const DepthStencilState* depthStencilState)
+template<DEVICE_VERSION deviceVersion>
+void GLDevice<deviceVersion>::SetDepthStencilState(const DepthStencilState* depthStencilState)
 {
     currentDepthStencilState = depthStencilState;
 }
 
-void GLDevice::SetRasterizerState(const RasterizerState* rasterizerState)
+template<DEVICE_VERSION deviceVersion>
+void GLDevice<deviceVersion>::SetRasterizerState(const RasterizerState* rasterizerState)
 {
     currentRasterizerState = rasterizerState;
 }
 
-void GLDevice::SetSamplerState(unsigned int stage, const SamplerState* samplerState)
+template<DEVICE_VERSION deviceVersion>
+void GLDevice<deviceVersion>::SetSamplerState(unsigned int stage, const SamplerState* samplerState)
 {
     assert(stage < NUM_TEXTURE_STAGES);
     if (currentSamplerState[stage] != samplerState && currentTexture[stage]) 
@@ -631,23 +628,27 @@ void GLDevice::SetSamplerState(unsigned int stage, const SamplerState* samplerSt
     }
 }
 
-void GLDevice::SetTexture(unsigned int stage, const Texture* texture)
+template<DEVICE_VERSION deviceVersion>
+void GLDevice<deviceVersion>::SetTexture(unsigned int stage, const Texture* texture)
 {
     assert(stage < NUM_TEXTURE_STAGES);
     currentTexture[stage] = texture;
 }
 
-void GLDevice::SetVertexBuffer(const VertexBuffer* vertexBuffer)
+template<DEVICE_VERSION deviceVersion>
+void GLDevice<deviceVersion>::SetVertexBuffer(const VertexBuffer* vertexBuffer)
 {
     currentVertexBuffer = vertexBuffer;
 }
 
-void GLDevice::SetVertexLayout(const VertexLayout* vertexLayout)
+template<DEVICE_VERSION deviceVersion>
+void GLDevice<deviceVersion>::SetVertexLayout(const VertexLayout* vertexLayout)
 {
     currentVertexLayout = vertexLayout;
 }
 
-void GLDevice::SetIndexBuffer(const IndexBuffer* indexBuffer, IndexBuffer::INDEX_TYPE type)
+template<DEVICE_VERSION deviceVersion>
+void GLDevice<deviceVersion>::SetIndexBuffer(const IndexBuffer* indexBuffer, IndexBuffer::INDEX_TYPE type)
 {
     currentIndexBuffer = indexBuffer;
     currentIndexFormat = type;
@@ -655,49 +656,56 @@ void GLDevice::SetIndexBuffer(const IndexBuffer* indexBuffer, IndexBuffer::INDEX
     glIndexSize        = BIND_GL_INDEX_SIZE[type];
 }
 
-void GLDevice::SetProgram(const Program* program)
+template<DEVICE_VERSION deviceVersion>
+void GLDevice<deviceVersion>::SetProgram(const Program* program)
 {
     currentProgram = program;
 }
 
-void GLDevice::SetRenderTarget(const RenderTarget* renderTarget)
+template<DEVICE_VERSION deviceVersion>
+void GLDevice<deviceVersion>::SetRenderTarget(const RenderTarget* renderTarget)
 {
     currentRenderTarget = renderTarget;
 }
 
 // ============================ DRAW ============================ //
 
-void GLDevice::Draw( PRIMITIVE_TYPE primType, 
-                     unsigned       firstVertex, 
-                     unsigned       numVertices ) const
+template<DEVICE_VERSION deviceVersion>
+void GLDevice<deviceVersion>::Draw( PRIMITIVE_TYPE primType, 
+                                    unsigned       firstVertex, 
+                                    unsigned       numVertices ) const
 {
     glDrawArrays(BIND_PRIMITIVE_TYPE[primType], firstVertex, numVertices);
 }
 
-void GLDevice::DrawInstanced( PRIMITIVE_TYPE primType, 
-                              unsigned       firstVertex, 
-                              unsigned       numVertices,
-                              unsigned       numInstances ) const
+template<DEVICE_VERSION deviceVersion>
+void GLDevice<deviceVersion>::DrawInstanced( PRIMITIVE_TYPE primType, 
+                                             unsigned       firstVertex, 
+                                             unsigned       numVertices,
+                                             unsigned       numInstances ) const
 {
     glDrawArraysInstancedEXT(BIND_PRIMITIVE_TYPE[primType], firstVertex, numVertices, numInstances);
 }
 
-void GLDevice::DrawIndexed( PRIMITIVE_TYPE primType,
-                            unsigned       firstIndex,
-                            unsigned       numIndices ) const
+template<DEVICE_VERSION deviceVersion>
+void GLDevice<deviceVersion>::DrawIndexed( PRIMITIVE_TYPE primType,
+                                           unsigned       firstIndex,
+                                           unsigned       numIndices ) const
 {
     glDrawElements(BIND_PRIMITIVE_TYPE[primType], numIndices, glIndexType, (GLvoid*)(firstIndex * glIndexSize));
 }
 
-void GLDevice::DrawIndexedInstanced( PRIMITIVE_TYPE primType, 
-                                     unsigned       firstIndex,
-                                     unsigned       numIndices,
-                                     unsigned       numInstances ) const
+template<DEVICE_VERSION deviceVersion>
+void GLDevice<deviceVersion>::DrawIndexedInstanced( PRIMITIVE_TYPE primType, 
+                                                    unsigned       firstIndex,
+                                                    unsigned       numIndices,
+                                                    unsigned       numInstances ) const
 {
     glDrawElementsInstanced(BIND_PRIMITIVE_TYPE[primType], numIndices, glIndexType, (GLvoid*)(firstIndex * glIndexSize), numInstances);
 }
 
-void GLDevice::Clear(bool colorBuffer, bool depthBuffer, bool stencilBuffer) const
+template<DEVICE_VERSION deviceVersion>
+void GLDevice<deviceVersion>::Clear(bool colorBuffer, bool depthBuffer, bool stencilBuffer) const
 {
     GLbitfield mask = (colorBuffer   ? GL_COLOR_BUFFER_BIT   : 0)
                     | (depthBuffer   ? GL_DEPTH_BUFFER_BIT   : 0)
@@ -705,7 +713,8 @@ void GLDevice::Clear(bool colorBuffer, bool depthBuffer, bool stencilBuffer) con
     glClear(mask);;
 }
 
-void GLDevice::SwapBuffers() const
+template<DEVICE_VERSION deviceVersion>
+void GLDevice<deviceVersion>::SwapBuffers() const
 {
 #ifdef WIN32
     ::SwapBuffers(hDC);
@@ -723,7 +732,8 @@ Texture1D* SGL_DLLCALL GLDevice::CreateTexture1D() const
     return new GLTexture1D( const_cast<GLDevice*>(this) );
 }
 */
-Texture2D* SGL_DLLCALL GLDevice::CreateTexture2D(const Texture2D::DESC& desc)
+template<DEVICE_VERSION deviceVersion>
+Texture2D* GLDevice<deviceVersion>::CreateTexture2D(const Texture2D::DESC& desc)
 {
     try
     {
@@ -736,7 +746,8 @@ Texture2D* SGL_DLLCALL GLDevice::CreateTexture2D(const Texture2D::DESC& desc)
     }
 }
 
-Texture2D* SGL_DLLCALL GLDevice::CreateTexture2DMS(const Texture2D::DESC_MS& desc)
+template<DEVICE_VERSION deviceVersion>
+Texture2D* SGL_DLLCALL GLDevice<deviceVersion>::CreateTexture2DMS(const Texture2D::DESC_MS& desc)
 {
     try
     {
@@ -749,7 +760,8 @@ Texture2D* SGL_DLLCALL GLDevice::CreateTexture2DMS(const Texture2D::DESC_MS& des
     }
 }
 
-Texture3D* SGL_DLLCALL GLDevice::CreateTexture3D(const Texture3D::DESC& desc)
+template<DEVICE_VERSION deviceVersion>
+Texture3D* SGL_DLLCALL GLDevice<deviceVersion>::CreateTexture3D(const Texture3D::DESC& desc)
 {
     try
     {
@@ -762,7 +774,8 @@ Texture3D* SGL_DLLCALL GLDevice::CreateTexture3D(const Texture3D::DESC& desc)
     }
 }
 
-Texture3D* SGL_DLLCALL GLDevice::CreateTexture3DMS(const Texture3D::DESC_MS& desc)
+template<DEVICE_VERSION deviceVersion>
+Texture3D* SGL_DLLCALL GLDevice<deviceVersion>::CreateTexture3DMS(const Texture3D::DESC_MS& desc)
 {
     try
     {
@@ -775,7 +788,8 @@ Texture3D* SGL_DLLCALL GLDevice::CreateTexture3DMS(const Texture3D::DESC_MS& des
     }
 }
 
-TextureCube* SGL_DLLCALL GLDevice::CreateTextureCube(const TextureCube::DESC& desc)
+template<DEVICE_VERSION deviceVersion>
+TextureCube* SGL_DLLCALL GLDevice<deviceVersion>::CreateTextureCube(const TextureCube::DESC& desc)
 {
     try
     {
@@ -790,18 +804,21 @@ TextureCube* SGL_DLLCALL GLDevice::CreateTextureCube(const TextureCube::DESC& de
 
 // ============================ BUFFERS ============================ //
 
-VertexLayout* SGL_DLLCALL GLDevice::CreateVertexLayout(unsigned int                 numElements, 
-                                                       const VertexLayout::ELEMENT* elements)
+template<DEVICE_VERSION deviceVersion>
+VertexLayout* SGL_DLLCALL GLDevice<deviceVersion>::CreateVertexLayout(unsigned int                 numElements, 
+                                                                      const VertexLayout::ELEMENT* elements)
 {
 	return new GLVertexLayout(this, numElements, elements);
 }
 
-VertexBuffer* SGL_DLLCALL GLDevice::CreateVertexBuffer()
+template<DEVICE_VERSION deviceVersion>
+VertexBuffer* SGL_DLLCALL GLDevice<deviceVersion>::CreateVertexBuffer()
 {
     return new GLVertexBuffer(this);
 }
 
-IndexBuffer* SGL_DLLCALL GLDevice::CreateIndexBuffer()
+template<DEVICE_VERSION deviceVersion>
+IndexBuffer* SGL_DLLCALL GLDevice<deviceVersion>::CreateIndexBuffer()
 {
     return new GLIndexBuffer(this);
 }
@@ -813,27 +830,32 @@ UniformBufferView* SGL_DLLCALL GLDevice::CreateUniformBuffer()
 */
 // ============================ STATES ============================ //
 
-BlendState* SGL_DLLCALL GLDevice::CreateBlendState(const BlendState::DESC& desc)
+template<DEVICE_VERSION deviceVersion>
+BlendState* SGL_DLLCALL GLDevice<deviceVersion>::CreateBlendState(const BlendState::DESC& desc)
 {
     return new GLBlendState(this, desc);
 }
 
-DepthStencilState* SGL_DLLCALL GLDevice::CreateDepthStencilState(const DepthStencilState::DESC& desc)
+template<DEVICE_VERSION deviceVersion>
+DepthStencilState* SGL_DLLCALL GLDevice<deviceVersion>::CreateDepthStencilState(const DepthStencilState::DESC& desc)
 {
     return new GLDepthStencilState(this, desc);
 }
 
-RasterizerState* SGL_DLLCALL GLDevice::CreateRasterizerState(const RasterizerState::DESC& desc)
+template<DEVICE_VERSION deviceVersion>
+RasterizerState* SGL_DLLCALL GLDevice<deviceVersion>::CreateRasterizerState(const RasterizerState::DESC& desc)
 {
     return new GLRasterizerState(this, desc);
 }
 
-SamplerState* SGL_DLLCALL GLDevice::CreateSamplerState(const SamplerState::DESC& desc)
+template<DEVICE_VERSION deviceVersion>
+SamplerState* SGL_DLLCALL GLDevice<deviceVersion>::CreateSamplerState(const SamplerState::DESC& desc)
 {
     return new GLSamplerState(this, desc);
 }
 
-void SGL_DLLCALL GLDevice::PushState(State::TYPE type)
+template<DEVICE_VERSION deviceVersion>
+void SGL_DLLCALL GLDevice<deviceVersion>::PushState(State::TYPE type)
 {
     switch (type)
     {
@@ -871,7 +893,8 @@ void SGL_DLLCALL GLDevice::PushState(State::TYPE type)
     }
 }
 
-SGL_HRESULT SGL_DLLCALL GLDevice::PopState(State::TYPE type)
+template<DEVICE_VERSION deviceVersion>
+SGL_HRESULT SGL_DLLCALL GLDevice<deviceVersion>::PopState(State::TYPE type)
 {
 #ifndef SGL_NO_STATUS_CHECK
     if ( stateStack[type].empty() ) {
@@ -904,11 +927,7 @@ SGL_HRESULT SGL_DLLCALL GLDevice::PopState(State::TYPE type)
 
         case State::SAMPLER_STATE:
         {
-            for(size_t i = 0; i<8; ++i) 
-            {
-                static_cast<const GLSamplerState&>( *stateStack[State::SAMPLER_STATE + i].top() ).Bind(i);
-                stateStack[State::SAMPLER_STATE + i].pop();
-            }
+            return EInvalidCall("Can't bind SamplerState to device, it can be binded to the texture.");
             break;
         }
 
@@ -924,32 +943,37 @@ SGL_HRESULT SGL_DLLCALL GLDevice::PopState(State::TYPE type)
 
 // ============================ OTHER ============================ //
 
-void GLDevice::SetClearColor(const math::Vector4f& color)
+template<DEVICE_VERSION deviceVersion>
+void GLDevice<deviceVersion>::SetClearColor(const math::Vector4f& color)
 {
     glClearColor(color.x, color.y, color.z, color.w);
 }
 
-void GLDevice::SetClearDepthStencil(double depthClear, int stencilClear)
+template<DEVICE_VERSION deviceVersion>
+void GLDevice<deviceVersion>::SetClearDepthStencil(double depthClear, int stencilClear)
 {
     glClearDepth(depthClear);
     glClearStencil(stencilClear);
 }
 
-math::Vector4f GLDevice::ClearColor() const
+template<DEVICE_VERSION deviceVersion>
+math::Vector4f GLDevice<deviceVersion>::ClearColor() const
 {
     math::Vector4f color;
     glGetFloatv(GL_COLOR_CLEAR_VALUE, &color[0]);
     return color;
 }
 
-double GLDevice::ClearDepth() const
+template<DEVICE_VERSION deviceVersion>
+double GLDevice<deviceVersion>::ClearDepth() const
 {
     double depth;
     glGetDoublev(GL_DEPTH_CLEAR_VALUE, &depth);
     return depth;
 }
 
-int GLDevice::ClearStencil() const
+template<DEVICE_VERSION deviceVersion>
+int GLDevice<deviceVersion>::ClearStencil() const
 {
     int stencil;
     glGetIntegerv(GL_STENCIL_CLEAR_VALUE, &stencil);
@@ -957,17 +981,19 @@ int GLDevice::ClearStencil() const
 }
 
 
-RenderTarget* GLDevice::CreateRenderTarget()
+template<DEVICE_VERSION deviceVersion>
+RenderTarget* GLDevice<deviceVersion>::CreateRenderTarget()
 {
     return new GLRenderTarget(this);
 }
 
-SGL_HRESULT GLDevice::CopyTexture2D( Texture2D*     texture,
-                                     unsigned       level,
-                                     unsigned       offsetx,
-                                     unsigned       offsety,
-                                     unsigned       width,
-                                     unsigned       height ) const
+template<DEVICE_VERSION deviceVersion>
+SGL_HRESULT GLDevice<deviceVersion>::CopyTexture2D( Texture2D*     texture,
+                                                    unsigned       level,
+                                                    unsigned       offsetx,
+                                                    unsigned       offsety,
+                                                    unsigned       width,
+                                                    unsigned       height ) const
 {
 #ifndef SGL_NO_STATUS_CHECK
     if (!texture) {
@@ -978,7 +1004,7 @@ SGL_HRESULT GLDevice::CopyTexture2D( Texture2D*     texture,
     GLTexture2D*                     glTexture = static_cast<GLTexture2D*>(texture);
     GLTexture2D::guarded_binding_ptr texBinding( new GLTexture2D::guarded_binding(this, glTexture, 0) );
     {
-        glCopyTexSubImage2D(glTexture->glTarget, level, offsetx, offsety, 0, 0, width, height); 
+        glCopyTexSubImage2D(glTexture->GLTarget(), level, offsetx, offsety, 0, 0, width, height); 
 
     #ifndef SGL_NO_STATUS_CHECK
         GLenum error = glGetError();
@@ -1002,7 +1028,10 @@ VBORenderTarget* SGL_DLLCALL GLDevice::CreateVBORenderTarget() const
 }
 */
 
+// explicit template instantiation
+template GLDevice<DV_OPENGL_2_1_MIXED>;
+template GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>;
+
 #ifdef _WIN32
 #pragma pop_macro("CreateFont")
-#pragma pop_macro("DEVICE_TYPE")
 #endif

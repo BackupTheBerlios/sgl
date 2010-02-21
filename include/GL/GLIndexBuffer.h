@@ -10,7 +10,7 @@ class GLIndexBuffer :
     public GLBuffer<IndexBuffer>
 {
 public:
-    GLIndexBuffer(GLDevice* device);
+    GLIndexBuffer(Device* device);
     ~GLIndexBuffer();
 
     // Override IndexBufferView

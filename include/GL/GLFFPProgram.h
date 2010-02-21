@@ -11,7 +11,7 @@ class GLFFPProgram :
 template<typename T> 
 friend class GLFFPUniform;
 public:   
-    GLFFPProgram(GLDevice* device);
+    GLFFPProgram(Device* device);
     ~GLFFPProgram();
 
     // shaders
@@ -87,7 +87,7 @@ public:
     SamplerUniformCube* SGL_DLLCALL GetSamplerUniformCube(const char* name) { return 0; }
 
 private:
-    ref_ptr<GLDevice>       device;
+    ref_ptr<Device>         device;
 
     // standart uniforms
     scoped_ptr<Uniform4x4F> modelViewMatrixUniform;

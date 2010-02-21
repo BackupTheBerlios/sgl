@@ -34,7 +34,7 @@ namespace {
 
 } // anonymous namespace
 
-GLBlendState::GLBlendState( sgl::GLDevice*  _device, 
+GLBlendState::GLBlendState( sgl::Device*    _device, 
                             const DESC&     _desc ) :
     device(_device),
     desc(_desc)
@@ -78,5 +78,5 @@ GLBlendState::~GLBlendState()
 void GLBlendState::Bind() const
 {
     glCallList(bindDisplayList);
-    device->SetBlendState(this);
+    static_cast< GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>* >(device.get())->SetBlendState(this);
 }

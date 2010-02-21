@@ -9,7 +9,7 @@ class GLBlendState :
     public ReferencedImpl<BlendState>
 {
 public:
-    GLBlendState(GLDevice* device, const DESC& desc);
+    GLBlendState(Device* device, const DESC& desc);
     ~GLBlendState();
 
     // Override State
@@ -19,7 +19,7 @@ public:
     const DESC& SGL_DLLCALL Desc() const { return desc; }
 
 private:
-    ref_ptr<GLDevice>   device;
+    ref_ptr<Device>     device;
 
     // setup display list
     GLuint              bindDisplayList;

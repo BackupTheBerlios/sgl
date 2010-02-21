@@ -241,7 +241,7 @@ namespace {
 
 } // anonymous namespace
 
-GLFFPProgram::GLFFPProgram(GLDevice* _device) :
+GLFFPProgram::GLFFPProgram(Device* _device) :
     device(_device)
 {
     using namespace math;
@@ -438,7 +438,7 @@ SGL_HRESULT GLFFPProgram::BindAttributeLocation(const char* name, unsigned index
 SGL_HRESULT GLFFPProgram::Bind() const
 {
     glUseProgram(0);
-    device->SetProgram(this);
+    static_cast< GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>* >(device.get())->SetProgram(this);
 
 	return SGL_OK;
 }

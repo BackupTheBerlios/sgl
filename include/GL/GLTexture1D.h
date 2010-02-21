@@ -14,11 +14,10 @@ namespace sgl {
 class GLTexture1D :
     public GLTexture<Texture1D>
 {
-friend class GLDevice;
-protected:
-    GLTexture1D(Device* _pDevice);
-
 public:
+    GLTexture1D(Device* _pDevice);
+    ~GLTexture1D();
+
     // type of the texture
     TYPE SGL_DLLCALL Type() const { return TEXTURE_1D; }
 
@@ -40,8 +39,6 @@ public:
 
     /** Get OpenGL texture format */
     GLenum SGL_DLLCALL GLFormat() const;
-
-    virtual ~GLTexture1D();
 
 protected:
     // settings

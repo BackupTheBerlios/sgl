@@ -27,7 +27,7 @@ namespace {
 
 } // anonymous namespace
 
-GLSamplerState::GLSamplerState( sgl::GLDevice*  _device, 
+GLSamplerState::GLSamplerState( sgl::Device*    _device, 
                                 const DESC&     _desc ) :
     device(_device),
     desc(_desc)
@@ -36,9 +36,4 @@ GLSamplerState::GLSamplerState( sgl::GLDevice*  _device,
 
 GLSamplerState::~GLSamplerState()
 {
-}
-
-void GLSamplerState::Bind(unsigned int stage) const
-{
-    device->SetSamplerState(stage, this);
 }

@@ -18,7 +18,7 @@ const GLenum sgl::BIND_SCALAR_TYPE[__NUMBER_OF_SCALAR_TYPES__] =
 };
 
 
-GLVertexLayout::GLVertexLayout( GLDevice*       _device, 
+GLVertexLayout::GLVertexLayout( Device*         _device, 
                                 unsigned int    numElements, 
                                 const ELEMENT*  elements ) :
 	device(_device),
@@ -90,7 +90,7 @@ void GLVertexLayout::Bind() const
         }
     }
 
-    device->SetVertexLayout(this);
+    static_cast< GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>* >(device.get())->SetVertexLayout(this);
 }
 
 void GLVertexLayout::Unbind() const
@@ -127,6 +127,6 @@ void GLVertexLayout::Unbind() const
             }
         }
 
-        device->SetVertexLayout(0);
+        static_cast< GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>* >(device.get())->SetVertexLayout(0);
     }
 }

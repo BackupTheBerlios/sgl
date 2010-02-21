@@ -3,7 +3,7 @@
 
 namespace sgl {
 
-GLTexture3D::GLTexture3D(GLDevice* device, const DESC& desc) :
+GLTexture3D::GLTexture3D(Device* device, const DESC& desc) :
     GLTexture<Texture3D>(device, GL_TEXTURE_3D),
     format(desc.format),
     width(desc.width),
@@ -63,7 +63,7 @@ GLTexture3D::GLTexture3D(GLDevice* device, const DESC& desc) :
 #endif // SGL_NO_STATUS_CHECK
 }
 
-GLTexture3D::GLTexture3D(GLDevice* device, const DESC_MS& desc) :
+GLTexture3D::GLTexture3D(Device* device, const DESC_MS& desc) :
     GLTexture<Texture3D>(device, 0xFFFFFF), // FIXME
     format(desc.format),
     width(desc.width),
@@ -274,7 +274,7 @@ SGL_HRESULT GLTexture3D::Bind(unsigned int _stage) const
         glTexParameteri( glTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT,   desc.maxAnisotropy);
     }
 
-    device->SetTexture(stage, this);
+    static_cast< GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>* >(device.get())->SetTexture(stage, this);
     return SGL_OK;
 }
 
@@ -284,7 +284,7 @@ void GLTexture3D::Unbind() const
     {
         glActiveTexture(GL_TEXTURE0 + stage);
         glBindTexture(glTarget, 0);
-        device->SetTexture(stage, 0);
+        static_cast< GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>* >(device.get())->SetTexture(stage, 0);
         stage = -1;
     }
 }
