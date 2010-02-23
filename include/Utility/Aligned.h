@@ -211,6 +211,14 @@ private:
         }
     }
 
+    void construct_default(T* first, T* last)
+    {
+        T val;
+        for (T* p = first; p != last; ++p) {
+            allocator.construct(p, val);
+        }
+    }
+
     size_type calc_capacity(size_type size)
     {
         static const size_type min_size = 5;
@@ -368,6 +376,9 @@ public:
             size_type newCapacity = calc_capacity(size);
             T*        newData     = allocator.allocate(newCapacity);
 
+            // fill with default values
+            construct_default(newData, newData + dataSize);
+
             // copy & store
             if (data)
             {
@@ -379,11 +390,8 @@ public:
             dataCapacity = newCapacity;
         }
 
-        // fill
-        T val;
-        for (T* p = data + dataSize; p != data + size; ++p) {
-            allocator.construct(p, val);
-        }
+        // fill with default values
+        construct_default(data + dataSize, data + size);
         dataSize = size;
     }
 
@@ -394,6 +402,9 @@ public:
         {
             size_type newCapacity = capacity;
             T*        newData     = allocator.allocate(newCapacity);
+
+            // fill with default values
+            construct_default(newData, newData + dataSize);
 
             // copy
             if (data)
