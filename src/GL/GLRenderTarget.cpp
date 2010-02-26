@@ -9,14 +9,14 @@ namespace {
     {
         GLuint oldFBO;
 	    glGetIntegerv(GL_FRAMEBUFFER_BINDING, (GLint*)&oldFBO);
-	    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo);
 
         return oldFBO;
     }
 
     void GuardedUnbind(GLuint oldFBO)
     {
-	    glBindFramebuffer(GL_FRAMEBUFFER, oldFBO);
+	    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, oldFBO);
     }
 
 } // anonymous namespace
@@ -33,17 +33,17 @@ GLRenderTarget::GLRenderTarget(Device* _device) :
 {
     attachments.resize(Device::NUM_TEXTURE_STAGES);
 
-    glGenFramebuffers(1, &fbo);
-    glGenRenderbuffers(1, &dsRenderBuffer);
+    glGenFramebuffersEXT(1, &fbo);
+    glGenRenderbuffersEXT(1, &dsRenderBuffer);
 }
 
 GLRenderTarget::~GLRenderTarget()
 {
     if (fbo) {
-        glDeleteFramebuffers(1, &fbo);
+        glDeleteFramebuffersEXT(1, &fbo);
     }
     if (dsRenderBuffer) {
-        glDeleteRenderbuffers(1, &dsRenderBuffer);
+        glDeleteRenderbuffersEXT(1, &dsRenderBuffer);
     }
 }
 
@@ -172,20 +172,20 @@ SGL_HRESULT GLRenderTarget::Dirty(bool force)
             case GL_TEXTURE_CUBE_MAP_NEGATIVE_Y:
             case GL_TEXTURE_CUBE_MAP_POSITIVE_Z:
             case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z:
-                glFramebufferTexture2D( GL_FRAMEBUFFER,
-                                        GL_COLOR_ATTACHMENT0 + i,
-                                        attachment.glTarget,
-                                        attachment.glTexture,
-                                        attachment.level );
+                glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT,
+                                           GL_COLOR_ATTACHMENT0 + i,
+                                           attachment.glTarget,
+                                           attachment.glTexture,
+                                           attachment.level );
                 break;
 
             case GL_TEXTURE_3D:
-                glFramebufferTexture3D( GL_FRAMEBUFFER,
-                                        GL_COLOR_ATTACHMENT0 + i,
-                                        attachment.glTarget,
-                                        attachment.glTexture,
-                                        attachment.level,
-                                        attachment.layer );
+                glFramebufferTexture3DEXT( GL_FRAMEBUFFER_EXT,
+                                           GL_COLOR_ATTACHMENT0 + i,
+                                           attachment.glTarget,
+                                           attachment.glTexture,
+                                           attachment.level,
+                                           attachment.layer );
                 break;
 
             default:
@@ -206,11 +206,11 @@ SGL_HRESULT GLRenderTarget::Dirty(bool force)
     // attach depth buffer
     if (dsAttachment.glTarget)
     {
-        glFramebufferTexture2D( GL_FRAMEBUFFER,
-                                GL_DEPTH_ATTACHMENT,
-                                dsAttachment.glTarget,
-                                dsAttachment.glTexture,
-                                dsAttachment.level );
+        glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT,
+                                   GL_DEPTH_ATTACHMENT_EXT,
+                                   dsAttachment.glTarget,
+                                   dsAttachment.glTexture,
+                                   dsAttachment.level );
 
 #ifndef SGL_NO_STATUS_CHECK
         error = glGetError();
@@ -223,21 +223,21 @@ SGL_HRESULT GLRenderTarget::Dirty(bool force)
     }
     else if (useDepthStencilRenderbuffer)
     {
-        glBindRenderbuffer(GL_RENDERBUFFER, dsRenderBuffer);
+        glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, dsRenderBuffer);
         if ( dsRenderBufferAttachment.samples > 0 )
         {
-            glRenderbufferStorageMultisample( GL_RENDERBUFFER,
-                                              dsRenderBufferAttachment.samples,
-                                              BIND_GL_FORMAT[dsRenderBufferAttachment.format],
-                                              maxAttachmentWidth,
-                                              maxAttachmentHeight );
+            glRenderbufferStorageMultisampleEXT( GL_RENDERBUFFER_EXT,
+                                                 dsRenderBufferAttachment.samples,
+                                                 BIND_GL_FORMAT[dsRenderBufferAttachment.format],
+                                                 maxAttachmentWidth,
+                                                 maxAttachmentHeight );
         }
         else
         {
-            glRenderbufferStorage( GL_RENDERBUFFER,
-                                   BIND_GL_FORMAT[dsRenderBufferAttachment.format],
-                                   maxAttachmentWidth,
-                                   maxAttachmentHeight );
+            glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT,
+                                      BIND_GL_FORMAT[dsRenderBufferAttachment.format],
+                                      maxAttachmentWidth,
+                                      maxAttachmentHeight );
         }
 
 #ifndef SGL_NO_STATUS_CHECK
@@ -249,15 +249,15 @@ SGL_HRESULT GLRenderTarget::Dirty(bool force)
         }
 #endif
 
-        glBindRenderbuffer(GL_RENDERBUFFER, 0);
-        glFramebufferRenderbuffer( GL_FRAMEBUFFER,
-                                   GL_DEPTH_ATTACHMENT, 
-                                   GL_RENDERBUFFER, 
-                                   dsRenderBuffer );
-        glFramebufferRenderbuffer( GL_FRAMEBUFFER,
-                                   GL_STENCIL_ATTACHMENT, 
-                                   GL_RENDERBUFFER, 
-                                   dsRenderBuffer );
+        glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
+        glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT,
+                                      GL_DEPTH_ATTACHMENT_EXT, 
+                                      GL_RENDERBUFFER_EXT, 
+                                      dsRenderBuffer );
+        glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT,
+                                      GL_STENCIL_ATTACHMENT_EXT, 
+                                      GL_RENDERBUFFER_EXT, 
+                                      dsRenderBuffer );
     
 #ifndef SGL_NO_STATUS_CHECK
         error = glGetError();
@@ -271,8 +271,8 @@ SGL_HRESULT GLRenderTarget::Dirty(bool force)
 
 #ifndef SGL_NO_STATUS_CHECK
     {
-        GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-        if (status != GL_FRAMEBUFFER_COMPLETE)
+        GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+        if (status != GL_FRAMEBUFFER_COMPLETE_EXT)
         {
             GuardedUnbind(oldFBO);
             return CheckGLFramebufferStatus("GLRenderTarget::Dirty failed: ", status);
@@ -287,7 +287,7 @@ SGL_HRESULT GLRenderTarget::Dirty(bool force)
 SGL_HRESULT GLRenderTarget::SetDrawBuffer(unsigned int drawBuffer)
 {
     drawBuffers.resize(1);
-    drawBuffers[0] = GL_COLOR_ATTACHMENT0 + drawBuffer;
+    drawBuffers[0] = GL_COLOR_ATTACHMENT0_EXT + drawBuffer;
     if ( device->CurrentRenderTarget() == this ) {
         glDrawBuffer(drawBuffers[0]);
     }
@@ -330,7 +330,7 @@ SGL_HRESULT GLRenderTarget::SetReadBuffer(unsigned int _readBuffer)
 
 unsigned int GLRenderTarget::ReadBuffer() const
 {
-    return readBuffer - GL_COLOR_ATTACHMENT0;
+    return readBuffer - GL_COLOR_ATTACHMENT0_EXT;
 }
 
 unsigned int GLRenderTarget::DrawBuffers(unsigned int* targets) const
@@ -355,7 +355,7 @@ SGL_HRESULT GLRenderTarget::Bind() const
 #endif
 
     // bind buffer
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    glBindFramebufferEXT(GL_FRAMEBUFFER, fbo);
     if ( drawBuffers.empty() ) {
         glDrawBuffer(GL_NONE);
     }
@@ -372,7 +372,7 @@ void GLRenderTarget::Unbind() const
 {
     if ( device->CurrentRenderTarget() == this )
     {
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glBindFramebufferEXT(GL_FRAMEBUFFER, 0);
         glDrawBuffer(GL_BACK);
         glReadBuffer(GL_BACK);
         static_cast< GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>* >(device.get())->SetRenderTarget(0);
