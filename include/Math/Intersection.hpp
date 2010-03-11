@@ -7,7 +7,7 @@ namespace sgl {
 namespace math {
 
 // forward types
-template<typename ValueType, INSTRUCTION_SET is>
+template<typename ValueType, int n, INSTRUCTION_SET is>
 class AABB;
 
 // forward types
@@ -22,17 +22,37 @@ class Frustum;
 template<typename ValueType>
 class Ray;
 
-/** Check wether this AABB contains another aabb */
-template<typename T, INSTRUCTION_SET is>
-inline bool contains(const AABB<T, is>& aabb, const AABB<T, is>& other) 
+/** Check wether this AABB contains point */
+template<typename T, int n, INSTRUCTION_SET is>
+inline bool contains(const AABB<T, n, is>& aabb, const typename AABB<T, n, is>::vec_type& point) 
 {
-    return aabb.minVec.x <= other.minVec.x && aabb.minVec.y <= other.minVec.y && aabb.minVec.z <= other.minVec.z
-           && aabb.maxVec.x >= other.maxVec.x && aabb.maxVec.y >= other.maxVec.y && aabb.maxVec.z >= other.maxVec.z;
+    for (int i = 0; i<n; ++i) 
+    {
+        if (point[i] < aabb.minVec[i] || point[i] > aabb.maxVec[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+/** Check wether this AABB contains another aabb */
+template<typename T, int n, INSTRUCTION_SET is>
+inline bool contains(const AABB<T, n, is>& aabb, const AABB<T, n, is>& other) 
+{
+    for (int i = 0; i<n; ++i) 
+    {
+        if (other.minVec[i] < aabb.minVec[i] || other.maxVec[i] > aabb.maxVec[i]) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 /** Check wether this AABB contains another aabb */
 template<>
-inline bool contains(const AABB<float, SSE>& aabb, const AABB<float, SSE>& other) 
+inline bool contains(const AABB<float, 4, SSE>& aabb, const AABB<float, 4, SSE>& other) 
 {
     __m128 minCmp = _mm_cmpge_ps(aabb.maxVec.m128, other.maxVec.m128);
     __m128 maxCmp = _mm_cmple_ps(aabb.minVec.m128, other.minVec.m128);
@@ -41,31 +61,25 @@ inline bool contains(const AABB<float, SSE>& aabb, const AABB<float, SSE>& other
 }
 
 /** Check wether instersection is not empty */
-template<typename T, INSTRUCTION_SET is>
-inline bool test_intersection( const AABB<T, is>&  a,
-                               const AABB<T, is>&  b ) 
+template<typename T, int n, INSTRUCTION_SET is>
+inline bool test_intersection( const AABB<T, n, is>&  a,
+                               const AABB<T, n, is>&  b ) 
 {
-    // Exit with no intersection if separated along an axis
-    if (a.maxVec.x < b.minVec.x || a.minVec.x > b.maxVec.x ) {
-        return false;
-    }
-
-    if (a.maxVec.x < b.minVec.x || a.minVec.x > b.maxVec.x ) {
-        return false;
-    }
-
-    if (a.maxVec.x < b.minVec.x || a.minVec.x > b.maxVec.x ) {
-        return false;
+    for (int i = 0; i<n; ++i) 
+    {
+        if (a.maxVec[i] < b.minVec[i] || a.minVec[i] > b.maxVec[i]) {
+            return false;
+        }
     }
 
     return true;
 }
 
-/** Check intersection with ray. direction must be normalized */
+/** Check intersection with ray */
 template<typename T, INSTRUCTION_SET is>
-inline bool test_intersection( const AABB<T, is>&  aabb,
-                               const Ray<T>&       ray,
-                               T                   epsilon = static_cast<T>(EPS_7f) ) 
+inline bool test_intersection( const AABB<T, 3, is>&    aabb,
+                               const Ray<T>&            ray,
+                               T                        epsilon = static_cast<T>(EPS_7f) ) 
 
 {
     T tMin = -std::numeric_limits<T>::max();
@@ -93,9 +107,20 @@ inline bool test_intersection( const AABB<T, is>&  aabb,
     return tMax >= 0;
 }
 
-/** Check intersection with ray and find intersection point. direction must be normalized */
+/** Check intersection with segment */
 template<typename T, INSTRUCTION_SET is>
-inline bool find_intersection( const AABB<T, is>&      aabb,
+inline bool test_intersection( const AABB<T, 3, is>&        aabb,
+                               const Matrix<T, 3, 1, is>&   a,
+                               const Matrix<T, 3, 1, is>&   b,
+                               T                            epsilon = static_cast<T>(EPS_7f) ) 
+
+{
+    return test_intersection(aabb, math::Ray<T>(a, b-a), epsilon) && test_intersection(aabb, math::Ray<T>(b, a-b), epsilon);
+}
+
+/** Check intersection with ray and find intersection point */
+template<typename T, INSTRUCTION_SET is>
+inline bool find_intersection( const AABB<T, 3, is>&   aabb,
                                const Ray<T>&           ray,
                                Matrix<T, 3, 1, is>&    intersectionPoint,
                                T                       epsilon = static_cast<T>(EPS_7f) )
@@ -128,6 +153,18 @@ inline bool find_intersection( const AABB<T, is>&      aabb,
     return tMax >= 0;
 }
 
+/** Find intersection with segment */
+template<typename T, INSTRUCTION_SET is>
+inline bool find_intersection( const AABB<T, 3, is>&        aabb,
+                               const Matrix<T, 3, 1, is>&   a,
+                               const Matrix<T, 3, 1, is>&   b,
+                               Matrix<T, 3, 1, is>&         intersectionPoint,
+                               T                            epsilon = static_cast<T>(EPS_7f) ) 
+
+{
+    return test_intersection(aabb, math::Ray<T>(a, b-a), epsilon) && find_intersection(aabb, math::Ray<T>(b, a-b), epsilon);
+}
+
 /** Check wether this AABB contains another aabb */
 template<typename T, INSTRUCTION_SET is>
 inline bool contains(const Sphere<T, is>& a, const Sphere<T, is>& b) 
@@ -145,7 +182,7 @@ inline bool test_intersection( const Sphere<T, is>&  a,
 
 /** Check wether intersection of frustum and BBOX is not empty*/
 template<typename T, INSTRUCTION_SET is>
-bool test_intersection(const Frustum<T, is>& frustum, const AABB<T, is>& aabb)
+bool test_intersection(const Frustum<T, is>& frustum, const AABB<T, 3, is>& aabb)
 {
     Frustum<T, is>::vec3_type vmin;
 

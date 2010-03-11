@@ -1,6 +1,7 @@
 #ifndef SIMPLE_GL_MATH_AABB_H
 #define SIMPLE_GL_MATH_AABB_H
 
+#include "../Utility/Meta.h"
 #include "Ray.hpp"
 #include "MatrixFunctions.hpp"
 #include "Utility.hpp"
@@ -12,76 +13,57 @@ namespace sgl {
 namespace math {
 
 /** Axis aligned bounding box. */
-template<typename ValueType, INSTRUCTION_SET is = DEFAULT_INSTRUCTION_SET>
+template< typename ValueType, 
+          int n,
+          INSTRUCTION_SET is = DEFAULT_INSTRUCTION_SET>
 class AABB
 {
-public:
-    typedef AABB<ValueType>                 this_type;
-    typedef ValueType                       value_type;
-
-    typedef Matrix<value_type, 3, 1, is>    vec_type;
-    typedef Matrix<value_type, 3, 1, is>    vec3_type;
-    typedef Matrix<value_type, 4, 1, is>    vec4_type;
-
-    typedef Matrix<value_type, 3, 3, is>    mat3_type;
-    typedef Matrix<value_type, 4, 4, is>    mat4_type;
-
-    typedef Ray<value_type>                 ray_type;
-
 private:
-    // FIXME: Use something except define. Using static constant arise error in MSVS
-    #define _0 static_cast<value_type>(0)
-    #define _1 static_cast<value_type>(1)
+    typedef sgl::enable_if_c<n == 2>*       enable_if_2;
+    typedef sgl::enable_if_c<n == 3>*       enable_if_3;
+
+public:
+    typedef AABB<ValueType, n, is>          this_type;
+    typedef ValueType                       value_type;
+    typedef Matrix<value_type, n, 1, is>    vec_type;
 
 public:
     inline AABB() {}
-    inline AABB(const vec3_type& _minVec, const vec3_type& _maxVec) :
+    inline AABB(const vec_type& _minVec, const vec_type& _maxVec) :
         minVec(_minVec),
         maxVec(_maxVec)
     {}
 
-    inline AABB(const vec4_type& _minVec, const vec4_type& _maxVec) :
-        minVec( xyz(_minVec) ),
-        maxVec( xyz(_maxVec) )
+    inline AABB(ValueType   minx,
+                ValueType   miny,
+                ValueType   maxx,
+                ValueType   maxy,
+                enable_if_2 toggle = 0) :
+        minVec(minx, miny),
+        maxVec(maxx, maxy)
     {}
 
-    inline AABB( value_type minx, 
-                 value_type miny, 
-                 value_type minz, 
-                 value_type maxx, 
-                 value_type maxy, 
-                 value_type maxz ) :
+    inline AABB(ValueType   minx,
+                ValueType   miny,
+                ValueType   minz,
+                ValueType   maxx,
+                ValueType   maxy,
+                ValueType   maxz,
+                enable_if_3 toggle = 0) :
         minVec(minx, miny, minz),
         maxVec(maxx, maxy, maxz)
-    {
-    }
+    {}
 
     /** Setup aabb using top right far corner and bottom left near corner */
-    inline AABB& setup(const vec3_type& _minVec, const vec3_type& _maxVec)
+    inline AABB& setup(const vec_type& _minVec, const vec_type& _maxVec)
     {
         minVec = _minVec;
         maxVec = _maxVec;
 
         return *this;
     }
-
-    /** Setup aabb using top right far corner and bottom left near corner */
-    inline AABB& setup(const vec4_type& _minVec, const vec4_type& _maxVec)
-    {
-        minVec = xyz(_minVec);
-        maxVec = xyz(_maxVec);
-
-        return *this;
-    }
-
     /** Extend aabb so point will be covered */
-    inline AABB& extend(const vec3_type& vec)
-    {
-        return extend( make_vec(vec, _1) );
-    }
-
-    /** Extend aabb so point will be covered */
-    inline AABB& extend(const vec4_type& vec)
+    inline AABB& extend(const vec_type& vec)
     {
         minVec = min(vec, minVec);
         maxVec = max(vec, maxVec);
@@ -90,123 +72,27 @@ public:
     }
 
     /** Get size of the box */
-    inline vec3_type size() const  { return maxVec - minVec; }
+    inline vec_type size() const { return maxVec - minVec; }
 
     /** Get center of the box */
-    inline vec3_type center() const  { return (maxVec + minVec) * static_cast<value_type>(0.5); }
-
-#undef _0
-#undef _1
+    inline vec_type center() const { return (maxVec + minVec) / 2; }
 
 public:
     vec_type minVec;
     vec_type maxVec;
 };
 
-/** Axis aligned bounding box sse optimized. */
-template<>
-class AABB<float, SSE>
-    : public sgl::Aligned16
-{
-public:
-    typedef AABB<float>                     this_type;
-    typedef float                           value_type;
-
-    typedef Matrix<value_type, 4, 1, SSE>    vec_type;
-    typedef Matrix<value_type, 3, 1, SSE>    vec3_type;
-    typedef Matrix<value_type, 4, 1, SSE>    vec4_type;
-
-    typedef Matrix<value_type, 3, 3, SSE>    mat3_type;
-    typedef Matrix<value_type, 4, 4, SSE>    mat4_type;
-
-    typedef Ray<value_type>                 ray_type;
-
-private:
-    // FIXME: Use something except define. Using static constant arise error in MSVS
-    #define _0 static_cast<value_type>(0)
-    #define _1 static_cast<value_type>(1)
-
-public:
-    inline AABB() {}
-    inline AABB(const vec3_type& _minVec, const vec3_type& _maxVec) :
-        minVec( make_vec(_minVec, _1) ),
-        maxVec( make_vec(_maxVec, _1) )
-    {}
-
-    inline AABB(const vec4_type& _minVec, const vec4_type& _maxVec) :
-        minVec(_minVec),
-        maxVec(_maxVec)
-    {}
-
-    inline AABB( value_type minx, 
-                 value_type miny, 
-                 value_type minz, 
-                 value_type maxx, 
-                 value_type maxy, 
-                 value_type maxz ) :
-        minVec(minx, miny, minz, _1),
-        maxVec(maxx, maxy, maxz, _1)
-    {
-    }
-
-    /** Setup aabb using top right far corner and bottom left near corner */
-    inline AABB& setup(const vec3_type& _minVec, const vec3_type& _maxVec)
-    {
-        minVec = make_vec(_minVec, _1);
-        maxVec = make_vec(_maxVec, _1);
-
-        return *this;
-    }
-
-    /** Setup aabb using top right far corner and bottom left near corner */
-    inline AABB& setup(const vec4_type& _minVec, const vec4_type& _maxVec)
-    {
-        minVec = _minVec;
-        maxVec = _maxVec;
-
-        return *this;
-    }
-
-    /** Extend aabb so point will be covered */
-    inline AABB& extend(const vec3_type& vec)
-    {
-        return extend( make_vec(vec, _1) );
-    }
-
-    /** Extend aabb so point will be covered */
-    inline AABB& extend(const vec4_type& vec)
-    {
-        minVec = min(vec, minVec);
-        maxVec = max(vec, maxVec);
-
-        return *this;
-    }
-
-    /** Get size of the box */
-    inline vec3_type size() const  { return xyz(maxVec - minVec); }
-
-    /** Get center of the box */
-    inline vec3_type center() const  { return xyz( (maxVec + minVec) * static_cast<value_type>(0.5) ); }
-
-#undef _0
-#undef _1
-
-public:
-    vec_type minVec;
-    vec_type maxVec;
-};
-
-typedef AABB<float>     AABBf;
-typedef AABB<double>    AABBd;
+typedef AABB<float, 3>  AABBf;
+typedef AABB<double, 3> AABBd;
 
 // operators
 
 /** Transform aabb by matrix */
 template<typename T, INSTRUCTION_SET is>
-inline AABB<T, is>& operator *= (AABB<T, is>& aabb, const Matrix<T, 3, 3, is>& matrix)
+inline AABB<T, 3, is>& operator *= (AABB<T, 3, is>& aabb, const Matrix<T, 3, 3, is>& matrix)
 {
-    AABB<T, is>::vec_type   aMin, aMax;
-    float                   a, b;
+    AABB<T, 3, is>::vec_type    aMin, aMax;
+    float                       a, b;
 
     // Copy box A into min and max array.
     aMin = aabb.minVec;
@@ -244,17 +130,17 @@ inline AABB<T, is>& operator *= (AABB<T, is>& aabb, const Matrix<T, 3, 3, is>& m
 
 /** Transform plane by matrix */
 template<typename T, INSTRUCTION_SET is>
-inline AABB<T, is>& operator *= (AABB<T, is>& aabb, const Matrix<T, 4, 4, is>& matrix)
+inline AABB<T, 3, is>& operator *= (AABB<T, 3, is>& aabb, const Matrix<T, 4, 4, is>& matrix)
 {
-    AABB<T, is>::vec_type   aMin, aMax;
-    float                   a, b;
+    AABB<T, 3, is>::vec_type    aMin, aMax;
+    float                       a, b;
 
     // Copy box A into min and max array.
     aMin = aabb.minVec;
     aMax = aabb.maxVec;
 
     // Begin at translation
-    AABB<T, is>::vec3_type trans = get_translation(matrix);
+    AABB<T, 3, is>::vec_type trans = get_translation(matrix);
     aabb.minVec.x = aabb.maxVec.x = trans.x;
     aabb.minVec.y = aabb.maxVec.y = trans.y;
     aabb.minVec.z = aabb.maxVec.z = trans.z;
@@ -286,56 +172,56 @@ inline AABB<T, is>& operator *= (AABB<T, is>& aabb, const Matrix<T, 4, 4, is>& m
 }
 
 // Compare AABB
-template<typename T, INSTRUCTION_SET is>
-inline bool operator == (const AABB<T, is>& lhs, const AABB<T, is>& rhs) 
+template<typename T, int n, INSTRUCTION_SET is>
+inline bool operator == (const AABB<T, n, is>& lhs, const AABB<T, n, is>& rhs) 
 { 
     return lhs.minVec == rhs.minVec && lhs.maxVec == rhs.maxVec; 
 }
 
-template<typename T, INSTRUCTION_SET is>
-inline bool operator != (const AABB<T, is>& lhs, const AABB<T, is>& rhs) 
+template<typename T, int n, INSTRUCTION_SET is>
+inline bool operator != (const AABB<T, n, is>& lhs, const AABB<T, n, is>& rhs) 
 { 
     return lhs.minVec != rhs.minVec || lhs.maxVec != rhs.maxVec; 
 }
 
 /** Transform aabb by matrix */
 template<typename T, INSTRUCTION_SET is>
-inline AABB<T, is> operator * (const Matrix<T, 3, 3, is>& matrix, const AABB<T, is>& aabb)
+inline AABB<T, is> operator * (const Matrix<T, 3, 3, is>& matrix, const AABB<T, 3, is>& aabb)
 {
-    return AABB<T, is>(aabb) *= matrix;
+    return AABB<T, 3, is>(aabb) *= matrix;
 }
 
 /** Transform aabb by matrix */
 template<typename T, INSTRUCTION_SET is>
-inline AABB<T, is> operator * (const AABB<T, is>& aabb, const Matrix<T, 3, 3, is>& matrix)
+inline AABB<T, 3, is> operator * (const AABB<T, 3, is>& aabb, const Matrix<T, 3, 3, is>& matrix)
 {
-    return AABB<T, is>(aabb) *= matrix;
+    return AABB<T, 3, is>(aabb) *= matrix;
 }
 
 /** Transform aabb by matrix */
 template<typename T, INSTRUCTION_SET is>
-inline AABB<T, is> operator * (const Matrix<T, 4, 4, is>& matrix, const AABB<T, is>& aabb)
+inline AABB<T, 3, is> operator * (const Matrix<T, 4, 4, is>& matrix, const AABB<T, 3, is>& aabb)
 {
-    return AABB<T, is>(aabb) *= matrix;
+    return AABB<T, 3, is>(aabb) *= matrix;
 }
 
 /** Transform aabb by matrix */
 template<typename T, INSTRUCTION_SET is>
-inline AABB<T, is> operator * (const AABB<T, is>& aabb, const Matrix<T, 4, 4, is>& matrix)
+inline AABB<T, 3, is> operator * (const AABB<T, 3, is>& aabb, const Matrix<T, 4, 4, is>& matrix)
 {
-    return AABB<T, is>(aabb) *= matrix;
+    return AABB<T, 3, is>(aabb) *= matrix;
 }
 
 /** Make minimum size AABB containing two aabbs */
-template<typename T, INSTRUCTION_SET is>
-inline AABB<T, is> merge(const AABB<T, is>& a, const AABB<T, is>& b)
+template<typename T, int n, INSTRUCTION_SET is>
+inline AABB<T, n, is> merge(const AABB<T, n, is>& a, const AABB<T, n, is>& b)
 {
-    return AABB<T, is>( min(a.minVec, b.minVec), max(a.maxVec, b.maxVec) );
+    return AABB<T, n, is>( min(a.minVec, b.minVec), max(a.maxVec, b.maxVec) );
 }
 
 /** get nearest vector to the aabb form point */
 template<typename T, INSTRUCTION_SET is>
-inline Matrix<T, 3, 1, is> get_nearest_direction(const AABB<T, is>& aabb, const Matrix<T, 3, 1, is>& vec)
+inline Matrix<T, 3, 1, is> get_nearest_direction(const AABB<T, 3, is>& aabb, const Matrix<T, 3, 1, is>& vec)
 {
     Matrix<T, 3, 1, is> direction;
     for(int i = 0; i<3; ++i) 
@@ -360,7 +246,7 @@ inline Matrix<T, 3, 1, is> get_nearest_direction(const AABB<T, is>& aabb, const 
 
 /** get nearest vector to the aabb form point */
 template<typename T, INSTRUCTION_SET is>
-inline Matrix<T, 4, 1, is> get_nearest_direction(const AABB<T, is>& aabb, const Matrix<T, 4, 1, is>& vec)
+inline Matrix<T, 4, 1, is> get_nearest_direction(const AABB<T, 3, is>& aabb, const Matrix<T, 4, 1, is>& vec)
 {
     return Matrix<T, 4, 1, is>(get_nearest_direction( xyz(vec) ), 0);
 }
