@@ -2,10 +2,7 @@
 #define SIMPLE_GL_MATH_AABB_H
 
 #include "../Utility/Meta.h"
-#include "Ray.hpp"
 #include "MatrixFunctions.hpp"
-#include "Utility.hpp"
-#include <cmath>
 
 #ifdef SIMPLEGL_MATH_IN_SGL_NAMESPACE
 namespace sgl {

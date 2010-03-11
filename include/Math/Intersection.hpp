@@ -11,7 +11,7 @@ template<typename ValueType, int n>
 class AABB;
 
 // forward types
-template<typename ValueType>
+template<typename ValueType, int n>
 class Sphere;
 
 // forward types
@@ -25,6 +25,20 @@ class Ray;
 // forward type
 template<typename ValueType, int n>
 class Plane;
+
+/** Check wether Sphere contains point */
+template<typename T, int n>
+inline bool contains(const Sphere<T, n>& sphere, const Matrix<T, n, 1>& point) 
+{
+    return length(sphere.center - point) < sphere.radius;
+}
+
+/** Check wether Sphere contains sphere */
+template<typename T, int n>
+inline bool contains(const Sphere<T, n>& sphere, const Sphere<T, n>& other) 
+{
+    return length(sphere.center - other.center) + other.radius < sphere.radius;
+}
 
 /** Check wether this AABB contains point */
 template<typename T, int n>
@@ -80,20 +94,20 @@ inline bool test_intersection( const AABB<T, n>&  a,
 }
 
 /** Check intersection with ray */
-template<typename T>
-inline bool test_intersection( const AABB<T, 3>&    aabb,
-                               const Ray<T, 3>&     ray,
+template<typename T, int n>
+inline bool test_intersection( const AABB<T, n>&    aabb,
+                               const Ray<T, n>&     ray,
                                T                    epsilon = static_cast<T>(EPS_7f) ) 
 
 {
     T tMin = -std::numeric_limits<T>::max();
     T tMax =  std::numeric_limits<T>::max();
-    for(int i = 0; i<3; ++i)
+    for(int i = 0; i<n; ++i)
     {
-        if ( std::abs(ray.get_direction()[i]) > epsilon )
+        if ( std::abs(ray.direction[i]) > epsilon )
         {
-            T t1 = (minVec[i] - ray.get_origin()[i]) / ray.get_direction()[i];
-            T t2 = (maxVec[i] - ray.get_origin()[i]) / ray.get_direction()[i];
+            T t1 = (minVec[i] - ray.origin[i]) / ray.direction[i];
+            T t2 = (maxVec[i] - ray.origin[i]) / ray.direction[i];
 
             if (t1 > t2) {
                 std::swap(t1, t2);
@@ -112,20 +126,20 @@ inline bool test_intersection( const AABB<T, 3>&    aabb,
 }
 
 /** Check intersection with segment */
-template<typename T>
-inline bool test_intersection( const AABB<T, 3>&        aabb,
-                               const Matrix<T, 3, 1>&   a,
-                               const Matrix<T, 3, 1>&   b,
+template<typename T, int n>
+inline bool test_intersection( const AABB<T, n>&        aabb,
+                               const Matrix<T, n, 1>&   a,
+                               const Matrix<T, n, 1>&   b,
                                T                        epsilon = static_cast<T>(EPS_7f) ) 
 
 {
     return test_intersection(aabb, math::Ray<T>(a, b-a), epsilon) && test_intersection(aabb, math::Ray<T>(b, a-b), epsilon);
 }
 
-template<typename T>
-bool find_intersection( const Plane<T, 3>&  plane, 
-                        const Ray<T, 3>&    ray, 
-                        Matrix<T, 3, 1>&    out,
+template<typename T, int n>
+bool find_intersection( const Plane<T, n>&  plane, 
+                        const Ray<T, n>&    ray, 
+                        Matrix<T, n, 1>&    out,
                         T                   threshold = std::numeric_limits<T>::epsilon() )
 {
     T nDotDir = dot(plane.normal, ray.direction);
@@ -144,21 +158,21 @@ bool find_intersection( const Plane<T, 3>&  plane,
 }
 
 /** Check intersection with ray and find intersection point */
-template<typename T>
-inline bool find_intersection( const AABB<T, 3>&   aabb,
-                               const Ray<T, 3>&    ray,
-                               Matrix<T, 3, 1>&    intersectionPoint,
+template<typename T, int n>
+inline bool find_intersection( const AABB<T, n>&   aabb,
+                               const Ray<T, n>&    ray,
+                               Matrix<T, n, 1>&    intersectionPoint,
                                T                   epsilon = static_cast<T>(EPS_7f) )
 
 {
     T tMin = -std::numeric_limits<value_type>::max();
     T tMax =  std::numeric_limits<value_type>::max();
-    for(int i = 0; i<3; ++i)
+    for(int i = 0; i<n; ++i)
     {
-        if ( std::abs(ray.get_direction()[i]) > epsilon )
+        if ( std::abs(ray.direction[i]) > epsilon )
         {
-            T t1 = (minVec[i] - ray.get_origin()[i]) / ray.get_direction()[i];
-            T t2 = (maxVec[i] - ray.get_origin()[i]) / ray.get_direction()[i];
+            T t1 = (minVec[i] - ray.origin[i]) / ray.direction[i];
+            T t2 = (maxVec[i] - ray.origin[i]) / ray.direction[i];
 
             if (t1 > t2) {
                 std::swap(t1, t2);
@@ -173,34 +187,26 @@ inline bool find_intersection( const AABB<T, 3>&   aabb,
         }
     }
 
-    intersectionPoint = ray.get_origin() + ray.get_direction() * tMin;
-
+    intersectionPoint = ray.origin + ray.direction * tMin;
     return tMax >= 0;
 }
 
 /** Find intersection with segment */
-template<typename T>
-inline bool find_intersection( const AABB<T, 3>&        aabb,
-                               const Matrix<T, 3, 1>&   a,
-                               const Matrix<T, 3, 1>&   b,
-                               Matrix<T, 3, 1>&         intersectionPoint,
+template<typename T, int n>
+inline bool find_intersection( const AABB<T, n>&        aabb,
+                               const Matrix<T, n, 1>&   a,
+                               const Matrix<T, n, 1>&   b,
+                               Matrix<T, n, 1>&         intersectionPoint,
                                T                        epsilon = static_cast<T>(EPS_7f) ) 
 
 {
     return test_intersection(aabb, math::Ray<T>(a, b-a), epsilon) && find_intersection(aabb, math::Ray<T>(b, a-b), epsilon);
 }
 
-/** Check wether this AABB contains another aabb */
-template<typename T>
-inline bool contains(const Sphere<T>& a, const Sphere<T>& b) 
-{
-    return length(a.center - b.center) + b.radius <= a.radius;
-}
-
 /** Check wether intersection is not empty */
-template<typename T>
-inline bool test_intersection( const Sphere<T>&  a,
-                               const Sphere<T>&  b ) 
+template<typename T, int n>
+inline bool test_intersection( const Sphere<T, n>&  a,
+                               const Sphere<T, n>&  b ) 
 {
     return length(a.center - b.center) <= a.radius + b.radius;
 }

@@ -1,7 +1,7 @@
 #ifndef SIMPLE_GL_MATH_PLANE_H
 #define SIMPLE_GL_MATH_PLANE_H
 
-#include "Ray.hpp"
+#include "Matrix.hpp"
 
 #ifdef SIMPLEGL_MATH_IN_SGL_NAMESPACE
 namespace sgl {

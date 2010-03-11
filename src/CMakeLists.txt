@@ -44,6 +44,7 @@ SET ( TARGET_MATH_HEADERS
 	${TARGET_HEADER_PATH}/Math/MatrixFunctions.hpp
 	${TARGET_HEADER_PATH}/Math/Plane.hpp
 	${TARGET_HEADER_PATH}/Math/Ray.hpp
+	${TARGET_HEADER_PATH}/Math/Sphere.hpp
 	${TARGET_HEADER_PATH}/Math/Utility.hpp
 	${TARGET_HEADER_PATH}/Math/Vector.hpp
 	${TARGET_HEADER_PATH}/Math/Quaternion.hpp

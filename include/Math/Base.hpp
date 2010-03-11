@@ -24,21 +24,6 @@ namespace sgl {
 #endif
 namespace math {
 
-/// Instruction set for math calculations
-enum INSTRUCTION_SET
-{
-    FPU       /// not using sse
-#ifdef SIMPLE_GL_USE_SSE
-         /// detect SSE version using preprocessor directive
-#endif
-};
-
-#ifdef SIMPLE_GL_USE_SSE
-#   define DEFAULT_INSTRUCTION_SET SSE
-#else // FPU
-#   define DEFAULT_INSTRUCTION_SET FPU
-#endif
-
 template<typename ValueType, 
          int n, 
          int m>
