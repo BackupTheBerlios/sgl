@@ -14,10 +14,10 @@ namespace sgl {
 namespace math {
 
 /** transpose matrix */
-template<typename T, int n, int m, INSTRUCTION_SET is>
-inline Matrix<T, m, n, is> transpose(const Matrix<T, n, m, is>& mat)
+template<typename T, int n, int m>
+inline Matrix<T, m, n> transpose(const Matrix<T, n, m>& mat)
 {
-    Matrix<T, m, n, is> res;
+    Matrix<T, m, n> res;
     for(int i = 0; i<n; ++i)
     {
         for(int j = 0; j<m; ++j) {
@@ -29,33 +29,33 @@ inline Matrix<T, m, n, is> transpose(const Matrix<T, n, m, is>& mat)
 }
 
 /** transpose vector */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, 1, n, is> transpose(const Matrix<T, n, 1, is>& vec)
+template<typename T, int n>
+inline Matrix<T, 1, n> transpose(const Matrix<T, n, 1>& vec)
 {
-    Matrix<T, 1, n, is> res;
+    Matrix<T, 1, n> res;
     std::copy(res.arr, res.arr + n, vec.arr);
     return res;
 }
 
 /** transpose vector */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, n, 1, is> transpose(const Matrix<T, 1, n, is>& vec)
+template<typename T, int n>
+inline Matrix<T, n, 1> transpose(const Matrix<T, 1, n>& vec)
 {
-    Matrix<T, n, 1, is> res;
+    Matrix<T, n, 1> res;
     std::copy(res.arr, res.arr + n, vec.arr);
     return res;
 }
 
 /** Get translation component of the matrix. */
-template<typename T, INSTRUCTION_SET is>
-inline Matrix<T, 3, 1, is> get_translation(const Matrix<T, 4, 4, is>& mat)
+template<typename T>
+inline Matrix<T, 3, 1> get_translation(const Matrix<T, 4, 4>& mat)
 {
-    return Matrix<T, 3, 1, is>( mat[0][3], mat[1][3], mat[2][3] );
+    return Matrix<T, 3, 1>( mat[0][3], mat[1][3], mat[2][3] );
 }
 
 /** Get translation component of the matrix. */
-template<typename T, INSTRUCTION_SET is>
-inline Matrix<T, 3, 3, is> get_rotation(const Matrix<T, 4, 4, is>& mat)
+template<typename T>
+inline Matrix<T, 3, 3> get_rotation(const Matrix<T, 4, 4>& mat)
 {
     return make_mat( mat[0][0], mat[1][3], mat[2][3],
                      mat[1][0], mat[1][1], mat[1][2],
@@ -63,30 +63,30 @@ inline Matrix<T, 3, 3, is> get_rotation(const Matrix<T, 4, 4, is>& mat)
 }
 
 /** Get scaling component of the matrix */
-template<typename T, INSTRUCTION_SET is>
-inline Matrix<T, 3, 1, is> get_scaling(const Matrix<T, 3, 3, is>& mat)
+template<typename T>
+inline Matrix<T, 3, 1> get_scaling(const Matrix<T, 3, 3>& mat)
 {
-    return Matrix<T, 3, 1, is>( sqrt(mat[0][0]*mat[0][0] + mat[1][0]*mat[1][0] + mat[2][0]*mat[2][0]),
+    return Matrix<T, 3, 1>( sqrt(mat[0][0]*mat[0][0] + mat[1][0]*mat[1][0] + mat[2][0]*mat[2][0]),
                                 sqrt(mat[0][1]*mat[0][1] + mat[1][1]*mat[1][1] + mat[2][1]*mat[2][1]),
                                 sqrt(mat[0][2]*mat[0][2] + mat[1][2]*mat[1][2] + mat[2][2]*mat[2][2]) );
 }
 
 /** Get scaling component of the matrix */
-template<typename T, INSTRUCTION_SET is>
-inline Matrix<T, 3, 1, is> get_scaling(const Matrix<T, 4, 4, is>& mat)
+template<typename T>
+inline Matrix<T, 3, 1> get_scaling(const Matrix<T, 4, 4>& mat)
 {
-    return Matrix<T, 3, 1, is>( sqrt(mat[0][0]*mat[0][0] + mat[1][0]*mat[1][0] + mat[2][0]*mat[2][0]),
+    return Matrix<T, 3, 1>( sqrt(mat[0][0]*mat[0][0] + mat[1][0]*mat[1][0] + mat[2][0]*mat[2][0]),
                                 sqrt(mat[0][1]*mat[0][1] + mat[1][1]*mat[1][1] + mat[2][1]*mat[2][1]),
                                 sqrt(mat[0][2]*mat[0][2] + mat[1][2]*mat[1][2] + mat[2][2]*mat[2][2]) );
 }
 
 /** Invert matrix. Code taken from Intel pdf "Streaming SIMD Extension - Inverse of 4x4 Matrix" */
-template<typename T, INSTRUCTION_SET is>
-inline Matrix<T, 4, 4, is> invert(const Matrix<T, 4, 4, is>& mat)
+template<typename T>
+inline Matrix<T, 4, 4> invert(const Matrix<T, 4, 4>& mat)
 {
-    Matrix<T, 4, 3, is> tmp;
-    Matrix<T, 4, 4, is> src;
-    Matrix<T, 4, 4, is> res;
+    Matrix<T, 4, 3> tmp;
+    Matrix<T, 4, 4> src;
+    Matrix<T, 4, 4> res;
     T                   det;
 
     /* transpose matrix */
@@ -177,9 +177,9 @@ inline Matrix<T, 4, 4, is> invert(const Matrix<T, 4, 4, is>& mat)
 }
 
 template<typename T, int n>
-inline Matrix<T, n, n, DEFAULT_INSTRUCTION_SET> make_identity()
+inline Matrix<T, n, n> make_identity()
 {
-    Matrix<T, n, n, DEFAULT_INSTRUCTION_SET> matrix;
+    Matrix<T, n, n> matrix;
     for (int i = 0; i<n; ++i)
     {
         for (int j = 0; j<n; ++j) {
@@ -191,7 +191,7 @@ inline Matrix<T, n, n, DEFAULT_INSTRUCTION_SET> make_identity()
 }
 
 template<typename T>
-inline Matrix<T, 4, 4, DEFAULT_INSTRUCTION_SET> make_translation(T x, T y, T z)
+inline Matrix<T, 4, 4> make_translation(T x, T y, T z)
 {
     return make_matrix( T(1.0), T(0.0), T(0.0), x,
                         T(0.0), T(1.0), T(0.0), y,
@@ -200,7 +200,7 @@ inline Matrix<T, 4, 4, DEFAULT_INSTRUCTION_SET> make_translation(T x, T y, T z)
 }
 
 template<typename T>
-inline Matrix<T, 4, 4, DEFAULT_INSTRUCTION_SET> make_scaling(T x, T y, T z)
+inline Matrix<T, 4, 4> make_scaling(T x, T y, T z)
 {
     return make_matrix( T(x),   T(0.0), T(0.0), T(0.0),
                         T(0.0), T(y),   T(0.0), T(0.0),
@@ -209,7 +209,7 @@ inline Matrix<T, 4, 4, DEFAULT_INSTRUCTION_SET> make_scaling(T x, T y, T z)
 }
 
 template<typename T>
-inline Matrix<T, 4, 4, DEFAULT_INSTRUCTION_SET> make_rotation(T angle, const math::Matrix<T, 3, 1, DEFAULT_INSTRUCTION_SET>& v)
+inline Matrix<T, 4, 4> make_rotation(T angle, const math::Matrix<T, 3, 1>& v)
 {
     T c = cos(angle);
     T s = sin(angle);
@@ -221,7 +221,7 @@ inline Matrix<T, 4, 4, DEFAULT_INSTRUCTION_SET> make_rotation(T angle, const mat
 }
 
 template<typename T>
-inline Matrix<T, 4, 4, DEFAULT_INSTRUCTION_SET> make_ortho(T left, T right, T bottom, T top, T near_, T far_)
+inline Matrix<T, 4, 4> make_ortho(T left, T right, T bottom, T top, T near_, T far_)
 {
     T tx = (right + left) / (left - right);
     T ty = (top + bottom) / (bottom - top);
@@ -238,7 +238,7 @@ inline Matrix<T, 4, 4, DEFAULT_INSTRUCTION_SET> make_ortho(T left, T right, T bo
 }
 
 template<typename T>
-inline Matrix<T, 4, 4, DEFAULT_INSTRUCTION_SET> make_perspective(T fovy, T aspect, T zNear, T zFar)
+inline Matrix<T, 4, 4> make_perspective(T fovy, T aspect, T zNear, T zFar)
 {
     T f = T(1) / tan(fovy / 2);
 	T d = zFar - zNear;
@@ -253,29 +253,29 @@ inline Matrix<T, 4, 4, DEFAULT_INSTRUCTION_SET> make_perspective(T fovy, T aspec
 #ifdef SIMPLE_GL_USE_SSE
 
 /** transpose matrix */
-inline Matrix<float, 4, 4, SSE> transpose(const Matrix<float, 4, 4, SSE>& mat)
+inline Matrix<float, 4, 4> transpose(const Matrix<float, 4, 4>& mat)
 {
-    Matrix<float, 4, 4, SSE> res(mat);
+    Matrix<float, 4, 4> res(mat);
     _MM_TRANSPOSE4_PS(res[0].m128, res[1].m128, res[2].m128, res[3].m128);
     return res;
 }
 
 /** transpose vector */
-inline Matrix<float, 1, 4, SSE> transpose(const Matrix<float, 4, 1, SSE>& vec)
+inline Matrix<float, 1, 4> transpose(const Matrix<float, 4, 1>& vec)
 {
-    return Matrix<float, 1, 4, SSE>(vec.m128);
+    return Matrix<float, 1, 4>(vec.m128);
 }
 
 /** transpose vector */
-inline Matrix<float, 4, 1, SSE> transpose(const Matrix<float, 1, 4, SSE>& vec)
+inline Matrix<float, 4, 1> transpose(const Matrix<float, 1, 4>& vec)
 {
-    return Matrix<float, 4, 1, SSE>(vec.m128);
+    return Matrix<float, 4, 1>(vec.m128);
 }
 
 /** Invert matrix. Code taken from Intel pdf "Streaming SIMD Extension - Inverse of 4x4 Matrix" */
-inline Matrix<float, 4, 4, SSE> invert(const Matrix<float, 4, 4, SSE>& mat)
+inline Matrix<float, 4, 4> invert(const Matrix<float, 4, 4>& mat)
 {
-    Matrix<float, 4, 4, SSE> res;
+    Matrix<float, 4, 4> res;
 
     float*       dst = &res[0].x;
     const float* src = &mat[0].x;

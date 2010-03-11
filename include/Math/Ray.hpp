@@ -1,6 +1,7 @@
 #ifndef SIMPLE_GL_MATH_RAY_H
 #define SIMPLE_GL_MATH_RAY_H
 
+#include "../Utility/Meta.h"
 #include "Matrix.hpp"
 
 #ifdef SIMPLEGL_MATH_IN_SGL_NAMESPACE
@@ -10,94 +11,94 @@ namespace sgl {
 namespace math {
 
 /** Ray in the space */
-template<typename value_type>
+template<typename  ValueType, 
+         int       Dimension>
 class Ray
 {
 public:
-    typedef Ray<value_type>            this_type;
-
-    typedef Matrix<value_type, 3, 1>   vec3_type;
-    typedef Matrix<value_type, 4, 1>    vec4_type;
-
-    typedef Matrix<value_type, 3, 3>   mat3_type;
-    typedef Matrix<value_type, 4, 4>   mat4_type;
+    typedef ValueType                       value_type;
+    typedef Ray<value_type, Dimension>      this_type;
+    typedef Matrix<ValueType, Dimension, 1> vec_type;
 
 public:
     Ray() {}
 
-    Ray(const Ray& rhs) :
+    Ray(const this_type& rhs) :
         origin(rhs.origin),
         direction(rhs.direction)
     {}
 
-    Ray(const vec3_type& _origin, const vec3_type& _direction) :
+    Ray(const vec_type& _origin, const vec_type& _direction) :
         origin(_origin),
         direction( normalize(_direction) )
     {}
 
-    /** Set position of the starting point */
-    void set_origin(const vec3_type& _origin) { origin = _origin; }
-
-    /** Get position of the starting point */
-    const vec3_type& get_origin() const { return origin; }
-
-    /** Set direction of the ray */
-    void set_direction(const vec3_type& _direction) { direction = normalize(_direction); }
-
-    /** Get direction of the ray */
-    const vec3_type& get_direction() const { return direction; }
-
-    /** Transform ray by matrix */
-    this_type& operator *= (const mat3_type& matrix)
-    {
-        direction *= matrix;
-        origin    *= matrix;
-        return *this;
-    }
-
-    /** Transform ray by matrix */
-    this_type& operator *= (const mat4_type& matrix)
-    {
-        direction = ( matrix * Vector4f(direction, 0.0f) ).xyz();
-        origin    = ( matrix * Vector4f(origin, 1.0f) ).xyz();
-        return *this;
-    }
-
-private:
-    vec3_type   origin;
-    vec3_type   direction;
+public:
+    vec_type    origin;
+    vec_type    direction;
 };
 
-typedef Ray<float>    Rayf;
-typedef Ray<double>   Rayd;
+typedef Ray<float, 2>   Ray2f;
+typedef Ray<double, 2>  Ray2d;
+
+typedef Ray<float, 3>   Ray3f;
+typedef Ray<double, 3>  Ray3d;
+
+typedef Ray<float, 4>   Ray4f;
+typedef Ray<double, 4>  Ray4d;
+
+typedef Ray<float, 3>   Rayf;
+typedef Ray<double, 3>  Rayd;
 
 // operators
-/** Transform ray by matrix */
+
 template<typename T>
-Ray<T> operator * (const Matrix<T,3,3>& matrix, const Ray<T>& ray)
+Ray<T, 3> operator *= (Ray<T, 3>& ray, const Matrix<T, 3, 3>& matrix)
 {
-    return Ray<T>(ray) *= matrix;
+    ray.direction *= matrix;
+    ray.origin    *= matrix;
+
+    return *this;
 }
 
-/** Transform ray by matrix */
 template<typename T>
-Ray<T> operator * (const Ray<T>& ray, const Matrix<T,3,3>& matrix)
+Ray<T, 4> operator *= (Ray<T, 4>& ray, const Matrix<T, 4, 4>&  matrix)
 {
-    return Ray<T>(ray) *= matrix;
+    ray.direction *= matrix;
+    ray.origin    *= matrix;
+
+    return *this;
 }
 
-/** Transform ray by matrix */
 template<typename T>
-Ray<T> operator * (const Matrix<T,4,4>& matrix, const Ray<T>& ray)
+Ray<T, 3> operator * (const Matrix<T, 3, 3>& matrix, const Ray<T, 3>& ray)
 {
-    return Ray<T>(ray) *= matrix;
+    return Ray<T, 3>(ray) *= matrix;
 }
 
-/** Transform ray by matrix */
 template<typename T>
-Ray<T> operator * (const Ray<T>& ray, const Matrix<T,4,4>& matrix)
+Ray<T, 4> operator * (const Matrix<T, 4, 4>& matrix, const Ray<T, 4>& ray)
 {
-    return Ray<T>(ray) *= matrix;
+    return Ray<T, 4>(ray) *= matrix;
+}
+
+template<typename T>
+Ray<T, 3> operator * (const Ray<T, 3>& ray, const Matrix<T, 3, 3>& matrix)
+{
+    return Ray<T, 3>(ray) *= matrix;
+}
+
+template<typename T>
+Ray<T, 4> operator * (const Ray<T, 4>& ray, const Matrix<T, 4, 4>& matrix)
+{
+    return Ray<T, 4>(ray) *= matrix;
+}
+
+/** Normalize ray direction */
+template<typename T, int n>
+Ray<T, n> normalize(const Ray<T, n>& ray)
+{
+    return Ray<T, n>( ray.origin, ray.direction / length(ray.direction) );
 }
 
 } // namespace math

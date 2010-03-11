@@ -46,30 +46,24 @@ namespace sgl {
 namespace math {
 
 // Forward
-template<typename ValueType, int n, int m, INSTRUCTION_SET inst_set = DEFAULT_INSTRUCTION_SET>
+template<typename ValueType, int n, int m = DEFAULT_INSTRUCTION_SET>
 class Matrix;
 
 /** Vector column. */
-template<typename ValueType, int n, INSTRUCTION_SET inst_set>
-class Matrix<ValueType, n, 1, inst_set> :
-    public MatrixBase<ValueType, n, 1, inst_set>
+template<typename ValueType, int n>
+class Matrix<ValueType, n, 1> :
+    public MatrixBase<ValueType, n, 1>
 {
 public:
-    typedef MatrixBase<ValueType, n, 1, inst_set> base_type;
-    typedef Matrix<ValueType, n, 1, inst_set>     this_type;
+    typedef MatrixBase<ValueType, n, 1> base_type;
+    typedef Matrix<ValueType, n, 1>     this_type;
 
 public:
     inline Matrix() {}
     inline Matrix(const this_type& vec) { std::copy(vec.arr, vec.arr + n, arr); }
 
-    template<INSTRUCTION_SET is>
-    inline Matrix(const Matrix<ValueType, n, 1, is>& vec)
-    {
-        std::copy(vec.arr, vec.arr + n, arr);
-    }
-
-    template<typename T, INSTRUCTION_SET is>
-    inline explicit Matrix(const Matrix<T, n, 1, is>& vec)
+    template<typename T>
+    inline explicit Matrix(const Matrix<T, n, 1>& vec)
     {
         std::copy(vec.arr, vec.arr + n, arr);
     }
@@ -91,26 +85,20 @@ public:
 };
 
 /** Vector row. */
-template<typename ValueType, int m, INSTRUCTION_SET inst_set>
-class Matrix<ValueType, 1, m, inst_set> :
-    public MatrixBase<ValueType, 1, m, inst_set>
+template<typename ValueType, int m>
+class Matrix<ValueType, 1, m> :
+    public MatrixBase<ValueType, 1, m>
 {
 public:
-    typedef MatrixBase<ValueType, 1, m, inst_set> base_type;
-    typedef Matrix<ValueType, 1, m, inst_set>     this_type;
+    typedef MatrixBase<ValueType, 1, m> base_type;
+    typedef Matrix<ValueType, 1, m>     this_type;
 
 public:
     inline Matrix() {}
     inline Matrix(const this_type& vec) { std::copy(vec.arr, vec.arr + m, arr); }
 
-    template<INSTRUCTION_SET is>
-    inline Matrix(const Matrix<ValueType, 1, m, is>& vec)
-    {
-        std::copy(vec.arr, vec.arr + m, arr);
-    }
-
-    template<typename T, INSTRUCTION_SET is>
-    inline explicit Matrix(const Matrix<T, 1, m, is>& vec)
+    template<typename T>
+    inline explicit Matrix(const Matrix<T, 1, m>& vec)
     {
         std::copy(vec.arr, vec.arr + m, arr);
     }
@@ -135,7 +123,7 @@ public:
 #ifdef SIMPLE_GL_USE_SSE
 
 template<>
-class MatrixBase<float, 4, 1, SSE> :
+class MatrixBase<float, 4, 1> :
     public sgl::Aligned<0x10>
 {
 public:
@@ -153,7 +141,7 @@ protected:
 };
 
 template<>
-class MatrixBase<float, 1, 4, SSE> :
+class MatrixBase<float, 1, 4> :
     public sgl::Aligned<0x10>
 {
 public:
@@ -172,12 +160,12 @@ protected:
 
 /** Vector column. */
 template<>
-class Matrix<float, 4, 1, SSE> :
-    public MatrixBase<float, 4, 1, SSE>
+class Matrix<float, 4, 1> :
+    public MatrixBase<float, 4, 1>
 {
 public:
-    typedef MatrixBase<float, 4, 1, SSE>     base_type;
-    typedef Matrix<float, 4, 1, SSE>         this_type;
+    typedef MatrixBase<float, 4, 1>     base_type;
+    typedef Matrix<float, 4, 1>         this_type;
 
 public:
     inline Matrix() {}
@@ -197,16 +185,8 @@ public:
         m128 = _mm_set_ps(_w, _z, _y, _x);
     }
 
-    template<INSTRUCTION_SET is>
-    inline Matrix(const Matrix<float, 4, 1, is>& vec) :
-        x(vec.x),
-        y(vec.y),
-        z(vec.z),
-        w(vec.w)
-    {}
-
-    template<typename T, INSTRUCTION_SET is>
-    inline explicit Matrix(const Matrix<T, 4, 1, is>& vec) :
+    template<typename T>
+    inline explicit Matrix(const Matrix<T, 4, 1>& vec) :
         x( static_cast<float>(vec.x) ),
         y( static_cast<float>(vec.y) ),
         z( static_cast<float>(vec.z) ),
@@ -244,12 +224,12 @@ public:
 
 /** Vector row. */
 template<>
-class Matrix<float, 1, 4, SSE> :
-    public MatrixBase<float, 1, 4, SSE>
+class Matrix<float, 1, 4> :
+    public MatrixBase<float, 1, 4>
 {
 public:
-    typedef MatrixBase<float, 1, 4, SSE>     base_type;
-    typedef Matrix<float, 1, 4, SSE>         this_type;
+    typedef MatrixBase<float, 1, 4>     base_type;
+    typedef Matrix<float, 1, 4>         this_type;
 
 public:
     inline Matrix() {}
@@ -264,21 +244,13 @@ public:
         m128 = _mm_set_ps(vec.w, vec.z, vec.y, vec.x);
     }
 
-    template<INSTRUCTION_SET is>
-    inline Matrix(const Matrix<float, 1, 4, is>& vec) :
-        x(vec.x),
-        y(vec.y),
-        z(vec.z),
-        w(vec.w)
-    {}
-
     inline Matrix(float _x, float _y, float _z, float _w)
     {
         m128 = _mm_set_ps(_w, _z, _y, _x);
     }
 
-    template<typename T, INSTRUCTION_SET is>
-    inline explicit Matrix(const Matrix<T, 4, 1, is>& vec) :
+    template<typename T>
+    inline explicit Matrix(const Matrix<T, 4, 1>& vec) :
         x( static_cast<float>(vec.x) ),
         y( static_cast<float>(vec.y) ),
         z( static_cast<float>(vec.z) ),
@@ -317,9 +289,9 @@ public:
 #endif // SIMPLE_GL_USE_SSE
 
 /** Vector column. */
-template<typename ValueType, INSTRUCTION_SET inst_set>
-class Matrix<ValueType, 4, 1, inst_set> :
-    public MatrixBase<ValueType, 4, 1, inst_set>
+template<typename ValueType>
+class Matrix<ValueType, 4, 1> :
+    public MatrixBase<ValueType, 4, 1>
 {
 public:
     typedef MatrixBase<ValueType, 4, 1>     base_type;
@@ -335,14 +307,6 @@ public:
         w(vec.w)
     {}
 
-    template<INSTRUCTION_SET is>
-    inline Matrix(const Matrix<ValueType, 4, 1, is>& vec) :
-        x(vec.x),
-        y(vec.y),
-        z(vec.z),
-        w(vec.w)
-    {}
-
     inline Matrix(ValueType _x, ValueType _y, ValueType _z, ValueType _w) :
         x(_x),
         y(_y),
@@ -350,8 +314,8 @@ public:
         w(_w)
     {}
 
-    template<typename T, INSTRUCTION_SET is>
-    inline explicit Matrix(const Matrix<T, 4, 1, is>& vec) :
+    template<typename T>
+    inline explicit Matrix(const Matrix<T, 4, 1>& vec) :
         x( static_cast<ValueType>(vec.x) ),
         y( static_cast<ValueType>(vec.y) ),
         z( static_cast<ValueType>(vec.z) ),
@@ -381,26 +345,18 @@ public:
 };
 
 /** Vector row. */
-template<typename ValueType, INSTRUCTION_SET inst_set>
-class Matrix<ValueType, 1, 4, inst_set> :
-    public MatrixBase<ValueType, 1, 4, inst_set>
+template<typename ValueType>
+class Matrix<ValueType, 1, 4> :
+    public MatrixBase<ValueType, 1, 4>
 {
 public:
-    typedef MatrixBase<ValueType, 1, 4, inst_set>     base_type;
-    typedef Matrix<ValueType, 1, 4, inst_set>         this_type;
+    typedef MatrixBase<ValueType, 1, 4>     base_type;
+    typedef Matrix<ValueType, 1, 4>         this_type;
 
 public:
     inline Matrix() {}
 
     inline Matrix(const this_type& vec) :
-        x(vec.x),
-        y(vec.y),
-        z(vec.z),
-        w(vec.w)
-    {}
-
-    template<INSTRUCTION_SET is>
-    inline Matrix(const Matrix<ValueType, 1, 4, is>& vec) :
         x(vec.x),
         y(vec.y),
         z(vec.z),
@@ -414,8 +370,8 @@ public:
         w(_w)
     {}
 
-    template<typename T, INSTRUCTION_SET is>
-    inline explicit Matrix(const Matrix<T, 1, 4, is>& vec) :
+    template<typename T>
+    inline explicit Matrix(const Matrix<T, 1, 4>& vec) :
         x( static_cast<ValueType>(vec.x) ),
         y( static_cast<ValueType>(vec.y) ),
         z( static_cast<ValueType>(vec.z) ),
@@ -445,25 +401,18 @@ public:
 };
 
 /** Vector column. */
-template<typename ValueType, INSTRUCTION_SET inst_set>
-class Matrix<ValueType, 3, 1, inst_set> :
-    public MatrixBase<ValueType, 3, 1, inst_set>
+template<typename ValueType>
+class Matrix<ValueType, 3, 1> :
+    public MatrixBase<ValueType, 3, 1>
 {
 public:
-    typedef MatrixBase<ValueType, 3, 1, inst_set>     base_type;
-    typedef Matrix<ValueType, 3, 1, inst_set>         this_type;
+    typedef MatrixBase<ValueType, 3, 1>     base_type;
+    typedef Matrix<ValueType, 3, 1>         this_type;
 
 public:
     inline Matrix() {}
 
     inline Matrix(const this_type& vec) :
-        x(vec.x),
-        y(vec.y),
-        z(vec.z)
-    {}
-
-    template<INSTRUCTION_SET is>
-    inline Matrix(const Matrix<ValueType, 3, 1, is>& vec) :
         x(vec.x),
         y(vec.y),
         z(vec.z)
@@ -475,8 +424,8 @@ public:
         z(_z)
     {}
 
-    template<typename T, INSTRUCTION_SET is>
-    inline explicit Matrix(const Matrix<T, 3, 1, is>& vec) :
+    template<typename T>
+    inline explicit Matrix(const Matrix<T, 3, 1>& vec) :
         x( static_cast<ValueType>(vec.x) ),
         y( static_cast<ValueType>(vec.y) ),
         z( static_cast<ValueType>(vec.z) )
@@ -505,25 +454,18 @@ public:
 };
 
 /** Vector row. */
-template<typename ValueType, INSTRUCTION_SET inst_set>
-class Matrix<ValueType, 1, 3, inst_set> :
-    public MatrixBase<ValueType, 1, 3, inst_set>
+template<typename ValueType>
+class Matrix<ValueType, 1, 3> :
+    public MatrixBase<ValueType, 1, 3>
 {
 public:
-    typedef MatrixBase<ValueType, 1, 3, inst_set>     base_type;
-    typedef Matrix<ValueType, 1, 3, inst_set>         this_type;
+    typedef MatrixBase<ValueType, 1, 3>     base_type;
+    typedef Matrix<ValueType, 1, 3>         this_type;
 
 public:
     inline Matrix() {}
 
     inline Matrix(const this_type& vec) :
-        x(vec.x),
-        y(vec.y),
-        z(vec.z)
-    {}
-
-    template<INSTRUCTION_SET is>
-    inline Matrix(const Matrix<ValueType, 1, 3, is>& vec) :
         x(vec.x),
         y(vec.y),
         z(vec.z)
@@ -535,8 +477,8 @@ public:
         z(_z)
     {}
 
-    template<typename T, INSTRUCTION_SET is>
-    inline explicit Matrix(const Matrix<T, 1, 3, is>& vec) :
+    template<typename T>
+    inline explicit Matrix(const Matrix<T, 1, 3>& vec) :
         x( static_cast<ValueType>(vec.x) ),
         y( static_cast<ValueType>(vec.y) ),
         z( static_cast<ValueType>(vec.z) )
@@ -565,24 +507,18 @@ public:
 };
 
 /** Vector column. */
-template<typename ValueType, INSTRUCTION_SET inst_set>
-class Matrix<ValueType, 2, 1, inst_set> :
-    public MatrixBase<ValueType, 2, 1, inst_set>
+template<typename ValueType>
+class Matrix<ValueType, 2, 1> :
+    public MatrixBase<ValueType, 2, 1>
 {
 public:
-    typedef MatrixBase<ValueType, 2, 1, inst_set>     base_type;
-    typedef Matrix<ValueType, 2, 1, inst_set>         this_type;
+    typedef MatrixBase<ValueType, 2, 1>     base_type;
+    typedef Matrix<ValueType, 2, 1>         this_type;
 
 public:
     inline Matrix() {}
 
     inline Matrix(const this_type& vec) :
-        x(vec.x),
-        y(vec.y)
-    {}
-
-    template<INSTRUCTION_SET is>
-    inline Matrix(const Matrix<ValueType, 2, 1, is>& vec) :
         x(vec.x),
         y(vec.y)
     {}
@@ -592,8 +528,8 @@ public:
         y(_y)
     {}
 
-    template<typename T, INSTRUCTION_SET is>
-    inline explicit Matrix(const Matrix<T, 2, 1, is>& vec) :
+    template<typename T>
+    inline explicit Matrix(const Matrix<T, 2, 1>& vec) :
         x( static_cast<ValueType>(vec.x) ),
         y( static_cast<ValueType>(vec.y) )
     {}
@@ -621,13 +557,13 @@ public:
 };
 
 /** Vector row. */
-template<typename ValueType, INSTRUCTION_SET inst_set>
-class Matrix<ValueType, 1, 2, inst_set> :
-    public MatrixBase<ValueType, 1, 2, inst_set>
+template<typename ValueType>
+class Matrix<ValueType, 1, 2> :
+    public MatrixBase<ValueType, 1, 2>
 {
 public:
-    typedef MatrixBase<ValueType, 1, 2, inst_set>     base_type;
-    typedef Matrix<ValueType, 1, 2, inst_set>         this_type;
+    typedef MatrixBase<ValueType, 1, 2>     base_type;
+    typedef Matrix<ValueType, 1, 2>         this_type;
 
 public:
     inline Matrix() {}
@@ -637,19 +573,13 @@ public:
         y(vec.y)
     {}
 
-    template<INSTRUCTION_SET is>
-    inline Matrix(const Matrix<ValueType, 1, 2, is>& vec) :
-        x(vec.x),
-        y(vec.y)
-    {}
-
     inline Matrix(ValueType _x, ValueType _y) :
         x(_x),
         y(_y)
     {}
 
-    template<typename T, INSTRUCTION_SET is>
-    inline explicit Matrix(const Matrix<T, 1, 2, is>& vec) :
+    template<typename T>
+    inline explicit Matrix(const Matrix<T, 1, 2>& vec) :
         x( static_cast<ValueType>(vec.x) ),
         y( static_cast<ValueType>(vec.y) )
     {}
@@ -677,36 +607,36 @@ public:
 };
 
 // default vectors
-typedef Matrix<double, 4, 1, FPU>           Vector4d;
-typedef Matrix<double, 3, 1, FPU>           Vector3d;
-typedef Matrix<double, 2, 1, FPU>           Vector2d;
+typedef Matrix<double, 4, 1>           Vector4d;
+typedef Matrix<double, 3, 1>           Vector3d;
+typedef Matrix<double, 2, 1>           Vector2d;
 
-typedef Matrix<float, 4, 1, FPU>            FPUVector4f;    /// Vector4f without SSE
-typedef Matrix<float, 4, 1, SSE>            SSEVector4f;    /// Vector4f with SSE
+typedef Matrix<float, 4, 1>            FPUVector4f;    /// Vector4f without SSE
+typedef Matrix<float, 4, 1>            SSEVector4f;    /// Vector4f with SSE
 #ifdef SIMPLE_GL_USE_SSE
-typedef Matrix<float, 4, 1, SSE>            Vector4f;      
+typedef Matrix<float, 4, 1>            Vector4f;      
 #else
-typedef Matrix<float, 4, 1, FPU>            Vector4f;      
+typedef Matrix<float, 4, 1>            Vector4f;      
 #endif 
 
-typedef Matrix<float, 3, 1, FPU>            Vector3f;
-typedef Matrix<float, 2, 1, FPU>            Vector2f;
+typedef Matrix<float, 3, 1>            Vector3f;
+typedef Matrix<float, 2, 1>            Vector2f;
 
-typedef Matrix<int, 4, 1, FPU>              Vector4i;
-typedef Matrix<int, 3, 1, FPU>              Vector3i;
-typedef Matrix<int, 2, 1, FPU>              Vector2i;
+typedef Matrix<int, 4, 1>              Vector4i;
+typedef Matrix<int, 3, 1>              Vector3i;
+typedef Matrix<int, 2, 1>              Vector2i;
 
-typedef Matrix<unsigned int, 4, 1, FPU>     Vector4ui;
-typedef Matrix<unsigned int, 3, 1, FPU>     Vector3ui;
-typedef Matrix<unsigned int, 2, 1, FPU>     Vector2ui;
+typedef Matrix<unsigned int, 4, 1>     Vector4ui;
+typedef Matrix<unsigned int, 3, 1>     Vector3ui;
+typedef Matrix<unsigned int, 2, 1>     Vector2ui;
 
-typedef Matrix<bool, 4, 1, FPU>             Vector4b;
-typedef Matrix<bool, 3, 1, FPU>             Vector3b;
-typedef Matrix<bool, 2, 1, FPU>             Vector2b;
+typedef Matrix<bool, 4, 1>             Vector4b;
+typedef Matrix<bool, 3, 1>             Vector3b;
+typedef Matrix<bool, 2, 1>             Vector2b;
 
 /** mul per component */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, n, 1, is>& operator *= (Matrix<T, n, 1, is>& lhs, const Matrix<T, n, 1, is>& rhs)
+template<typename T, int n>
+inline Matrix<T, n, 1>& operator *= (Matrix<T, n, 1>& lhs, const Matrix<T, n, 1>& rhs)
 {
     for (int i = 0; i<n; ++i)
         lhs[i] *= rhs[i];
@@ -714,8 +644,8 @@ inline Matrix<T, n, 1, is>& operator *= (Matrix<T, n, 1, is>& lhs, const Matrix<
 }
 
 /** mul per component */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, 1, n, is>& operator *= (Matrix<T, 1, n, is>& lhs, const Matrix<T, 1, n, is>& rhs)
+template<typename T, int n>
+inline Matrix<T, 1, n>& operator *= (Matrix<T, 1, n>& lhs, const Matrix<T, 1, n>& rhs)
 {
     for (int i = 0; i<n; ++i)
         lhs[i] *= rhs[i];
@@ -723,8 +653,8 @@ inline Matrix<T, 1, n, is>& operator *= (Matrix<T, 1, n, is>& lhs, const Matrix<
 }
 
 /** mul per component */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, n, 1, is>& operator *= (Matrix<T, n, 1, is>& lhs, T rhs)
+template<typename T, int n>
+inline Matrix<T, n, 1>& operator *= (Matrix<T, n, 1>& lhs, T rhs)
 {
     for (int i = 0; i<n; ++i)
         lhs[i] *= rhs;
@@ -732,8 +662,8 @@ inline Matrix<T, n, 1, is>& operator *= (Matrix<T, n, 1, is>& lhs, T rhs)
 }
 
 /** mul per component */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, 1, n, is>& operator *= (Matrix<T, 1, n, is>& lhs, T rhs)
+template<typename T, int n>
+inline Matrix<T, 1, n>& operator *= (Matrix<T, 1, n>& lhs, T rhs)
 {
     for (int i = 0; i<n; ++i)
         lhs[i] *= rhs;
@@ -741,8 +671,8 @@ inline Matrix<T, 1, n, is>& operator *= (Matrix<T, 1, n, is>& lhs, T rhs)
 }
 
 /** div per component */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, n, 1, is>& operator /= (Matrix<T, n, 1, is>& lhs, const Matrix<T, n, 1, is>& rhs)
+template<typename T, int n>
+inline Matrix<T, n, 1>& operator /= (Matrix<T, n, 1>& lhs, const Matrix<T, n, 1>& rhs)
 {
     for(int i = 0; i<n; ++i)
         lhs[i] /= rhs[i];
@@ -750,8 +680,8 @@ inline Matrix<T, n, 1, is>& operator /= (Matrix<T, n, 1, is>& lhs, const Matrix<
 }
 
 /** div per component */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, 1, n, is>& operator /= (Matrix<T, 1, n, is>& lhs, const Matrix<T, 1, n, is>& rhs)
+template<typename T, int n>
+inline Matrix<T, 1, n>& operator /= (Matrix<T, 1, n>& lhs, const Matrix<T, 1, n>& rhs)
 {
     for(int i = 0; i<n; ++i)
         lhs[i] /= rhs[i];
@@ -759,8 +689,8 @@ inline Matrix<T, 1, n, is>& operator /= (Matrix<T, 1, n, is>& lhs, const Matrix<
 }
 
 /** div per component */
-template<typename T, typename Y, int n, INSTRUCTION_SET is>
-inline Matrix<T, n, 1, is>& operator /= (Matrix<T, n, 1, is>& lhs, Y rhs)
+template<typename T, typename Y, int n>
+inline Matrix<T, n, 1>& operator /= (Matrix<T, n, 1>& lhs, Y rhs)
 {
     for(int i = 0; i<n; ++i)
         lhs[i] /= static_cast<T>(rhs);
@@ -768,8 +698,8 @@ inline Matrix<T, n, 1, is>& operator /= (Matrix<T, n, 1, is>& lhs, Y rhs)
 }
 
 /** div per component */
-template<typename T, typename Y, int n, INSTRUCTION_SET is>
-inline Matrix<T, 1, n, is>& operator /= (Matrix<T, 1, n, is>& lhs, Y rhs)
+template<typename T, typename Y, int n>
+inline Matrix<T, 1, n>& operator /= (Matrix<T, 1, n>& lhs, Y rhs)
 {
     for(int i = 0; i<n; ++i)
         lhs[i] /= static_cast<T>(rhs);
@@ -777,8 +707,8 @@ inline Matrix<T, 1, n, is>& operator /= (Matrix<T, 1, n, is>& lhs, Y rhs)
 }
 
 /** compare vectors */
-template<typename T, int n, INSTRUCTION_SET is>
-inline bool operator == (const Matrix<T, n, 1, is>& lhs, const Matrix<T, n, 1, is>& rhs)
+template<typename T, int n>
+inline bool operator == (const Matrix<T, n, 1>& lhs, const Matrix<T, n, 1>& rhs)
 {
     for(int i = 0; i<n; ++i)
     {
@@ -791,8 +721,8 @@ inline bool operator == (const Matrix<T, n, 1, is>& lhs, const Matrix<T, n, 1, i
 }
 
 /** compare vectors */
-template<typename T, int n, INSTRUCTION_SET is>
-inline bool operator == (const Matrix<T, 1, n, is>& lhs, const Matrix<T, 1, n, is>& rhs)
+template<typename T, int n>
+inline bool operator == (const Matrix<T, 1, n>& lhs, const Matrix<T, 1, n>& rhs)
 {
     for(int i = 0; i<n; ++i)
     {
@@ -805,8 +735,8 @@ inline bool operator == (const Matrix<T, 1, n, is>& lhs, const Matrix<T, 1, n, i
 }
 
 /** compare matrices */
-template<typename T, int n, INSTRUCTION_SET is>
-inline bool operator != (const Matrix<T, n, 1, is>& lhs, const Matrix<T, n, 1, is>& rhs)
+template<typename T, int n>
+inline bool operator != (const Matrix<T, n, 1>& lhs, const Matrix<T, n, 1>& rhs)
 {
     for(int i = 0; i<n; ++i)
     {
@@ -819,8 +749,8 @@ inline bool operator != (const Matrix<T, n, 1, is>& lhs, const Matrix<T, n, 1, i
 }
 
 /** compare matrices */
-template<typename T, int n, INSTRUCTION_SET is>
-inline bool operator != (const Matrix<T, 1, n, is>& lhs, const Matrix<T, 1, n, is>& rhs)
+template<typename T, int n>
+inline bool operator != (const Matrix<T, 1, n>& lhs, const Matrix<T, 1, n>& rhs)
 {
     for(int i = 0; i<n; ++i)
     {
@@ -836,49 +766,49 @@ inline bool operator != (const Matrix<T, 1, n, is>& lhs, const Matrix<T, 1, n, i
 #ifdef SIMPLE_GL_USE_SSE
 
 /** add per component */
-inline Matrix<float, 4, 1, SSE>& operator += (Matrix<float, 4, 1, SSE>& lhs, const Matrix<float, 4, 1, SSE>& rhs)
+inline Matrix<float, 4, 1>& operator += (Matrix<float, 4, 1>& lhs, const Matrix<float, 4, 1>& rhs)
 {
     lhs.m128 = _mm_add_ps(lhs.m128, rhs.m128);
     return lhs;
 }
 
 /** add per component */
-inline Matrix<float, 1, 4, SSE>& operator += (Matrix<float, 1, 4, SSE>& lhs, const Matrix<float, 1, 4, SSE>& rhs)
+inline Matrix<float, 1, 4>& operator += (Matrix<float, 1, 4>& lhs, const Matrix<float, 1, 4>& rhs)
 {
     lhs.m128 = _mm_add_ps(lhs.m128, rhs.m128);
     return lhs;
 }
 
 /** subtract per component */
-inline Matrix<float, 4, 1, SSE>& operator -= (Matrix<float, 4, 1, SSE>& lhs, const Matrix<float, 4, 1, SSE>& rhs)
+inline Matrix<float, 4, 1>& operator -= (Matrix<float, 4, 1>& lhs, const Matrix<float, 4, 1>& rhs)
 {
     lhs.m128 = _mm_sub_ps(lhs.m128, rhs.m128);
     return lhs;
 }
 
 /** subtract per component */
-inline Matrix<float, 1, 4, SSE>& operator -= (Matrix<float, 1, 4, SSE>& lhs, const Matrix<float, 1, 4, SSE>& rhs)
+inline Matrix<float, 1, 4>& operator -= (Matrix<float, 1, 4>& lhs, const Matrix<float, 1, 4>& rhs)
 {
     lhs.m128 = _mm_sub_ps(lhs.m128, rhs.m128);
     return lhs;
 }
 
 /** mul per component */
-inline Matrix<float, 4, 1, SSE>& operator *= (Matrix<float, 4, 1, SSE>& lhs, const Matrix<float, 4, 1, SSE>& rhs)
+inline Matrix<float, 4, 1>& operator *= (Matrix<float, 4, 1>& lhs, const Matrix<float, 4, 1>& rhs)
 {
     lhs.m128 = _mm_mul_ps(lhs.m128, rhs.m128);
     return lhs;
 }
 
 /** mul per component */
-inline Matrix<float, 1, 4, SSE>& operator *= (Matrix<float, 1, 4, SSE>& lhs, const Matrix<float, 1, 4, SSE>& rhs)
+inline Matrix<float, 1, 4>& operator *= (Matrix<float, 1, 4>& lhs, const Matrix<float, 1, 4>& rhs)
 {
     lhs.m128 = _mm_mul_ps(lhs.m128, rhs.m128);
     return lhs;
 }
 
 /** mul per component */
-inline Matrix<float, 4, 1, SSE>& operator *= (Matrix<float, 4, 1, SSE>& lhs, float rhs)
+inline Matrix<float, 4, 1>& operator *= (Matrix<float, 4, 1>& lhs, float rhs)
 {
     __m128 packed = _mm_set1_ps(rhs);
     lhs.m128 = _mm_mul_ps(lhs.m128, packed);
@@ -886,7 +816,7 @@ inline Matrix<float, 4, 1, SSE>& operator *= (Matrix<float, 4, 1, SSE>& lhs, flo
 }
 
 /** mul per component */
-inline Matrix<float, 1, 4, SSE>& operator *= (Matrix<float, 1, 4, SSE>& lhs, float rhs)
+inline Matrix<float, 1, 4>& operator *= (Matrix<float, 1, 4>& lhs, float rhs)
 {
     __m128 packed = _mm_set1_ps(rhs);
     lhs.m128 = _mm_mul_ps(lhs.m128, packed);
@@ -894,14 +824,14 @@ inline Matrix<float, 1, 4, SSE>& operator *= (Matrix<float, 1, 4, SSE>& lhs, flo
 }
 
 /** div per component */
-inline Matrix<float, 4, 1, SSE>& operator /= (Matrix<float, 4, 1, SSE>& lhs, const Matrix<float, 4, 1, SSE>& rhs)
+inline Matrix<float, 4, 1>& operator /= (Matrix<float, 4, 1>& lhs, const Matrix<float, 4, 1>& rhs)
 {
     lhs.m128 = _mm_div_ps(lhs.m128, rhs.m128);
     return lhs;
 }
 
 /** div per component */
-inline Matrix<float, 1, 4, SSE>& operator /= (Matrix<float, 1, 4, SSE>& lhs, const Matrix<float, 1, 4, SSE>& rhs)
+inline Matrix<float, 1, 4>& operator /= (Matrix<float, 1, 4>& lhs, const Matrix<float, 1, 4>& rhs)
 {
     lhs.m128 = _mm_div_ps(lhs.m128, rhs.m128);
     return lhs;
@@ -910,58 +840,58 @@ inline Matrix<float, 1, 4, SSE>& operator /= (Matrix<float, 1, 4, SSE>& lhs, con
 #endif // SIMPLE_GL_USE_SSE
 
 /** mul per component */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, n, 1, is> operator * (const Matrix<T, n, 1, is>& lhs, const Matrix<T, n, 1, is>& rhs)
+template<typename T, int n>
+inline Matrix<T, n, 1> operator * (const Matrix<T, n, 1>& lhs, const Matrix<T, n, 1>& rhs)
 {
-    Matrix<T, n, 1, is> tmp(lhs);
+    Matrix<T, n, 1> tmp(lhs);
     return tmp *= rhs;
 }
 
 /** mul per component */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, 1, n, is> operator * (const Matrix<T, 1, n, is>& lhs, const Matrix<T, 1, n, is>& rhs)
+template<typename T, int n>
+inline Matrix<T, 1, n> operator * (const Matrix<T, 1, n>& lhs, const Matrix<T, 1, n>& rhs)
 {
-    Matrix<T, 1, n, is> tmp(lhs);
+    Matrix<T, 1, n> tmp(lhs);
     return tmp *= rhs;
 }
 
 /** mul per component */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, n, 1, is> operator * (const Matrix<T, n, 1, is>& lhs, T rhs)
+template<typename T, int n>
+inline Matrix<T, n, 1> operator * (const Matrix<T, n, 1>& lhs, T rhs)
 {
-    Matrix<T, n, 1, is> tmp(lhs);
+    Matrix<T, n, 1> tmp(lhs);
     return tmp *= rhs;
 }
 
 /** mul per component */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, 1, n, is> operator * (const Matrix<T, 1, n, is>& lhs, T rhs)
+template<typename T, int n>
+inline Matrix<T, 1, n> operator * (const Matrix<T, 1, n>& lhs, T rhs)
 {
-    Matrix<T, 1, n, is> tmp(lhs);
+    Matrix<T, 1, n> tmp(lhs);
     return tmp *= rhs;
 }
 
 /** mul per component */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, n, 1, is> operator * (T lhs, const Matrix<T, n, 1, is>& rhs)
+template<typename T, int n>
+inline Matrix<T, n, 1> operator * (T lhs, const Matrix<T, n, 1>& rhs)
 {
-    Matrix<T, n, 1, is> tmp(rhs);
+    Matrix<T, n, 1> tmp(rhs);
     return tmp *= lhs;
 }
 
 /** mul per component */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, 1, n, is> operator * (T lhs, const Matrix<T, 1, n, is>& rhs)
+template<typename T, int n>
+inline Matrix<T, 1, n> operator * (T lhs, const Matrix<T, 1, n>& rhs)
 {
-    Matrix<T, 1, n, is> tmp(rhs);
+    Matrix<T, 1, n> tmp(rhs);
     return tmp *= lhs;
 }
 
 /** mul matrix per vector column */
-template<typename T, int n, int m, INSTRUCTION_SET is>
-Matrix<T, n, 1, is> operator * (const Matrix<T, n, m, is>& lhs, const Matrix<T, m, 1, is>& rhs)
+template<typename T, int n, int m>
+Matrix<T, n, 1> operator * (const Matrix<T, n, m>& lhs, const Matrix<T, m, 1>& rhs)
 {
-    Matrix<T, n, 1, is> res;
+    Matrix<T, n, 1> res;
     for(int i = 0; i<n; ++i)
     {
         res[i] = lhs[i][0] * rhs[0];
@@ -972,10 +902,10 @@ Matrix<T, n, 1, is> operator * (const Matrix<T, n, m, is>& lhs, const Matrix<T, 
 }
 
 /** mul matrix44 per vector4 */
-template<typename T, INSTRUCTION_SET is>
-Matrix<T, 4, 1, is> operator * (const Matrix<T, 4, 4, is>& lhs, const Matrix<T, 4, 1, is>& rhs)
+template<typename T>
+Matrix<T, 4, 1> operator * (const Matrix<T, 4, 4>& lhs, const Matrix<T, 4, 1>& rhs)
 {
-    Matrix<T, 4, 1, is> res;
+    Matrix<T, 4, 1> res;
     res[0] = lhs[0][0] * rhs[0] + lhs[0][1] * rhs[1] + lhs[0][2] * rhs[2] + lhs[0][3] * rhs[3];
     res[1] = lhs[1][0] * rhs[0] + lhs[1][1] * rhs[1] + lhs[1][2] * rhs[2] + lhs[1][3] * rhs[3];
     res[2] = lhs[2][0] * rhs[0] + lhs[2][1] * rhs[1] + lhs[2][2] * rhs[2] + lhs[2][3] * rhs[3];
@@ -984,10 +914,10 @@ Matrix<T, 4, 1, is> operator * (const Matrix<T, 4, 4, is>& lhs, const Matrix<T, 
 }
 
 /** mul matrix44 per vector3 */
-template<typename T, INSTRUCTION_SET is>
-Matrix<T, 3, 1, is> operator * (const Matrix<T, 4, 4, is>& lhs, const Matrix<T, 3, 1, is>& rhs)
+template<typename T>
+Matrix<T, 3, 1> operator * (const Matrix<T, 4, 4>& lhs, const Matrix<T, 3, 1>& rhs)
 {
-    Matrix<T, 3, 1, is> res;
+    Matrix<T, 3, 1> res;
     res[0] = lhs[0][0] * rhs[0] + lhs[0][1] * rhs[1] + lhs[0][2] * rhs[2];
     res[1] = lhs[1][0] * rhs[0] + lhs[1][1] * rhs[1] + lhs[1][2] * rhs[2];
     res[2] = lhs[2][0] * rhs[0] + lhs[2][1] * rhs[1] + lhs[2][2] * rhs[2];
@@ -995,8 +925,8 @@ Matrix<T, 3, 1, is> operator * (const Matrix<T, 4, 4, is>& lhs, const Matrix<T, 
 }
 
 /** mul column per row */
-template<typename T, int n, int l, INSTRUCTION_SET is>
-Matrix<T, n, l, is> operator * (const Matrix<T, n, 1, is>& lhs, const Matrix<T, 1, l, is>& rhs)
+template<typename T, int n, int l>
+Matrix<T, n, l> operator * (const Matrix<T, n, 1>& lhs, const Matrix<T, 1, l>& rhs)
 {
     Matrix<T, n, l> res;
     for(int i = 0; i<n; ++i)
@@ -1009,10 +939,10 @@ Matrix<T, n, l, is> operator * (const Matrix<T, n, 1, is>& lhs, const Matrix<T, 
 }
 
 /** mul vector row per matrix */
-template<typename T,int m, int l, INSTRUCTION_SET is>
-Matrix<T, 1, l, is> operator * (const Matrix<T, 1, m, is>& lhs, const Matrix<T, m, l, is>& rhs)
+template<typename T,int m, int l>
+Matrix<T, 1, l> operator * (const Matrix<T, 1, m>& lhs, const Matrix<T, m, l>& rhs)
 {
-    Matrix<T, 1, l, is> res;
+    Matrix<T, 1, l> res;
     for(int j = 0; j<l; ++j)
     {
         res[j] = lhs[0] * rhs[0][j];
@@ -1023,40 +953,40 @@ Matrix<T, 1, l, is> operator * (const Matrix<T, 1, m, is>& lhs, const Matrix<T, 
 }
 
 /** div per component */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, n, 1, is> operator / (const Matrix<T, n, 1, is>& lhs, const Matrix<T, n, 1, is>& rhs)
+template<typename T, int n>
+inline Matrix<T, n, 1> operator / (const Matrix<T, n, 1>& lhs, const Matrix<T, n, 1>& rhs)
 {
-    Matrix<T, n, 1, is> tmp(lhs);
+    Matrix<T, n, 1> tmp(lhs);
     return tmp /= rhs;
 }
 
 /** div per component */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, 1, n, is> operator / (const Matrix<T, 1, n, is>& lhs, const Matrix<T, 1, n, is>& rhs)
+template<typename T, int n>
+inline Matrix<T, 1, n> operator / (const Matrix<T, 1, n>& lhs, const Matrix<T, 1, n>& rhs)
 {
-    Matrix<T, 1, n, is> tmp(lhs);
+    Matrix<T, 1, n> tmp(lhs);
     return tmp /= rhs;
 }
 
 /** div per component */
-template<typename T, typename Y, int n, INSTRUCTION_SET is>
-inline Matrix<T, n, 1, is> operator / (const Matrix<T, n, 1, is>& lhs, Y rhs)
+template<typename T, typename Y, int n>
+inline Matrix<T, n, 1> operator / (const Matrix<T, n, 1>& lhs, Y rhs)
 {
-    Matrix<T, n, 1, is> tmp(lhs);
+    Matrix<T, n, 1> tmp(lhs);
     return tmp /= rhs;
 }
 
 /** div per component */
-template<typename T, typename Y, int n, INSTRUCTION_SET is>
-inline Matrix<T, 1, n, is> operator / (const Matrix<T, 1, n, is>& lhs, Y rhs)
+template<typename T, typename Y, int n>
+inline Matrix<T, 1, n> operator / (const Matrix<T, 1, n>& lhs, Y rhs)
 {
-    Matrix<T, 1, n, is> tmp(lhs);
+    Matrix<T, 1, n> tmp(lhs);
     return tmp /= rhs;
 }
 
 /** print vector */
-template<typename T, int n, INSTRUCTION_SET is>
-std::ostream& operator << (std::ostream& os, const Matrix<T, n, 1, is>& vec)
+template<typename T, int n>
+std::ostream& operator << (std::ostream& os, const Matrix<T, n, 1>& vec)
 {
     for(int i = 0; i<n-1; ++i) {
         os << vec[i] << ' ';
@@ -1066,8 +996,8 @@ std::ostream& operator << (std::ostream& os, const Matrix<T, n, 1, is>& vec)
 }
 
 /** print vector */
-template<typename T, int n, INSTRUCTION_SET is>
-std::ostream& operator << (std::ostream& os, const Matrix<T, 1, n, is>& vec)
+template<typename T, int n>
+std::ostream& operator << (std::ostream& os, const Matrix<T, 1, n>& vec)
 {
     for(int i = 0; i<n-1; ++i) {
         os << vec[i] << ' ';
@@ -1077,8 +1007,8 @@ std::ostream& operator << (std::ostream& os, const Matrix<T, 1, n, is>& vec)
 }
 
 /** read vector */
-template<typename T, int n, INSTRUCTION_SET is>
-std::istream& operator >> (std::istream& istream, Matrix<T, n, 1, is>& vec)
+template<typename T, int n>
+std::istream& operator >> (std::istream& istream, Matrix<T, n, 1>& vec)
 {
     for(int i = 0; i<n; ++i) {
         istream >> vec[i];
@@ -1088,8 +1018,8 @@ std::istream& operator >> (std::istream& istream, Matrix<T, n, 1, is>& vec)
 }
 
 /** read vector */
-template<typename T, int n, INSTRUCTION_SET is>
-std::istream& operator >> (std::istream& istream, Matrix<T, 1, n, is>& vec)
+template<typename T, int n>
+std::istream& operator >> (std::istream& istream, Matrix<T, 1, n>& vec)
 {
     for(int i = 0; i<n; ++i) {
         istream >> vec[i];
@@ -1099,30 +1029,30 @@ std::istream& operator >> (std::istream& istream, Matrix<T, 1, n, is>& vec)
 }
 
 /** append value to vector */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, n+1, 1, is> make_vec(const Matrix<T, n, 1, is>& vec, T val)
+template<typename T, int n>
+inline Matrix<T, n+1, 1> make_vec(const Matrix<T, n, 1>& vec, T val)
 {
-    Matrix<T, n+1, 1, is> res;
+    Matrix<T, n+1, 1> res;
     std::copy(vec.arr, vec.arr + n, res.arr);
     res[n] = val;
     return res;
 }
 
 /** append value to vector */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, 1, n+1, is> make_vec(const Matrix<T, 1, n, is>& vec, T val)
+template<typename T, int n>
+inline Matrix<T, 1, n+1> make_vec(const Matrix<T, 1, n>& vec, T val)
 {
-    Matrix<T, 1, n+1, is> res;
+    Matrix<T, 1, n+1> res;
     std::copy(vec.arr, vec.arr + n, res.arr);
     res[n] = val;
     return res;
 }
 
 /** append 2 values to vector */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, n+2, 1, is> make_vec(const Matrix<T, n, 1, is>& vec, T a, T b)
+template<typename T, int n>
+inline Matrix<T, n+2, 1> make_vec(const Matrix<T, n, 1>& vec, T a, T b)
 {
-    Matrix<T, n+2, 1, is> res;
+    Matrix<T, n+2, 1> res;
     std::copy(vec.arr, vec.arr + n, res.arr);
     res[n]   = a;
     res[n+1] = b;
@@ -1130,10 +1060,10 @@ inline Matrix<T, n+2, 1, is> make_vec(const Matrix<T, n, 1, is>& vec, T a, T b)
 }
 
 /** append 2 values to vector */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, 1, n+2, is> make_vec(const Matrix<T, 1, n, is>& vec, T a, T b)
+template<typename T, int n>
+inline Matrix<T, 1, n+2> make_vec(const Matrix<T, 1, n>& vec, T a, T b)
 {
-    Matrix<T, 1, n+2, is> res;
+    Matrix<T, 1, n+2> res;
     std::copy(vec.arr, vec.arr + n, res.arr);
     res[n]   = a;
     res[n+1] = b;
@@ -1141,20 +1071,20 @@ inline Matrix<T, 1, n+2, is> make_vec(const Matrix<T, 1, n, is>& vec, T a, T b)
 }
 
 /** concatenate vectors */
-template<typename T, int n, int m, INSTRUCTION_SET is>
-inline Matrix<T, n+m, 1, is> make_vec(const Matrix<T, n, 1, is>& a, const Matrix<T, m, 1, is>& b)
+template<typename T, int n, int m>
+inline Matrix<T, n+m, 1> make_vec(const Matrix<T, n, 1>& a, const Matrix<T, m, 1>& b)
 {
-    Matrix<T, n+m, 1, is> res;
+    Matrix<T, n+m, 1> res;
     std::copy(a.arr, a.arr + n, res.arr);
     std::copy(b.arr, b.arr + m, res.arr + n);
     return res;
 }
 
 /** concatenate vectors */
-template<typename T, int n, int m, INSTRUCTION_SET is>
-inline Matrix<T, 1, n+m, is> make_vec(const Matrix<T, 1, n, is>& a, const Matrix<T, 1, m, is>& b)
+template<typename T, int n, int m>
+inline Matrix<T, 1, n+m> make_vec(const Matrix<T, 1, n>& a, const Matrix<T, 1, m>& b)
 {
-    Matrix<T, 1, n+m, is> res;
+    Matrix<T, 1, n+m> res;
     std::copy(a.arr, a.arr + n, res.arr);
     std::copy(b.arr, b.arr + m, res.arr + n);
     return res;
@@ -1162,9 +1092,9 @@ inline Matrix<T, 1, n+m, is> make_vec(const Matrix<T, 1, n, is>& a, const Matrix
 
 
 /** compare to vectors using threshold */
-template<typename T, int n, INSTRUCTION_SET is>
-inline bool equal( const Matrix<T, n, 1, is>& a,
-                   const Matrix<T, n, 1, is>& b,
+template<typename T, int n>
+inline bool equal( const Matrix<T, n, 1>& a,
+                   const Matrix<T, n, 1>& b,
                    T threshold = std::numeric_limits<T>::epsilon() )
 {
     for(int i = 0; i<n; ++i)
@@ -1178,9 +1108,9 @@ inline bool equal( const Matrix<T, n, 1, is>& a,
 }
 
 /** compare to vectors using threshold */
-template<typename T, int n, INSTRUCTION_SET is>
-inline bool equal( const Matrix<T, 1, n, is>& a,
-                   const Matrix<T, 1, n, is>& b,
+template<typename T, int n>
+inline bool equal( const Matrix<T, 1, n>& a,
+                   const Matrix<T, 1, n>& b,
                    T threshold = std::numeric_limits<T>::epsilon() )
 {
     for(int i = 0; i<n; ++i)
@@ -1194,10 +1124,10 @@ inline bool equal( const Matrix<T, 1, n, is>& a,
 }
 
 /** per component max */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, n, 1, is> max(const Matrix<T, n, 1, is>& a, const Matrix<T, n, 1, is>& b)
+template<typename T, int n>
+inline Matrix<T, n, 1> max(const Matrix<T, n, 1>& a, const Matrix<T, n, 1>& b)
 {
-    Matrix<T, n, 1, is> result;
+    Matrix<T, n, 1> result;
     for(int i = 0; i<n; ++i) {
         result[i] = std::max(a[i], b[i]);
     }
@@ -1205,10 +1135,10 @@ inline Matrix<T, n, 1, is> max(const Matrix<T, n, 1, is>& a, const Matrix<T, n, 
 }
 
 /** per component max */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, 1, n, is> max(const Matrix<T, 1, n, is>& a, const Matrix<T, 1, n, is>& b)
+template<typename T, int n>
+inline Matrix<T, 1, n> max(const Matrix<T, 1, n>& a, const Matrix<T, 1, n>& b)
 {
-    Matrix<T, 1, n, is> result;
+    Matrix<T, 1, n> result;
     for(int i = 0; i<n; ++i) {
         result[i] = std::max(a[i], b[i]);
     }
@@ -1216,10 +1146,10 @@ inline Matrix<T, 1, n, is> max(const Matrix<T, 1, n, is>& a, const Matrix<T, 1, 
 }
 
 /** per component min */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, n, 1, is> min(const Matrix<T, n, 1, is>& a, const Matrix<T, n, 1, is>& b)
+template<typename T, int n>
+inline Matrix<T, n, 1> min(const Matrix<T, n, 1>& a, const Matrix<T, n, 1>& b)
 {
-    Matrix<T, n, 1, is> result;
+    Matrix<T, n, 1> result;
     for(int i = 0; i<n; ++i) {
         result[i] = std::min(a[i], b[i]);
     }
@@ -1227,10 +1157,10 @@ inline Matrix<T, n, 1, is> min(const Matrix<T, n, 1, is>& a, const Matrix<T, n, 
 }
 
 /** per component min */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, 1, n, is> min(const Matrix<T, 1, n, is>& a, const Matrix<T, 1, n, is>& b)
+template<typename T, int n>
+inline Matrix<T, 1, n> min(const Matrix<T, 1, n>& a, const Matrix<T, 1, n>& b)
 {
-    Matrix<T, 1, n, is> result;
+    Matrix<T, 1, n> result;
     for(int i = 0; i<n; ++i) {
         result[i] = std::min(a[i], b[i]);
     }
@@ -1238,11 +1168,11 @@ inline Matrix<T, 1, n, is> min(const Matrix<T, 1, n, is>& a, const Matrix<T, 1, 
 }
 
 /** per component min & max*/
-template<typename T, int n, INSTRUCTION_SET is>
-inline void min_max( const Matrix<T, n, 1, is>& a,
-                     const Matrix<T, n, 1, is>& b,
-                     Matrix<T, n, 1, is>&       outMin,
-                     Matrix<T, n, 1, is>&       outMax )
+template<typename T, int n>
+inline void min_max( const Matrix<T, n, 1>& a,
+                     const Matrix<T, n, 1>& b,
+                     Matrix<T, n, 1>&       outMin,
+                     Matrix<T, n, 1>&       outMax )
 {
     for(int i = 0; i<n; ++i)
     {
@@ -1260,11 +1190,11 @@ inline void min_max( const Matrix<T, n, 1, is>& a,
 }
 
 /** per component min & max*/
-template<typename T, int n, INSTRUCTION_SET is>
-inline void min_max( const Matrix<T, 1, n, is>& a,
-                     const Matrix<T, 1, n, is>& b,
-                     Matrix<T, 1, n, is>&       outMin,
-                     Matrix<T, 1, n, is>&       outMax )
+template<typename T, int n>
+inline void min_max( const Matrix<T, 1, n>& a,
+                     const Matrix<T, 1, n>& b,
+                     Matrix<T, 1, n>&       outMin,
+                     Matrix<T, 1, n>&       outMax )
 {
     for(int i = 0; i<n; ++i)
     {
@@ -1282,10 +1212,10 @@ inline void min_max( const Matrix<T, 1, n, is>& a,
 }
 
 /** per component clamp */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, n, 1, is> clamp(const Matrix<T, n, 1, is>& vec, T minVal, T maxVal)
+template<typename T, int n>
+inline Matrix<T, n, 1> clamp(const Matrix<T, n, 1>& vec, T minVal, T maxVal)
 {
-    Matrix<T, n, 1, is> result;
+    Matrix<T, n, 1> result;
     for(int i = 0; i<n; ++i) {
         result[i] = std::min( std::max(vec[i], minVal), maxVal );
     }
@@ -1293,10 +1223,10 @@ inline Matrix<T, n, 1, is> clamp(const Matrix<T, n, 1, is>& vec, T minVal, T max
 }
 
 /** per component clamp */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, 1, n, is> clamp(const Matrix<T, 1, n, is>& vec, T minVal, T maxVal)
+template<typename T, int n>
+inline Matrix<T, 1, n> clamp(const Matrix<T, 1, n>& vec, T minVal, T maxVal)
 {
-    Matrix<T, 1, n, is> result;
+    Matrix<T, 1, n> result;
     for(int i = 0; i<n; ++i) {
         result[i] = std::min( std::max(vec[i], minVal), maxVal );
     }
@@ -1304,10 +1234,10 @@ inline Matrix<T, 1, n, is> clamp(const Matrix<T, 1, n, is>& vec, T minVal, T max
 }
 
 /** linear interpolation between vectors */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, n, 1, is> lerp(const Matrix<T, n, 1, is>& a, const Matrix<T, n, 1, is>& b, T lerpVal)
+template<typename T, int n>
+inline Matrix<T, n, 1> lerp(const Matrix<T, n, 1>& a, const Matrix<T, n, 1>& b, T lerpVal)
 {
-    Matrix<T, n, 1, is> result;
+    Matrix<T, n, 1> result;
     for(int i = 0; i<n; ++i) {
         result[i] = a[i] + lerpVal * (b[i] - a[i]);
     }
@@ -1315,60 +1245,62 @@ inline Matrix<T, n, 1, is> lerp(const Matrix<T, n, 1, is>& a, const Matrix<T, n,
 }
 
 /** linear interpolation between vectors */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, 1, n, is> lerp(const Matrix<T, 1, n, is>& a, const Matrix<T, 1, n, is>& b, T lerpVal)
+template<typename T, int n>
+inline Matrix<T, 1, n> lerp(const Matrix<T, 1, n>& a, const Matrix<T, 1, n>& b, T lerpVal)
 {
-    Matrix<T, 1, n, is> result;
+    Matrix<T, 1, n> result;
     for(int i = 0; i<n; ++i) {
         result[i] = a[i] + lerpVal * (b[i] - a[i]);
     }
     return result;
 }
 
-/** equal to slice<0, 3>
- * TODO: Add check fo n
- * @see slice
- */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, 3, 1, is> xyz(const Matrix<T, n, 1, is>& vec)
+/** Same as lisp cdr. Returns vector without last element. */
+template<typename T, int n>
+inline Matrix<T, n - 1, 1> cdr(const Matrix<T, n, 1>& vec)
 {
-    return Matrix<T, 3, 1, is>(vec.x, vec.y, vec.z);
+    Matrix<T, n - 1, 1> res;
+    std::copy(vec.arr, vec.arr + n - 1, res.arr);
+    return res;
 }
 
-/** equal to slice<0, 3>
- * TODO: Add check fo n
- * @see slice
- */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, 1, 3, is> xyz(const Matrix<T, 1, n, is>& vec)
+/** Same as lisp cdr. Returns vector without last element. */
+template<typename T, int n>
+inline Matrix<T, 1, n - 1> cdr(const Matrix<T, 1, n>& vec)
 {
-    return Matrix<T, 1, 3, is>(vec.x, vec.y, vec.z);
+    Matrix<T, 1, n - 1> res;
+    std::copy(vec.arr, vec.arr + n - 1, res.arr);
+    return res;
 }
 
-/** equal to slice<0, 2>
- * TODO: Add check fo n
- * @see slice
- */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, 2, 1, is> xy(const Matrix<T, n, 1, is>& vec)
+template<typename T, int n>
+inline Matrix<T, 3, 1> xyz(const Matrix<T, n, 1>& vec)
 {
-    return Matrix<T, 2, 1, is>(vec.x, vec.y);
+    return Matrix<T, 3, 1>(vec.x, vec.y, vec.z);
 }
 
-/** equal to slice<0, 2>
- * TODO: Add check fo n
- * @see slice
- */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, 1, 2, is> xy(const Matrix<T, 1, n, is>& vec)
+template<typename T, int n>
+inline Matrix<T, 1, 3> xyz(const Matrix<T, 1, n>& vec)
 {
-    return Matrix<T, 1, 2, is>(vec.x, vec.y);
+    return Matrix<T, 1, 3>(vec.x, vec.y, vec.z);
+}
+
+template<typename T, int n>
+inline Matrix<T, 2, 1> xy(const Matrix<T, n, 1>& vec)
+{
+    return Matrix<T, 2, 1>(vec.x, vec.y);
+}
+
+template<typename T, int n>
+inline Matrix<T, 1, 2> xy(const Matrix<T, 1, n>& vec)
+{
+    return Matrix<T, 1, 2>(vec.x, vec.y);
 }
 
 /** dot product */
-template<typename T, int n, INSTRUCTION_SET is>
-inline T dot( const Matrix<T, n, 1, is>& lhs,
-              const Matrix<T, n, 1, is>& rhs )
+template<typename T, int n>
+inline T dot( const Matrix<T, n, 1>& lhs,
+              const Matrix<T, n, 1>& rhs )
 {
     T res = lhs[0] * rhs[0];
     for(int i = 1; i<n; ++i)
@@ -1377,9 +1309,9 @@ inline T dot( const Matrix<T, n, 1, is>& lhs,
 }
 
 /** dot product */
-template<typename T, int n, INSTRUCTION_SET is>
-inline T dot( const Matrix<T, 1, n, is>& lhs,
-              const Matrix<T, 1, n, is>& rhs )
+template<typename T, int n>
+inline T dot( const Matrix<T, 1, n>& lhs,
+              const Matrix<T, 1, n>& rhs )
 {
     T res = lhs[0] * rhs[0];
     for(int i = 1; i<n; ++i)
@@ -1388,49 +1320,49 @@ inline T dot( const Matrix<T, 1, n, is>& lhs,
 }
 
 /** cross product */
-template<typename T, INSTRUCTION_SET is>
-inline Matrix<T, 3, 1, is> cross( const Matrix<T, 3, 1, is>& lhs,
-                                  const Matrix<T, 3, 1, is>& rhs )
+template<typename T>
+inline Matrix<T, 3, 1> cross( const Matrix<T, 3, 1>& lhs,
+                                  const Matrix<T, 3, 1>& rhs )
 {
-    return Matrix<T, 3, 1, is>( lhs.y * rhs.z - lhs.z * rhs.y,
+    return Matrix<T, 3, 1>( lhs.y * rhs.z - lhs.z * rhs.y,
                                 lhs.z * rhs.x - lhs.x * rhs.z,
                                 lhs.x * rhs.y - lhs.y * rhs.x );
 }
 
 /** cross product */
-template<typename T, INSTRUCTION_SET is>
-inline Matrix<T, 1, 3, is> cross( const Matrix<T, 1, 3, is>& lhs,
-                                  const Matrix<T, 1, 3, is>& rhs )
+template<typename T>
+inline Matrix<T, 1, 3> cross( const Matrix<T, 1, 3>& lhs,
+                                  const Matrix<T, 1, 3>& rhs )
 {
-    return Matrix<T, 1, 3, is>( lhs.y * rhs.z - lhs.z * rhs.y,
+    return Matrix<T, 1, 3>( lhs.y * rhs.z - lhs.z * rhs.y,
                                 lhs.z * rhs.x - lhs.x * rhs.z,
                                 lhs.x * rhs.y - lhs.y * rhs.x );
 }
 
 /** vector length */
-template<typename T, int n, INSTRUCTION_SET is>
-inline T length(const Matrix<T, n, 1, is>& vec)
+template<typename T, int n>
+inline T length(const Matrix<T, n, 1>& vec)
 {
     return ::sqrt( dot(vec, vec) );
 }
 
 /** vector length */
-template<typename T, int n, INSTRUCTION_SET is>
-inline T length(const Matrix<T, 1, n, is>& vec)
+template<typename T, int n>
+inline T length(const Matrix<T, 1, n>& vec)
 {
     return ::sqrt( dot(vec, vec) );
 }
 
 /** normalize vector */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, n, 1, is> normalize(const Matrix<T, n, 1, is>& vec)
+template<typename T, int n>
+inline Matrix<T, n, 1> normalize(const Matrix<T, n, 1>& vec)
 {
     return vec / length(vec);
 }
 
 /** normalize vector */
-template<typename T, int n, INSTRUCTION_SET is>
-inline Matrix<T, 1, n, is> normalize(const Matrix<T, 1, n, is>& vec)
+template<typename T, int n>
+inline Matrix<T, 1, n> normalize(const Matrix<T, 1, n>& vec)
 {
     return vec / length(vec);
 }
@@ -1439,77 +1371,77 @@ inline Matrix<T, 1, n, is> normalize(const Matrix<T, 1, n, is>& vec)
 #ifdef SIMPLE_GL_USE_SSE
 
 /** per component max */
-inline Matrix<float, 4, 1, SSE> max(const Matrix<float, 4, 1, SSE>& a, const Matrix<float, 4, 1, SSE>& b)
+inline Matrix<float, 4, 1> max(const Matrix<float, 4, 1>& a, const Matrix<float, 4, 1>& b)
 {
     __m128 packed = _mm_max_ps(a.m128, b.m128);
-    return Matrix<float, 4, 1, SSE>(packed);
+    return Matrix<float, 4, 1>(packed);
 }
 
 /** per component max */
-inline Matrix<float, 1, 4, SSE> max(const Matrix<float, 1, 4, SSE>& a, const Matrix<float, 1, 4, SSE>& b)
+inline Matrix<float, 1, 4> max(const Matrix<float, 1, 4>& a, const Matrix<float, 1, 4>& b)
 {
     __m128 packed = _mm_max_ps(a.m128, b.m128);
-    return Matrix<float, 1, 4, SSE>(packed);
+    return Matrix<float, 1, 4>(packed);
 }
 
 /** per component min */
-inline Matrix<float, 4, 1, SSE> min(const Matrix<float, 4, 1, SSE>& a, const Matrix<float, 4, 1, SSE>& b)
+inline Matrix<float, 4, 1> min(const Matrix<float, 4, 1>& a, const Matrix<float, 4, 1>& b)
 {
     __m128 packed = _mm_min_ps(a.m128, b.m128);
-    return Matrix<float, 4, 1, SSE>(packed);
+    return Matrix<float, 4, 1>(packed);
 }
 
 /** per component min */
-inline Matrix<float, 1, 4, SSE> min(const Matrix<float, 1, 4, SSE>& a, const Matrix<float, 1, 4, SSE>& b)
+inline Matrix<float, 1, 4> min(const Matrix<float, 1, 4>& a, const Matrix<float, 1, 4>& b)
 {
     __m128 packed = _mm_min_ps(a.m128, b.m128);
-    return Matrix<float, 1, 4, SSE>(packed);
+    return Matrix<float, 1, 4>(packed);
 }
 
 /** per component min & max*/
-inline void min_max( const Matrix<float, 4, 1, SSE>& a,
-                     const Matrix<float, 4, 1, SSE>& b,
-                     Matrix<float, 4, 1, SSE>&       outMin,
-                     Matrix<float, 4, 1, SSE>&       outMax )
+inline void min_max( const Matrix<float, 4, 1>& a,
+                     const Matrix<float, 4, 1>& b,
+                     Matrix<float, 4, 1>&       outMin,
+                     Matrix<float, 4, 1>&       outMax )
 {
     outMin.m128 = _mm_min_ps(a.m128, b.m128);
     outMax.m128 = _mm_max_ps(a.m128, b.m128);
 }
 
 /** per component min & max*/
-inline void min_max( const Matrix<float, 1, 4, SSE>& a,
-                     const Matrix<float, 1, 4, SSE>& b,
-                     Matrix<float, 1, 4, SSE>&       outMin,
-                     Matrix<float, 1, 4, SSE>&       outMax )
+inline void min_max( const Matrix<float, 1, 4>& a,
+                     const Matrix<float, 1, 4>& b,
+                     Matrix<float, 1, 4>&       outMin,
+                     Matrix<float, 1, 4>&       outMax )
 {
     outMin.m128 = _mm_min_ps(a.m128, b.m128);
     outMax.m128 = _mm_max_ps(a.m128, b.m128);
 }
 
 /** per component clamp */
-inline Matrix<float, 4, 1, SSE> clamp(const Matrix<float, 4, 1, SSE>& vec, float minVal, float maxVal)
+inline Matrix<float, 4, 1> clamp(const Matrix<float, 4, 1>& vec, float minVal, float maxVal)
 {
     __m128 valPacked   = _mm_set1_ps(minVal);
     __m128 clampPacked = _mm_max_ps(vec.m128, clampPacked);
     valPacked          = _mm_set1_ps(maxVal);
     clampPacked        = _mm_min_ps(vec.m128, clampPacked);
 
-    return Matrix<float, 4, 1, SSE>(clampPacked);
+    return Matrix<float, 4, 1>(clampPacked);
 }
 
 /** per component clamp */
-inline Matrix<float, 1, 4, SSE> clamp(const Matrix<float, 1, 4, SSE>& vec, float minVal, float maxVal)
+inline Matrix<float, 1, 4> clamp(const Matrix<float, 1, 4>& vec, float minVal, float maxVal)
 {
     __m128 valPacked   = _mm_set1_ps(minVal);
     __m128 clampPacked = _mm_max_ps(vec.m128, clampPacked);
     valPacked          = _mm_set1_ps(maxVal);
     clampPacked        = _mm_min_ps(vec.m128, clampPacked);
 
-    return Matrix<float, 1, 4, SSE>(clampPacked);
+    return Matrix<float, 1, 4>(clampPacked);
 }
 
 /** linear interpolation between vectors */
-inline Matrix<float, 4, 1, SSE> lerp(const Matrix<float, 4, 1, SSE>& a, const Matrix<float, 4, 1, SSE>& b, float lerpVal)
+inline Matrix<float, 4, 1> lerp(const Matrix<float, 4, 1>& a, const Matrix<float, 4, 1>& b, float lerpVal)
 {
     __m128 diffPacked = _mm_sub_ps(a.m128, b.m128);
     __m128 lerpPacked = _mm_set1_ps(lerpVal);
@@ -1517,11 +1449,11 @@ inline Matrix<float, 4, 1, SSE> lerp(const Matrix<float, 4, 1, SSE>& a, const Ma
     __m128 resPacked  = _mm_mul_ps(diffPacked, lerpPacked);
     resPacked         = _mm_add_ps(a.m128, resPacked);
 
-    return Matrix<float, 4, 1, SSE>(resPacked);
+    return Matrix<float, 4, 1>(resPacked);
 }
 
 /** linear interpolation between vectors */
-inline Matrix<float, 1, 4, SSE> lerp(const Matrix<float, 1, 4, SSE>& a, const Matrix<float, 1, 4, SSE>& b, float lerpVal)
+inline Matrix<float, 1, 4> lerp(const Matrix<float, 1, 4>& a, const Matrix<float, 1, 4>& b, float lerpVal)
 {
     __m128 diffPacked = _mm_sub_ps(a.m128, b.m128);
     __m128 lerpPacked = _mm_set1_ps(lerpVal);
@@ -1529,12 +1461,12 @@ inline Matrix<float, 1, 4, SSE> lerp(const Matrix<float, 1, 4, SSE>& a, const Ma
     __m128 resPacked  = _mm_mul_ps(diffPacked, lerpPacked);
     resPacked         = _mm_add_ps(a.m128, resPacked);
 
-    return Matrix<float, 1, 4, SSE>(resPacked);
+    return Matrix<float, 1, 4>(resPacked);
 }
 
 /** dot product */
-inline float dot( const Matrix<float, 4, 1, SSE>& lhs,
-                  const Matrix<float, 4, 1, SSE>& rhs )
+inline float dot( const Matrix<float, 4, 1>& lhs,
+                  const Matrix<float, 4, 1>& rhs )
 {
     float res;
 
@@ -1564,8 +1496,8 @@ inline float dot( const Matrix<float, 4, 1, SSE>& lhs,
 }
 
 /** dot product */
-inline float dot( const Matrix<float, 1, 4, SSE>& lhs,
-                  const Matrix<float, 1, 4, SSE>& rhs )
+inline float dot( const Matrix<float, 1, 4>& lhs,
+                  const Matrix<float, 1, 4>& rhs )
 {
     float res;
 

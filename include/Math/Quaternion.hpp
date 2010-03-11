@@ -8,7 +8,7 @@ namespace sgl {
 #endif
 namespace math {
 
-template<typename T, INSTRUCTION_SET inst_set = DEFAULT_INSTRUCTION_SET>
+template<typename T>
 class Quaternion
 {
 public:
@@ -17,19 +17,13 @@ public:
     Quaternion(const Quaternion& rhs) :
         x(rhs.x), y(rhs.y), z(rhs.z), w(rhs.w) {}
 
-    template<INSTRUCTION_SET is>
-    Quaternion(const Quaternion<T, is>& rhs) :
-        x(rhs.x), y(rhs.y), z(rhs.z), w(rhs.w) {}
-
-    template<INSTRUCTION_SET is>
-    Quaternion(const Matrix<T, 3, 1, is>& vec, T _w) :
+    Quaternion(const Matrix<T, 3, 1>& vec, T _w) :
         x(vec.x), y(vec.y), z(vec.z), w(_w) {}
 
     Quaternion(T _x, T _y, T _z, T _w) :
         x(_x), y(_y), z(_z), w(_w) {}
 
-    template<INSTRUCTION_SET is>
-    explicit Quaternion(const Matrix<T, 4, 1, is>& vec) :
+    explicit Quaternion(const Matrix<T, 4, 1>& vec) :
         x(vec.x), y(vec.y), z(vec.z), w(vec.w) {}
 
     // operators
@@ -58,7 +52,7 @@ public:
 #ifdef SIMPLE_GL_USE_SSE
 
 template<>
-class Quaternion<float, SSE> :
+class Quaternion<float> :
     public sgl::Aligned<0x10>
 {
 public:
@@ -71,8 +65,7 @@ public:
     Quaternion(const Quaternion& rhs) :
         x(rhs.x), y(rhs.y), z(rhs.z), w(rhs.w) {}
 
-    template<INSTRUCTION_SET is>
-    Quaternion(const Matrix<float, 3, 1, is>& vec, float _w) :
+    Quaternion(const Matrix<float, 3, 1>& vec, float _w) :
         x(vec.x), y(vec.y), z(vec.z), w(_w) {}
 
     Quaternion(float _x, float _y, float _z, float _w) :
@@ -82,11 +75,7 @@ public:
         m128(_m128)
     {}
 
-    template<INSTRUCTION_SET is>
-    explicit Quaternion(const Matrix<float, 4, 1, is>& vec) :
-        x(vec.x), y(vec.y), z(vec.z), w(vec.w) {}
-
-    explicit Quaternion(const Matrix<float, 4, 1, SSE>& vec) :
+    explicit Quaternion(const Matrix<float, 4, 1>& vec) :
         m128(vec.m128) {}
 
     // operators
@@ -115,26 +104,26 @@ public:
 
 #endif // SIMPLE_GL_USE_SSE
 
-template<typename T, INSTRUCTION_SET i>
-inline bool operator == (const Quaternion<T, i>& lhs, const Quaternion<T, i>& rhs)
+template<typename T>
+inline bool operator == (const Quaternion<T>& lhs, const Quaternion<T>& rhs)
 {
     return (lhs.x == rhs.x) && (lhs.y == rhs.y) && (lhs.z == rhs.z) && (lhs.w == rhs.w);
 }
 
-template<typename T, INSTRUCTION_SET i>
-inline bool operator != (const Quaternion<T, i>& lhs, const Quaternion<T, i>& rhs)
+template<typename T>
+inline bool operator != (const Quaternion<T>& lhs, const Quaternion<T>& rhs)
 {
     return (lhs.x != rhs.x) || (lhs.y != rhs.y) || (lhs.z != rhs.z) || (lhs.w != rhs.w);
 }
 
-template<typename T, INSTRUCTION_SET i>
-inline Quaternion<T, i> operator - (const Quaternion<T, i>& rhs)
+template<typename T>
+inline Quaternion<T> operator - (const Quaternion<T>& rhs)
 {
-    return Quaternion<T, i>(-rhs.x, -rhs.y, -rhs.z, -rhs.w);
+    return Quaternion<T>(-rhs.x, -rhs.y, -rhs.z, -rhs.w);
 }
 
-template<typename T, INSTRUCTION_SET i>
-inline Quaternion<T, i>& operator += (Quaternion<T, i>& lhs, const Quaternion<T, i>& rhs)
+template<typename T>
+inline Quaternion<T>& operator += (Quaternion<T>& lhs, const Quaternion<T>& rhs)
 {
     lhs.x += rhs.x;
     lhs.y += rhs.y;
@@ -143,8 +132,8 @@ inline Quaternion<T, i>& operator += (Quaternion<T, i>& lhs, const Quaternion<T,
     return lhs;
 }
 
-template<typename T, INSTRUCTION_SET i>
-inline Quaternion<T, i>& operator -= (Quaternion<T, i>& lhs, const Quaternion<T, i>& rhs)
+template<typename T>
+inline Quaternion<T>& operator -= (Quaternion<T>& lhs, const Quaternion<T>& rhs)
 {
     lhs.x -= rhs.x;
     lhs.y -= rhs.y;
@@ -153,8 +142,8 @@ inline Quaternion<T, i>& operator -= (Quaternion<T, i>& lhs, const Quaternion<T,
     return lhs;
 }
 
-template<typename T, INSTRUCTION_SET i>
-inline Quaternion<T, i>& operator *= (Quaternion<T, i>& lhs, const Quaternion<T, i>& rhs)
+template<typename T>
+inline Quaternion<T>& operator *= (Quaternion<T>& lhs, const Quaternion<T>& rhs)
 {
     T tmpX = lhs.x;
     T tmpY = lhs.y;
@@ -168,8 +157,8 @@ inline Quaternion<T, i>& operator *= (Quaternion<T, i>& lhs, const Quaternion<T,
     return lhs;
 }
 
-template<typename T, INSTRUCTION_SET i>
-inline Quaternion<T, i>& operator *= (Quaternion<T, i>& lhs, T rhs)
+template<typename T>
+inline Quaternion<T>& operator *= (Quaternion<T>& lhs, T rhs)
 {
     lhs.x *= rhs;
     lhs.y *= rhs;
@@ -178,14 +167,14 @@ inline Quaternion<T, i>& operator *= (Quaternion<T, i>& lhs, T rhs)
     return lhs;
 }
 
-template<typename T, INSTRUCTION_SET i>
-inline Matrix<T, 3, 1, FPU> operator *= (Matrix<T, 3, 1, FPU>& lhs, const Quaternion<T, i>& rhs)
+template<typename T>
+inline Matrix<T, 3, 1> operator *= (Matrix<T, 3, 1>& lhs, const Quaternion<T>& rhs)
 {
     return to_matrix(rhs) * lhs;
 }
 
-template<typename T, INSTRUCTION_SET i>
-inline Quaternion<T, i>& operator /= (Quaternion<T, i>& lhs, T rhs)
+template<typename T>
+inline Quaternion<T>& operator /= (Quaternion<T>& lhs, T rhs)
 {
     lhs.x /= rhs;
     lhs.y /= rhs;
@@ -195,53 +184,53 @@ inline Quaternion<T, i>& operator /= (Quaternion<T, i>& lhs, T rhs)
 }
 
 // functions
-template<typename T, INSTRUCTION_SET is>
-inline Matrix<T, 4, 1, is> as_vec(const Quaternion<T, is>& quat)
+template<typename T>
+inline Matrix<T, 4, 1> as_vec(const Quaternion<T>& quat)
 {
-    return Matrix<T, 4, 1, is>(quat.x, quat.y, quat.z, quat.w);
+    return Matrix<T, 4, 1>(quat.x, quat.y, quat.z, quat.w);
 }
 
-template<typename T, INSTRUCTION_SET is>
-inline Quaternion<T, is> conjugate(const Quaternion<T, is>& quat)
+template<typename T>
+inline Quaternion<T> conjugate(const Quaternion<T>& quat)
 {
-    return Quaternion<T, is>(-quat.x, -quat.y, -quat.z, quat.w);
+    return Quaternion<T>(-quat.x, -quat.y, -quat.z, quat.w);
 }
 
-template<typename T, INSTRUCTION_SET is>
-inline Quaternion<T, is> invert(const Quaternion<T, is>& quat)
+template<typename T>
+inline Quaternion<T> invert(const Quaternion<T>& quat)
 {
     return conjugate(quat) / norm(quat);
 }
 
-template<typename T, INSTRUCTION_SET is>
-inline T norm(const Quaternion<T, is>& quat)
+template<typename T>
+inline T norm(const Quaternion<T>& quat)
 {
     return quat.x*quat.x + quat.y*quat.y + quat.z*quat.z + quat.w*quat.w;
 }
 
-template<typename T, INSTRUCTION_SET is>
-inline T magnitude(const Quaternion<T, is>& quat)
+template<typename T>
+inline T magnitude(const Quaternion<T>& quat)
 {
     return sqrt(quat.x*quat.x + quat.y*quat.y + quat.z*quat.z + quat.w*quat.w);
 }
 
 /** normalize vector */
-template<typename T, INSTRUCTION_SET is>
-inline Quaternion<T, is> normalize(const Quaternion<T, is>& quat)
+template<typename T>
+inline Quaternion<T> normalize(const Quaternion<T>& quat)
 {
     return quat / magnitude(quat);
 }
 
-template<typename T, int n, INSTRUCTION_SET is>
-inline Quaternion<T, is> from_matrix(const Matrix<T, n, n, is>& m)
+template<typename T, int n>
+inline Quaternion<T> from_matrix(const Matrix<T, n, n>& m)
 {
-    Quaternion<T, is> quat;
+    Quaternion<T> quat;
 
     T tr = m[0][0] + m[1][1] + m[2][2]; // trace of martix
     if (tr > 0.0)
     {
         // if trace positive than "w" is biggest component
-        Quaternion<T, is> quat( m[1][2] - m[2][1],
+        Quaternion<T> quat( m[1][2] - m[2][1],
                                 m[2][0] - m[0][2],
                                 m[0][1] - m[1][0],
                                 tr + T(1.0) );
@@ -250,7 +239,7 @@ inline Quaternion<T, is> from_matrix(const Matrix<T, n, n, is>& m)
     else if ( (m[0][0] > m[1][1]) && (m[0][0] > m[2][2]) )
     {
         // Some of vector components is bigger
-        Quaternion<T, is> quat( T(1.0) + m[0][0] - m[1][1] - m[2][2],
+        Quaternion<T> quat( T(1.0) + m[0][0] - m[1][1] - m[2][2],
                                 m[1][0] + m[0][1],
                                 m[2][0] + m[0][2],
                                 m[1][2] - m[2][1] );
@@ -259,7 +248,7 @@ inline Quaternion<T, is> from_matrix(const Matrix<T, n, n, is>& m)
     }
     else if ( m[1][1] > m[2][2] )
     {
-        Quaternion<T, is> quat( m[1][0] + m[0][1],
+        Quaternion<T> quat( m[1][0] + m[0][1],
                                 T(1.0) + m[1][1] - m[0][0] - m[2][2],
                                 m[2][1] + m[1][2],
                                 m[2][0] - m[0][2] );
@@ -268,7 +257,7 @@ inline Quaternion<T, is> from_matrix(const Matrix<T, n, n, is>& m)
     }
     else
     {
-        Quaternion<T, is> quat( m[2][0] + m[0][2],
+        Quaternion<T> quat( m[2][0] + m[0][2],
                                 m[2][1] + m[1][2],
                                 T(1.0) + m[2][2] - m[0][0] - m[1][1],
                                 m[0][1] - m[1][0] );
@@ -276,8 +265,8 @@ inline Quaternion<T, is> from_matrix(const Matrix<T, n, n, is>& m)
     }
 }
 
-template<typename T, INSTRUCTION_SET i>
-inline Matrix<T, 3, 3, FPU> to_matrix(const Quaternion<T, i>& quat)
+template<typename T>
+inline Matrix<T, 3, 3> to_matrix(const Quaternion<T>& quat)
 {
     T wx, wy, wz, xx, yy, yz, xy, xz, zz, x2, y2, z2;
     x2 = quat.x * static_cast<T>(2);
@@ -296,7 +285,7 @@ inline Matrix<T, 3, 3, FPU> to_matrix(const Quaternion<T, i>& quat)
     wy = quat.w * y2;
     wz = quat.w * z2;
 
-    Matrix<T, 3, 3, FPU> matrix;
+    Matrix<T, 3, 3> matrix;
     matrix[0][0] = static_cast<T>(1) - (yy + zz);
     matrix[1][0] = xy - wz;
     matrix[2][0] = xz + wy;
@@ -312,8 +301,8 @@ inline Matrix<T, 3, 3, FPU> to_matrix(const Quaternion<T, i>& quat)
     return matrix;
 }
 
-template<typename T, INSTRUCTION_SET i>
-inline Matrix<T, 4, 4, i> to_matrix_4x4(const Quaternion<T, i>& quat)
+template<typename T>
+inline Matrix<T, 4, 4> to_matrix_4x4(const Quaternion<T>& quat)
 {
     T wx, wy, wz, xx, yy, yz, xy, xz, zz, x2, y2, z2;
     x2 = quat.x * static_cast<T>(2);
@@ -332,7 +321,7 @@ inline Matrix<T, 4, 4, i> to_matrix_4x4(const Quaternion<T, i>& quat)
     wy = quat.w * y2;
     wz = quat.w * z2;
 
-    Matrix<T, 4, 4, i> matrix;
+    Matrix<T, 4, 4> matrix;
     matrix[0][0] = static_cast<T>(1) - (yy + zz);
     matrix[1][0] = xy - wz;
     matrix[2][0] = xz + wy;
@@ -357,16 +346,16 @@ inline Matrix<T, 4, 4, i> to_matrix_4x4(const Quaternion<T, i>& quat)
 }
 
 template<typename T>
-inline Quaternion<T, DEFAULT_INSTRUCTION_SET> from_axis_angle(const Matrix<T, 3, 1, FPU>& axis)
+inline Quaternion<T> from_axis_angle(const Matrix<T, 3, 1>& axis)
 {
     T angle = length(axis);
-    return Quaternion<T, DEFAULT_INSTRUCTION_SET>( axis / angle * sin(angle/2), cos(angle/2) );
+    return Quaternion<T>( axis / angle * sin(angle/2), cos(angle/2) );
 }
 
-template<typename T, INSTRUCTION_SET i>
-inline Matrix<T, 3, 1, FPU> to_axis_angle(const Quaternion<T, i>& quat)
+template<typename T>
+inline Matrix<T, 3, 1> to_axis_angle(const Quaternion<T>& quat)
 {
-    Matrix<T, 3, 1, i> axis(quat.x, quat.y, quat.z);
+    Matrix<T, 3, 1> axis(quat.x, quat.y, quat.z);
     T vl  = length(axis);
     axis /= vl;
     if( quat.w < 0 ) {
@@ -391,29 +380,29 @@ bool Quaternion<float>::operator != (const Quaternion<float>& rhs) const
 */
 
 template<>
-inline Quaternion<float, SSE> operator - (const Quaternion<float, SSE>& rhs)
+inline Quaternion<float> operator - (const Quaternion<float>& rhs)
 {
     __m128 zero    = _mm_set1_ps(0.0f);
     __m128 invQuat = _mm_sub_ps(zero, rhs.m128);
-    return Quaternion<float, SSE>(invQuat);
+    return Quaternion<float>(invQuat);
 }
 
 template<>
-inline Quaternion<float, SSE>& operator += (Quaternion<float, SSE>& lhs, const Quaternion<float, SSE>& rhs)
+inline Quaternion<float>& operator += (Quaternion<float>& lhs, const Quaternion<float>& rhs)
 {
     lhs.m128 = _mm_add_ps(lhs.m128, rhs.m128);
     return lhs;
 }
 
 template<>
-inline Quaternion<float, SSE>& operator -= (Quaternion<float, SSE>& lhs, const Quaternion<float, SSE>& rhs)
+inline Quaternion<float>& operator -= (Quaternion<float>& lhs, const Quaternion<float>& rhs)
 {
     lhs.m128 = _mm_sub_ps(lhs.m128, rhs.m128);
     return lhs;
 }
 /*
 template<>
-inline Quaternion<float, SSE>& operator *= (Quaternion<float, SSE>& lhs, const Quaternion<float, SSE>& rhs)
+inline Quaternion<float>& operator *= (Quaternion<float>& lhs, const Quaternion<float>& rhs)
 {
     float tmpX = lhs.x;
     float tmpY = lhs.y;
@@ -428,7 +417,7 @@ inline Quaternion<float, SSE>& operator *= (Quaternion<float, SSE>& lhs, const Q
 }
 */
 template<>
-inline Quaternion<float, SSE>& operator *= (Quaternion<float, SSE>& lhs, float rhs)
+inline Quaternion<float>& operator *= (Quaternion<float>& lhs, float rhs)
 {
     __m128 packed = _mm_set1_ps(rhs);
     lhs.m128      = _mm_mul_ps(lhs.m128, packed);
@@ -436,7 +425,7 @@ inline Quaternion<float, SSE>& operator *= (Quaternion<float, SSE>& lhs, float r
 }
 
 template<>
-inline Quaternion<float, SSE>& operator /= (Quaternion<float, SSE>& lhs, float rhs)
+inline Quaternion<float>& operator /= (Quaternion<float>& lhs, float rhs)
 {
     __m128 packed = _mm_set1_ps(rhs);
     lhs.m128      = _mm_div_ps(lhs.m128, packed);
@@ -444,9 +433,9 @@ inline Quaternion<float, SSE>& operator /= (Quaternion<float, SSE>& lhs, float r
 }
 
 template<typename T>
-inline Matrix<float, 4, 1, SSE> as_vec(const Quaternion<float, SSE>& quat)
+inline Matrix<float, 4, 1> as_vec(const Quaternion<float>& quat)
 {
-    return Matrix<float, 4, 1, SSE>(quat.m128);
+    return Matrix<float, 4, 1>(quat.m128);
 }
 
 
@@ -470,72 +459,72 @@ void to_axis_angle(const Quaternion<float>& quat, Matrix<float, 3, 1>& axis, flo
 // standart quaternions
 
 #ifdef SIMPLE_GL_USE_SSE
-typedef Quaternion<float, SSE>      Quaternionf;    /// Quaternion with SSE
+typedef Quaternion<float>      Quaternionf;    /// Quaternion with SSE
 #else
-typedef Quaternion<float, FPU>      Quaternionf;    /// Quaternion with default instruction set
+typedef Quaternion<float>      Quaternionf;    /// Quaternion with default instruction set
 #endif 
 typedef Quaternion<double>          Quaterniond;
 
-template<typename T, INSTRUCTION_SET i>
-inline math::Quaternion<T, i> operator + (const math::Quaternion<T, i>& lhs, const math::Quaternion<T, i>& rhs)
+template<typename T>
+inline math::Quaternion<T> operator + (const math::Quaternion<T>& lhs, const math::Quaternion<T>& rhs)
 {
-    math::Quaternion<T, i> tmp(lhs);
+    math::Quaternion<T> tmp(lhs);
     return tmp += rhs;
 }
 
-template<typename T, INSTRUCTION_SET i>
-inline math::Quaternion<T, i> operator - (const math::Quaternion<T, i>& lhs, const math::Quaternion<T, i>& rhs)
+template<typename T>
+inline math::Quaternion<T> operator - (const math::Quaternion<T>& lhs, const math::Quaternion<T>& rhs)
 {
-    math::Quaternion<T, i> tmp(lhs);
+    math::Quaternion<T> tmp(lhs);
     return tmp -= rhs;
 }
 
-template<typename T, INSTRUCTION_SET i>
-inline math::Quaternion<T, i> operator * (const math::Quaternion<T, i>& lhs, const math::Quaternion<T, i>& rhs)
+template<typename T>
+inline math::Quaternion<T> operator * (const math::Quaternion<T>& lhs, const math::Quaternion<T>& rhs)
 {
-    math::Quaternion<T, i> tmp(lhs);
+    math::Quaternion<T> tmp(lhs);
     return tmp *= rhs;
 }
 
-template<typename T, INSTRUCTION_SET is>
-inline Matrix<T, 3, 1, FPU> operator * (const Matrix<T, 3, 1, FPU>& lhs, const Quaternion<T, is>& rhs)
+template<typename T>
+inline Matrix<T, 3, 1> operator * (const Matrix<T, 3, 1>& lhs, const Quaternion<T>& rhs)
 {
-    Matrix<T, 3, 1, is> tmp(rhs);
+    Matrix<T, 3, 1> tmp(rhs);
     return tmp *= lhs;
 }
 
-template<typename T, INSTRUCTION_SET is>
-inline Matrix<T, 3, 1, FPU> operator * (const Quaternion<T, is>& lhs, const Matrix<T, 3, 1, FPU>& rhs)
+template<typename T>
+inline Matrix<T, 3, 1> operator * (const Quaternion<T>& lhs, const Matrix<T, 3, 1>& rhs)
 {
-    Matrix<T, 3, 1, FPU> tmp(rhs);
+    Matrix<T, 3, 1> tmp(rhs);
     return tmp *= lhs;
 }
 
-template<typename T, INSTRUCTION_SET i>
-inline math::Quaternion<T, i> operator * (const math::Quaternion<T, i>& lhs, T rhs)
+template<typename T>
+inline math::Quaternion<T> operator * (const math::Quaternion<T>& lhs, T rhs)
 {
-    math::Quaternion<T, i> tmp(lhs);
+    math::Quaternion<T> tmp(lhs);
     return tmp *= rhs;
 }
 
-template<typename T, INSTRUCTION_SET i>
-inline math::Quaternion<T, i> operator / (const math::Quaternion<T, i>& lhs, T rhs)
+template<typename T>
+inline math::Quaternion<T> operator / (const math::Quaternion<T>& lhs, T rhs)
 {
-    math::Quaternion<T, i> tmp(lhs);
+    math::Quaternion<T> tmp(lhs);
     return tmp /= rhs;
 }
 
 /** print math::Quaternion */
-template<typename T, INSTRUCTION_SET i>
-inline std::ostream& operator << (std::ostream& os, const math::Quaternion<T, i>& quat)
+template<typename T>
+inline std::ostream& operator << (std::ostream& os, const math::Quaternion<T>& quat)
 {
     os << quat.x << ' ' << quat.y << ' ' << quat.z << ' ' << quat.w;
     return os;
 }
 
 /** scan math::Quaternion */
-template<typename T, INSTRUCTION_SET i>
-inline std::istream& operator >> (std::istream& is, math::Quaternion<T, i>& quat)
+template<typename T>
+inline std::istream& operator >> (std::istream& is, math::Quaternion<T>& quat)
 {
     is >> quat.x >> ' ' >> quat.y >> ' ' >> quat.z >> ' ' >> quat.w;
     return is;

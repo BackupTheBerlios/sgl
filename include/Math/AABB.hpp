@@ -13,19 +13,18 @@ namespace sgl {
 namespace math {
 
 /** Axis aligned bounding box. */
-template< typename ValueType, 
-          int n,
-          INSTRUCTION_SET is = DEFAULT_INSTRUCTION_SET>
+template<typename   ValueType, 
+         int        Dimension>
 class AABB
 {
 private:
-    typedef sgl::enable_if_c<n == 2>*       enable_if_2;
-    typedef sgl::enable_if_c<n == 3>*       enable_if_3;
+    typedef sgl::enable_if_c<Dimension == 2>*   enable_if_2;
+    typedef sgl::enable_if_c<Dimension == 3>*   enable_if_3;
 
 public:
-    typedef AABB<ValueType, n, is>          this_type;
-    typedef ValueType                       value_type;
-    typedef Matrix<value_type, n, 1, is>    vec_type;
+    typedef AABB<ValueType, Dimension>          this_type;
+    typedef ValueType                           value_type;
+    typedef Matrix<value_type, Dimension, 1>    vec_type;
 
 public:
     inline AABB() {}
@@ -82,16 +81,25 @@ public:
     vec_type maxVec;
 };
 
+typedef AABB<float, 2>  AABB2f;
+typedef AABB<double, 2> AABB2d;
+
+typedef AABB<float, 3>  AABB3f;
+typedef AABB<double, 3> AABB3d;
+
+typedef AABB<float, 4>  AABB4f;
+typedef AABB<double, 4> AABB4d;
+
 typedef AABB<float, 3>  AABBf;
 typedef AABB<double, 3> AABBd;
 
 // operators
 
 /** Transform aabb by matrix */
-template<typename T, INSTRUCTION_SET is>
-inline AABB<T, 3, is>& operator *= (AABB<T, 3, is>& aabb, const Matrix<T, 3, 3, is>& matrix)
+template<typename T>
+inline AABB<T, 3>& operator *= (AABB<T, 3>& aabb, const Matrix<T, 3, 3>& matrix)
 {
-    AABB<T, 3, is>::vec_type    aMin, aMax;
+    AABB<T, 3>::vec_type    aMin, aMax;
     float                       a, b;
 
     // Copy box A into min and max array.
@@ -129,10 +137,10 @@ inline AABB<T, 3, is>& operator *= (AABB<T, 3, is>& aabb, const Matrix<T, 3, 3, 
 }
 
 /** Transform plane by matrix */
-template<typename T, INSTRUCTION_SET is>
-inline AABB<T, 3, is>& operator *= (AABB<T, 3, is>& aabb, const Matrix<T, 4, 4, is>& matrix)
+template<typename T>
+inline AABB<T, 3>& operator *= (AABB<T, 3>& aabb, const Matrix<T, 4, 4>& matrix)
 {
-    AABB<T, 3, is>::vec_type    aMin, aMax;
+    AABB<T, 3>::vec_type    aMin, aMax;
     float                       a, b;
 
     // Copy box A into min and max array.
@@ -140,7 +148,7 @@ inline AABB<T, 3, is>& operator *= (AABB<T, 3, is>& aabb, const Matrix<T, 4, 4, 
     aMax = aabb.maxVec;
 
     // Begin at translation
-    AABB<T, 3, is>::vec_type trans = get_translation(matrix);
+    AABB<T, 3>::vec_type trans = get_translation(matrix);
     aabb.minVec.x = aabb.maxVec.x = trans.x;
     aabb.minVec.y = aabb.maxVec.y = trans.y;
     aabb.minVec.z = aabb.maxVec.z = trans.z;
@@ -172,58 +180,58 @@ inline AABB<T, 3, is>& operator *= (AABB<T, 3, is>& aabb, const Matrix<T, 4, 4, 
 }
 
 // Compare AABB
-template<typename T, int n, INSTRUCTION_SET is>
-inline bool operator == (const AABB<T, n, is>& lhs, const AABB<T, n, is>& rhs) 
+template<typename T, int n>
+inline bool operator == (const AABB<T, n>& lhs, const AABB<T, n>& rhs) 
 { 
     return lhs.minVec == rhs.minVec && lhs.maxVec == rhs.maxVec; 
 }
 
-template<typename T, int n, INSTRUCTION_SET is>
-inline bool operator != (const AABB<T, n, is>& lhs, const AABB<T, n, is>& rhs) 
+template<typename T, int n>
+inline bool operator != (const AABB<T, n>& lhs, const AABB<T, n>& rhs) 
 { 
     return lhs.minVec != rhs.minVec || lhs.maxVec != rhs.maxVec; 
 }
 
 /** Transform aabb by matrix */
-template<typename T, INSTRUCTION_SET is>
-inline AABB<T, is> operator * (const Matrix<T, 3, 3, is>& matrix, const AABB<T, 3, is>& aabb)
+template<typename T>
+inline AABB<T, 3> operator * (const Matrix<T, 3, 3>& matrix, const AABB<T, 3>& aabb)
 {
-    return AABB<T, 3, is>(aabb) *= matrix;
+    return AABB<T, 3>(aabb) *= matrix;
 }
 
 /** Transform aabb by matrix */
-template<typename T, INSTRUCTION_SET is>
-inline AABB<T, 3, is> operator * (const AABB<T, 3, is>& aabb, const Matrix<T, 3, 3, is>& matrix)
+template<typename T>
+inline AABB<T, 3> operator * (const AABB<T, 3>& aabb, const Matrix<T, 3, 3>& matrix)
 {
-    return AABB<T, 3, is>(aabb) *= matrix;
+    return AABB<T, 3>(aabb) *= matrix;
 }
 
 /** Transform aabb by matrix */
-template<typename T, INSTRUCTION_SET is>
-inline AABB<T, 3, is> operator * (const Matrix<T, 4, 4, is>& matrix, const AABB<T, 3, is>& aabb)
+template<typename T>
+inline AABB<T, 3> operator * (const Matrix<T, 4, 4>& matrix, const AABB<T, 3>& aabb)
 {
-    return AABB<T, 3, is>(aabb) *= matrix;
+    return AABB<T, 3>(aabb) *= matrix;
 }
 
 /** Transform aabb by matrix */
-template<typename T, INSTRUCTION_SET is>
-inline AABB<T, 3, is> operator * (const AABB<T, 3, is>& aabb, const Matrix<T, 4, 4, is>& matrix)
+template<typename T>
+inline AABB<T, 3> operator * (const AABB<T, 3>& aabb, const Matrix<T, 4, 4>& matrix)
 {
-    return AABB<T, 3, is>(aabb) *= matrix;
+    return AABB<T, 3>(aabb) *= matrix;
 }
 
 /** Make minimum size AABB containing two aabbs */
-template<typename T, int n, INSTRUCTION_SET is>
-inline AABB<T, n, is> merge(const AABB<T, n, is>& a, const AABB<T, n, is>& b)
+template<typename T, int n>
+inline AABB<T, n> merge(const AABB<T, n>& a, const AABB<T, n>& b)
 {
-    return AABB<T, n, is>( min(a.minVec, b.minVec), max(a.maxVec, b.maxVec) );
+    return AABB<T, n>( min(a.minVec, b.minVec), max(a.maxVec, b.maxVec) );
 }
 
 /** get nearest vector to the aabb form point */
-template<typename T, INSTRUCTION_SET is>
-inline Matrix<T, 3, 1, is> get_nearest_direction(const AABB<T, 3, is>& aabb, const Matrix<T, 3, 1, is>& vec)
+template<typename T>
+inline Matrix<T, 3, 1> get_nearest_direction(const AABB<T, 3>& aabb, const Matrix<T, 3, 1>& vec)
 {
-    Matrix<T, 3, 1, is> direction;
+    Matrix<T, 3, 1> direction;
     for(int i = 0; i<3; ++i) 
     {
         if (vec[i] > minVec[i])
@@ -245,10 +253,10 @@ inline Matrix<T, 3, 1, is> get_nearest_direction(const AABB<T, 3, is>& aabb, con
 
 
 /** get nearest vector to the aabb form point */
-template<typename T, INSTRUCTION_SET is>
-inline Matrix<T, 4, 1, is> get_nearest_direction(const AABB<T, 3, is>& aabb, const Matrix<T, 4, 1, is>& vec)
+template<typename T>
+inline Matrix<T, 4, 1> get_nearest_direction(const AABB<T, 3>& aabb, const Matrix<T, 4, 1>& vec)
 {
-    return Matrix<T, 4, 1, is>(get_nearest_direction( xyz(vec) ), 0);
+    return Matrix<T, 4, 1>(get_nearest_direction( xyz(vec) ), 0);
 }
 
 } // namespace math

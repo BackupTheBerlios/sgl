@@ -38,6 +38,7 @@ SET ( TARGET_MATH_HEADERS
 	${TARGET_HEADER_PATH}/Math/Base.hpp
     ${TARGET_HEADER_PATH}/Math/Containers.hpp
 	${TARGET_HEADER_PATH}/Math/Frustum.hpp
+	${TARGET_HEADER_PATH}/Math/KDop.hpp
 	${TARGET_HEADER_PATH}/Math/Intersection.hpp
 	${TARGET_HEADER_PATH}/Math/Matrix.hpp
 	${TARGET_HEADER_PATH}/Math/MatrixFunctions.hpp

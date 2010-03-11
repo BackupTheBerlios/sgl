@@ -29,7 +29,7 @@ enum INSTRUCTION_SET
 {
     FPU       /// not using sse
 #ifdef SIMPLE_GL_USE_SSE
-    , SSE     /// detect SSE version using preprocessor directive
+         /// detect SSE version using preprocessor directive
 #endif
 };
 
@@ -39,10 +39,9 @@ enum INSTRUCTION_SET
 #   define DEFAULT_INSTRUCTION_SET FPU
 #endif
 
-template< typename ValueType, 
-          int n, 
-          int m, 
-          INSTRUCTION_SET inst_set = DEFAULT_INSTRUCTION_SET >
+template<typename ValueType, 
+         int n, 
+         int m>
 class MatrixBase
 {
 public:
