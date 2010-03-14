@@ -50,19 +50,35 @@ public:
         maxVec(maxx, maxy, maxz)
     {}
 
-    /** Setup aabb using top right far corner and bottom left near corner */
-    inline AABB& setup(const vec_type& _minVec, const vec_type& _maxVec)
-    {
-        minVec = _minVec;
-        maxVec = _maxVec;
-
-        return *this;
-    }
     /** Extend aabb so point will be covered */
     inline AABB& extend(const vec_type& vec)
     {
         minVec = min(vec, minVec);
         maxVec = max(vec, maxVec);
+
+        return *this;
+    }
+
+    /** Make minimum size aabb */
+    inline AABB& reset_min()
+    {
+        for (int i = 0; i<Dimension; ++i) 
+        {
+            minVec[i] =  std::numeric_limits<value_type>::max();
+            maxVec[i] = -std::numeric_limits<value_type>::max();
+        }
+
+        return *this;
+    }
+
+    /** Make maximum size aabb */
+    inline AABB& reset_max()
+    {
+        for (int i = 0; i<Dimension; ++i) 
+        {
+            minVec[i] = -std::numeric_limits<value_type>::max();
+            maxVec[i] =  std::numeric_limits<value_type>::max();
+        }
 
         return *this;
     }
@@ -90,9 +106,26 @@ typedef AABB<double, 4> AABB4d;
 typedef AABB<float, 3>  AABBf;
 typedef AABB<double, 3> AABBd;
 
-// operators
+// functions
+template<typename T, int n>
+inline AABB<T, n> extend(const AABB<T, n>& aabb, const Matrix<T, n, 1>& vec)
+{
+    return AABB<T, n>( min(vec, aabb.minVec), max(vec, aabb.maxVec) );
+}
 
-/** Transform aabb by matrix */
+template<typename T, int n>
+inline Matrix<T, n, 1> size(const AABB<T, n>& aabb)
+{
+    return aabb.maxVec - aabb.minVec;
+}
+
+template<typename T, int n>
+inline Matrix<T, n, 1> center(const AABB<T, n>& aabb)
+{
+    return (aabb.maxVec + aabb.minVec) / 2;
+}
+
+// operators
 template<typename T>
 inline AABB<T, 3>& operator *= (AABB<T, 3>& aabb, const Matrix<T, 3, 3>& matrix)
 {

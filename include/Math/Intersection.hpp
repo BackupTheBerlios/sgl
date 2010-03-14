@@ -1,6 +1,8 @@
 #ifndef SIMPLE_GL_MATH_INTERSECTION_HPP
 #define SIMPLE_GL_MATH_INTERSECTION_HPP
 
+#include <limits>
+
 #ifdef SIMPLEGL_MATH_IN_SGL_NAMESPACE
 namespace sgl {
 #endif
@@ -97,7 +99,7 @@ inline bool test_intersection( const AABB<T, n>&  a,
 template<typename T, int n>
 inline bool test_intersection( const AABB<T, n>&    aabb,
                                const Ray<T, n>&     ray,
-                               T                    epsilon = static_cast<T>(EPS_7f) ) 
+                               T                    epsilon = static_cast<T>(1e-7) ) 
 
 {
     T tMin = -std::numeric_limits<T>::max();
@@ -106,8 +108,8 @@ inline bool test_intersection( const AABB<T, n>&    aabb,
     {
         if ( std::abs(ray.direction[i]) > epsilon )
         {
-            T t1 = (minVec[i] - ray.origin[i]) / ray.direction[i];
-            T t2 = (maxVec[i] - ray.origin[i]) / ray.direction[i];
+            T t1 = (aabb.minVec[i] - ray.origin[i]) / ray.direction[i];
+            T t2 = (aabb.maxVec[i] - ray.origin[i]) / ray.direction[i];
 
             if (t1 > t2) {
                 std::swap(t1, t2);
@@ -130,10 +132,10 @@ template<typename T, int n>
 inline bool test_intersection( const AABB<T, n>&        aabb,
                                const Matrix<T, n, 1>&   a,
                                const Matrix<T, n, 1>&   b,
-                               T                        epsilon = static_cast<T>(EPS_7f) ) 
+                               T                        epsilon = static_cast<T>(1e-7) ) 
 
 {
-    return test_intersection(aabb, math::Ray<T>(a, b-a), epsilon) && test_intersection(aabb, math::Ray<T>(b, a-b), epsilon);
+    return test_intersection(aabb, math::Ray<T,n>(a, b-a), epsilon) && test_intersection(aabb, math::Ray<T,n>(b, a-b), epsilon);
 }
 
 template<typename T, int n>
@@ -161,18 +163,18 @@ bool find_intersection( const Plane<T, n>&  plane,
 template<typename T, int n>
 inline bool find_intersection( const AABB<T, n>&   aabb,
                                const Ray<T, n>&    ray,
-                               Matrix<T, n, 1>&    intersectionPoint,
-                               T                   epsilon = static_cast<T>(EPS_7f) )
+                               Matrix<T, n, 1>&    intPoint,
+                               T                   epsilon = static_cast<T>(1e-7) )
 
 {
-    T tMin = -std::numeric_limits<value_type>::max();
-    T tMax =  std::numeric_limits<value_type>::max();
+    T tMin = -std::numeric_limits<T>::max();
+    T tMax =  std::numeric_limits<T>::max();
     for(int i = 0; i<n; ++i)
     {
         if ( std::abs(ray.direction[i]) > epsilon )
         {
-            T t1 = (minVec[i] - ray.origin[i]) / ray.direction[i];
-            T t2 = (maxVec[i] - ray.origin[i]) / ray.direction[i];
+            T t1 = (aabb.minVec[i] - ray.origin[i]) / ray.direction[i];
+            T t2 = (aabb.maxVec[i] - ray.origin[i]) / ray.direction[i];
 
             if (t1 > t2) {
                 std::swap(t1, t2);
@@ -187,7 +189,7 @@ inline bool find_intersection( const AABB<T, n>&   aabb,
         }
     }
 
-    intersectionPoint = ray.origin + ray.direction * tMin;
+    intPoint = ray.origin + ray.direction * tMin;
     return tMax >= 0;
 }
 
@@ -196,11 +198,11 @@ template<typename T, int n>
 inline bool find_intersection( const AABB<T, n>&        aabb,
                                const Matrix<T, n, 1>&   a,
                                const Matrix<T, n, 1>&   b,
-                               Matrix<T, n, 1>&         intersectionPoint,
-                               T                        epsilon = static_cast<T>(EPS_7f) ) 
+                               Matrix<T, n, 1>&         intPoint,
+                               T                        epsilon = static_cast<T>(1e-7) ) 
 
 {
-    return test_intersection(aabb, math::Ray<T>(a, b-a), epsilon) && find_intersection(aabb, math::Ray<T>(b, a-b), epsilon);
+    return test_intersection(aabb, math::Ray<T,n>(a, b-a), epsilon) && find_intersection(aabb, math::Ray<T,n>(b, a-b), intPoint, epsilon);
 }
 
 /** Check wether intersection is not empty */

@@ -1,7 +1,7 @@
 #ifndef SIMPLE_GL_FONT_H
 #define SIMPLE_GL_FONT_H
 
-#include "Texture.h"
+#include "Texture2D.h"
 
 namespace sgl {
 
