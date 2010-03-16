@@ -1,5 +1,6 @@
 #include "GL/GLCommon.h"
 #include "GL/GLShader.h"
+#include <cstring>
 #include <string>
 
 using namespace sgl;
@@ -13,7 +14,7 @@ GLenum SHADER_TYPE_BINDINGS[] =
     GL_GEOMETRY_SHADER_EXT
 };
 
-GLShader::GLShader( Device*     _device, 
+GLShader::GLShader( Device*     _device,
                     const DESC& desc ) :
     device(_device),
     type(desc.type)

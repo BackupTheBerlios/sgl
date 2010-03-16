@@ -11,7 +11,7 @@ namespace sgl {
 namespace math {
 
 /** Ray in the space */
-template<typename  ValueType, 
+template<typename  ValueType,
          int       Dimension>
 class Ray
 {
@@ -57,8 +57,7 @@ Ray<T, 3> operator *= (Ray<T, 3>& ray, const Matrix<T, 3, 3>& matrix)
 {
     ray.direction *= matrix;
     ray.origin    *= matrix;
-
-    return *this;
+    return ray;
 }
 
 template<typename T>
@@ -66,32 +65,35 @@ Ray<T, 4> operator *= (Ray<T, 4>& ray, const Matrix<T, 4, 4>&  matrix)
 {
     ray.direction *= matrix;
     ray.origin    *= matrix;
-
-    return *this;
+    return ray;
 }
 
 template<typename T>
 Ray<T, 3> operator * (const Matrix<T, 3, 3>& matrix, const Ray<T, 3>& ray)
 {
-    return Ray<T, 3>(ray) *= matrix;
+    Ray<T, 3> tmp(ray);
+    return tmp *= matrix;
 }
 
 template<typename T>
 Ray<T, 4> operator * (const Matrix<T, 4, 4>& matrix, const Ray<T, 4>& ray)
 {
-    return Ray<T, 4>(ray) *= matrix;
+    Ray<T, 4> tmp(ray);
+    return tmp *= matrix;
 }
 
 template<typename T>
 Ray<T, 3> operator * (const Ray<T, 3>& ray, const Matrix<T, 3, 3>& matrix)
 {
-    return Ray<T, 3>(ray) *= matrix;
+    Ray<T, 3> tmp(ray);
+    return tmp *= matrix;
 }
 
 template<typename T>
 Ray<T, 4> operator * (const Ray<T, 4>& ray, const Matrix<T, 4, 4>& matrix)
 {
-    return Ray<T, 4>(ray) *= matrix;
+    Ray<T, 4> tmp(ray);
+    return tmp *= matrix;
 }
 
 /** Normalize ray direction */

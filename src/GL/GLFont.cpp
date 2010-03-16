@@ -4,7 +4,6 @@
 #include <assert.h>
 #include "GL/GLCommon.h"
 
-using namespace sgl;
 using namespace std;
 using namespace math;
 
@@ -35,7 +34,9 @@ const char* font_fragment_shader = "\
         gl_FragColor = color * texture2D(texture, fp_texcoord);\
     }";
 
-} // anonymous namespace 
+} // anonymous namespace
+
+namespace sgl {
 
 template<>
 GLFont<PT_FIXED>::GLFont(Device* _pDevice) :
@@ -67,8 +68,8 @@ GLFont<PT_FIXED>::GLFont(Device* _pDevice) :
     }
 
     {
-        VertexLayout::ELEMENT elements[] = 
-        { 
+        VertexLayout::ELEMENT elements[] =
+        {
             {0, 2, 0, 16, FLOAT, VertexLayout::VERTEX},
             {0, 2, 8, 16, FLOAT, VertexLayout::TEXCOORD}
         };
@@ -135,8 +136,8 @@ GLFont<PT_PROGRAMMABLE>::GLFont(Device* _pDevice) :
             throw gl_error("GLFont::GLFont failed. Can't get location of font attribute.");
         }
 
-        VertexLayout::ELEMENT elements[] = 
-        { 
+        VertexLayout::ELEMENT elements[] =
+        {
             {location, 4, 0, 16, FLOAT, VertexLayout::ATTRIBUTE},
         };
         vertexLayout.reset( pDevice->CreateVertexLayout(1, elements) );
@@ -202,7 +203,7 @@ SGL_HRESULT GLFont<pipeline>::SetTexture(sgl::Texture2D* texture_)
     {
         float charHeight = texture->Height() / 16.0f;
         float charWidth  = texture->Width()  / 24.0f;
-        
+
         math::vector_of_vector4f vertices;
 	    const float ds = 1.0f / 16.0f;
 	    const float dt = 1.0f / 16.0f;
@@ -238,7 +239,7 @@ sgl::Texture2D* GLFont<pipeline>::Texture() const
 }
 
 template<>
-SGL_HRESULT GLFont<PT_FIXED>::Bind(int width, 
+SGL_HRESULT GLFont<PT_FIXED>::Bind(int width,
                                    int height,
                                    const math::Vector4f& color) const
 {
@@ -247,10 +248,10 @@ SGL_HRESULT GLFont<PT_FIXED>::Bind(int width,
 
     float charHeight = texture->Height() / 16.0f;
     float charWidth  = texture->Width()  / 24.0f;
-    
+
     // setup states
     myAttr.projectionMatrix = myAttr.projectionMatrixUniform->Value();
-    myAttr.modelViewMatrix  = myAttr.modelViewMatrixUniform->Value(); 
+    myAttr.modelViewMatrix  = myAttr.modelViewMatrixUniform->Value();
 
     rectangle vp = pDevice->Viewport();
     myAttr.projectionMatrixUniform->Set( make_ortho( 0.0f, vp.width / (width / charHeight),
@@ -269,7 +270,7 @@ SGL_HRESULT GLFont<PT_FIXED>::Bind(int width,
 }
 
 template<>
-SGL_HRESULT GLFont<PT_PROGRAMMABLE>::Bind(int width, 
+SGL_HRESULT GLFont<PT_PROGRAMMABLE>::Bind(int width,
                                           int height,
                                           const math::Vector4f& color) const
 {
@@ -390,5 +391,7 @@ void GLFont<PT_PROGRAMMABLE>::Print(float x, float y, const char* str) const
 }
 
 // explicit template instantiation
-template GLFont<PT_FIXED>;
-template GLFont<PT_PROGRAMMABLE>;
+template class GLFont<PT_FIXED>;
+template class GLFont<PT_PROGRAMMABLE>;
+
+} // namespace sgl

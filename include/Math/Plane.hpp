@@ -8,7 +8,7 @@ namespace sgl {
 #endif
 namespace math {
 
-template<typename  ValueType, 
+template<typename  ValueType,
          int       Dimension>
 class Plane
 {
@@ -20,7 +20,7 @@ public:
 
 public:
     Plane() {}
-    
+
     Plane(const Plane& rhs) :
         normal(rhs.normal),
         distance(rhs.distance)
@@ -41,7 +41,7 @@ public:
     Plane(const vec_type& a, const vec_type& b, const vec_type& c)
     {
         normal   = normalize( cross(b - a, c - a) );
-        distance = -dot(a, normal); 
+        distance = -dot(a, normal);
     }
 
     /** Represent plane as vector */
@@ -92,25 +92,29 @@ Plane<T, n>& operator *= (Plane<T, n>& plane, const Matrix<T, n+1, n+1>& matrix)
 template<typename T, int n>
 Plane<T, n> operator * (const Matrix<T,n,n>& matrix, const Plane<T, n>& plane)
 {
-    return Plane<T, n>(plane) *= matrix;
+    Plane<T, n> tmp(plane);
+    return tmp *= matrix;
 }
 
 template<typename T, int n>
 Plane<T, n> operator * (const Plane<T, n>& plane, const Matrix<T,n,n>& matrix)
 {
-    return Plane<T, n>(plane) *= matrix;
+    Plane<T, n> tmp(plane);
+    return tmp *= matrix;
 }
 
 template<typename T, int n>
 Plane<T, n> operator * (const Matrix<T,n+1,n+1>& matrix, const Plane<T, n>& plane)
 {
-    return Plane<T, n>(plane) *= matrix;
+    Plane<T, n> tmp(plane);
+    return tmp *= matrix;
 }
 
 template<typename T, int n>
 Plane<T, n> operator * (const Plane<T, n>& plane, const Matrix<T,n+1,n+1>& matrix)
 {
-    return Plane<T, n>(plane) *= matrix;
+    Plane<T, n> tmp(plane);
+    return tmp *= matrix;
 }
 
 template<typename T, int n>

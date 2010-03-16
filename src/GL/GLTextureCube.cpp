@@ -32,27 +32,27 @@ GLTextureCubeSide::GLTextureCubeSide( GLTextureCube*            texture,
 #endif // SGL_NO_STATUS_CHECK
 
     // copy image
-    if (compressed) 
+    if (compressed)
     {
-        glCompressedTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + side, 
-                                0, 
-                                glFormat, 
-                                width, 
-                                height, 
-                                0, 
-                                Image::SizeOfData(format, width, height, 1), 
+        glCompressedTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + side,
+                                0,
+                                glFormat,
+                                width,
+                                height,
+                                0,
+                                Image::SizeOfData(format, width, height, 1),
                                 desc.data );
     }
-    else 
+    else
     {
-        glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + side, 
-                      0, 
-                      glFormat, 
-                      width, 
-                      height, 
-                      0, 
-                      glUsage, 
-                      glPixelType, 
+        glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + side,
+                      0,
+                      glFormat,
+                      width,
+                      height,
+                      0,
+                      glUsage,
+                      glPixelType,
                       desc.data );
     }
 
@@ -67,8 +67,8 @@ GLTextureCubeSide::GLTextureCubeSide( GLTextureCube*            texture,
 SGL_HRESULT GLTextureCubeSide::SetSubImage( unsigned int  mipmap,
                                             unsigned int  offsetx,
                                             unsigned int  offsety,
-                                            unsigned int  regionWidth, 
-                                            unsigned int  regionHeight, 
+                                            unsigned int  regionWidth,
+                                            unsigned int  regionHeight,
                                             const void*   data )
 {
     // image settings
@@ -87,28 +87,28 @@ SGL_HRESULT GLTextureCubeSide::SetSubImage( unsigned int  mipmap,
 #endif // SGL_NO_STATUS_CHECK
 
     // copy image
-    if (compressed) 
+    if (compressed)
     {
-        glCompressedTexSubImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + side, 
-                                   mipmap, 
+        glCompressedTexSubImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + side,
+                                   mipmap,
                                    offsetx,
                                    offsety,
-                                   regionWidth, 
-                                   regionHeight, 
-                                   glFormat, 
-                                   Image::SizeOfData(format, regionWidth, regionHeight, 1), 
+                                   regionWidth,
+                                   regionHeight,
+                                   glFormat,
+                                   Image::SizeOfData(format, regionWidth, regionHeight, 1),
                                    data );
     }
-    else 
+    else
     {
-        glTexSubImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + side, 
-                         mipmap, 
+        glTexSubImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + side,
+                         mipmap,
                          offsetx,
                          offsety,
-                         regionWidth, 
-                         regionHeight, 
-                         glFormat, 
-                         glPixelType, 
+                         regionWidth,
+                         regionHeight,
+                         glFormat,
+                         glPixelType,
                          data );
     }
 
@@ -130,7 +130,6 @@ SGL_HRESULT GLTextureCubeSide::GetImage( unsigned int  mipmap,
     GLenum glError;
 	GLenum glUsage     = BIND_GL_FORMAT_USAGE[format];
 	GLenum glPixelType = BIND_GL_FORMAT_PIXEL_TYPE[format];
-    GLenum glFormat    = BIND_GL_FORMAT[format];
 
     bool   compressed  = Texture::FORMAT_TRAITS[format].compressed;
 
@@ -239,7 +238,7 @@ SGL_HRESULT GLTextureCube::Bind(unsigned int _stage) const
     glEnable(glTarget);
     glBindTexture(glTarget, glTexture);
 /*
-    if ( boundSamplerState != device->CurrentSamplerState(stage) ) 
+    if ( boundSamplerState != device->CurrentSamplerState(stage) )
     {
         boundSamplerState               = static_cast<const GLSamplerState*>( device->CurrentSamplerState(stage) );
         const SamplerState::DESC& desc  = boundSamplerState->Desc();
@@ -261,7 +260,7 @@ SGL_HRESULT GLTextureCube::Bind(unsigned int _stage) const
 
 void GLTextureCube::Unbind() const
 {
-    if ( stage >= 0 && device->CurrentTexture(stage) == this ) 
+    if ( stage >= 0 && device->CurrentTexture(stage) == this )
     {
         glActiveTexture(GL_TEXTURE0 + stage);
         glBindTexture(glTarget, 0);

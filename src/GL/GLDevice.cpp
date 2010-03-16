@@ -30,7 +30,7 @@
 #endif // WIN32
 
 #ifdef __linux__
-Bool wait_for_notify( Display* pDisplay,
+Bool wait_for_notify( Display* /*pDisplay*/,
 					  XEvent*  pEvent,
 					  XPointer arg )
 {
@@ -218,7 +218,7 @@ GLDevice<deviceVersion>::GLDevice() :
     }
 
     hGLRC = wglGetCurrentContext();
-    if (!hGLRC) 
+    if (!hGLRC)
     {
         sglSetError(SGLERR_INVALID_CALL, "Can't get current context");
         throw gl_error("GLDevice::GLDevice() failed");
@@ -226,7 +226,7 @@ GLDevice<deviceVersion>::GLDevice() :
 
 #elif __linux__
     display = glXGetCurrentDisplay();
-    if (!display) 
+    if (!display)
     {
         sglSetError(SGLERR_INVALID_CALL, "Can't get current display");
         throw gl_error("GLDevice::GLDevice() failed");
@@ -240,7 +240,7 @@ GLDevice<deviceVersion>::GLDevice() :
     }
 
     glxDrawable = glXGetCurrentDrawable();
-    if (!glxDrawable) 
+    if (!glxDrawable)
     {
         sglSetError(SGLERR_INVALID_CALL, "Can't get current drawable");
         throw gl_error("GLDevice::GLDevice() failed");
@@ -269,14 +269,14 @@ GLDevice<deviceVersion>::GLDevice(const Device::VIDEO_DESC& desc)
     // Open a connection to the X server
     display = XOpenDisplay(0);
     if (!display) {
-        return EUnknown("Couldn't open display");
+        throw gl_error("Couldn't open display");
     }
 
     // Make sure OpenGL's GLX extension supported
     int errorBase;
 	int eventBase;
     if( !glXQueryExtension( display, &errorBase, &eventBase ) ) {
-        return EUnsupported("X server has no OpenGL GLX extension");
+        throw gl_error("X server has no OpenGL GLX extension");
     }
 
     // Find an appropriate visual
@@ -308,7 +308,7 @@ GLDevice<deviceVersion>::GLDevice(const Device::VIDEO_DESC& desc)
     };
 
     int* bufferAttributes = bufferAttributes32;
-    if ( bpp == 24 ) {
+    if ( Texture::FORMAT_TRAITS[desc.colorBufferFormat].sizeInBits == 24 ) {
         bufferAttributes = bufferAttributes24;
     }
 
@@ -321,7 +321,7 @@ GLDevice<deviceVersion>::GLDevice(const Device::VIDEO_DESC& desc)
                                    bufferAttributes,
                                    &numFBConfigs );
     if (!FBConfigs) {
-        return EUnsupported("Couldn't get FB config with 24 bit depth buffer and 8 bit stencil buffer");
+        throw gl_error("Couldn't get FB config with 24 bit depth buffer and 8 bit stencil buffer");
     }
 
     XVisualInfo* visualInfo = 0;
@@ -359,7 +359,7 @@ GLDevice<deviceVersion>::GLDevice(const Device::VIDEO_DESC& desc)
     window = XCreateWindow( display,
                             RootWindow(display, visualInfo->screen),
                             0, 0,                                   // x/y position of top-left outside corner of the window
-                            width, height,                          // Width and height of window
+                            desc.width, desc.height,                // Width and height of window
                             0,                                      // Border width
                             visualInfo->depth,
                             InputOutput,
@@ -374,7 +374,7 @@ GLDevice<deviceVersion>::GLDevice(const Device::VIDEO_DESC& desc)
 									  0,              // No sharing of display lists
 									  GL_TRUE );      // Direct rendering if possible
     if (!glxContext) {
-        return EUnsupported("Couldn't create rendering context");
+        throw gl_error("Couldn't create rendering context");
     }
 
 	// make sure to get a GLX window with the fb-config with render-support
@@ -409,7 +409,7 @@ SGL_HRESULT GLDevice<deviceVersion>::InitOpenGL()
     currentBlendState           = 0;
     currentDepthStencilState    = 0;
     currentRasterizerState      = 0;
-    
+
     std::fill(currentTexture,      currentTexture      + NUM_TEXTURE_STAGES, (Texture*)0);
     std::fill(currentSamplerState, currentSamplerState + NUM_TEXTURE_STAGES, (SamplerState*)0);
 
@@ -418,7 +418,7 @@ SGL_HRESULT GLDevice<deviceVersion>::InitOpenGL()
     if (!glewInitialized)
     {
         GLenum err = glewInit();
-        if (GLEW_OK != err) 
+        if (GLEW_OK != err)
         {
             sglSetError(SGLERR_UNKNOWN, "Can't init glew.");
             throw gl_error("GLDevice::InitOpenGL() failed");
@@ -553,11 +553,11 @@ SGL_HRESULT GLDevice<deviceVersion>::TakeScreenshot(Image* image) const
 template<DEVICE_VERSION deviceVersion>
 Shader* GLDevice<deviceVersion>::CreateShader(const Shader::DESC& desc)
 {
-    try 
+    try
     {
         return new GLShader( const_cast<GLDevice*>(this), desc );
     }
-    catch(gl_error& err) 
+    catch(gl_error& err)
     {
         sglSetError( SGLERR_UNKNOWN, err.what() );
         return 0;
@@ -567,7 +567,7 @@ Shader* GLDevice<deviceVersion>::CreateShader(const Shader::DESC& desc)
 template<DEVICE_VERSION deviceVersion>
 Program* GLDevice<deviceVersion>::CreateProgram()
 {
-    try 
+    try
     {
         return new GLProgram( const_cast<GLDevice*>(this) );
     }
@@ -590,7 +590,7 @@ Image* GLDevice<deviceVersion>::CreateImage()
 #ifdef SIMPLE_GL_USE_DEVIL
     return new IlImage( const_cast<GLDevice*>(this) );
 #endif
-    sglSetError(SGLERR_UNSUPPORTED, "SimpleGL compiled without DevIL. Can't create image."); 
+    sglSetError(SGLERR_UNSUPPORTED, "SimpleGL compiled without DevIL. Can't create image.");
     return 0;
 }
 
@@ -617,7 +617,7 @@ template<DEVICE_VERSION deviceVersion>
 void GLDevice<deviceVersion>::SetSamplerState(unsigned int stage, const SamplerState* samplerState)
 {
     assert(stage < NUM_TEXTURE_STAGES);
-    if (currentSamplerState[stage] != samplerState && currentTexture[stage]) 
+    if (currentSamplerState[stage] != samplerState && currentTexture[stage])
     {
         // rebind state to the texture
         currentSamplerState[stage] = samplerState;
@@ -671,16 +671,16 @@ void GLDevice<deviceVersion>::SetRenderTarget(const RenderTarget* renderTarget)
 // ============================ DRAW ============================ //
 
 template<DEVICE_VERSION deviceVersion>
-void GLDevice<deviceVersion>::Draw( PRIMITIVE_TYPE primType, 
-                                    unsigned       firstVertex, 
+void GLDevice<deviceVersion>::Draw( PRIMITIVE_TYPE primType,
+                                    unsigned       firstVertex,
                                     unsigned       numVertices ) const
 {
     glDrawArrays(BIND_PRIMITIVE_TYPE[primType], firstVertex, numVertices);
 }
 
 template<DEVICE_VERSION deviceVersion>
-void GLDevice<deviceVersion>::DrawInstanced( PRIMITIVE_TYPE primType, 
-                                             unsigned       firstVertex, 
+void GLDevice<deviceVersion>::DrawInstanced( PRIMITIVE_TYPE primType,
+                                             unsigned       firstVertex,
                                              unsigned       numVertices,
                                              unsigned       numInstances ) const
 {
@@ -696,7 +696,7 @@ void GLDevice<deviceVersion>::DrawIndexed( PRIMITIVE_TYPE primType,
 }
 
 template<DEVICE_VERSION deviceVersion>
-void GLDevice<deviceVersion>::DrawIndexedInstanced( PRIMITIVE_TYPE primType, 
+void GLDevice<deviceVersion>::DrawIndexedInstanced( PRIMITIVE_TYPE primType,
                                                     unsigned       firstIndex,
                                                     unsigned       numIndices,
                                                     unsigned       numInstances ) const
@@ -805,7 +805,7 @@ TextureCube* SGL_DLLCALL GLDevice<deviceVersion>::CreateTextureCube(const Textur
 // ============================ BUFFERS ============================ //
 
 template<DEVICE_VERSION deviceVersion>
-VertexLayout* SGL_DLLCALL GLDevice<deviceVersion>::CreateVertexLayout(unsigned int                 numElements, 
+VertexLayout* SGL_DLLCALL GLDevice<deviceVersion>::CreateVertexLayout(unsigned int                 numElements,
                                                                       const VertexLayout::ELEMENT* elements)
 {
 	return new GLVertexLayout(this, numElements, elements);
@@ -1004,7 +1004,7 @@ SGL_HRESULT GLDevice<deviceVersion>::CopyTexture2D( Texture2D*     texture,
     GLTexture2D*                     glTexture = static_cast<GLTexture2D*>(texture);
     GLTexture2D::guarded_binding_ptr texBinding( new GLTexture2D::guarded_binding(this, glTexture, 0) );
     {
-        glCopyTexSubImage2D(glTexture->GLTarget(), level, offsetx, offsety, 0, 0, width, height); 
+        glCopyTexSubImage2D(glTexture->GLTarget(), level, offsetx, offsety, 0, 0, width, height);
 
     #ifndef SGL_NO_STATUS_CHECK
         GLenum error = glGetError();
@@ -1029,8 +1029,8 @@ VBORenderTarget* SGL_DLLCALL GLDevice::CreateVBORenderTarget() const
 */
 
 // explicit template instantiation
-template GLDevice<DV_OPENGL_2_1_MIXED>;
-template GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>;
+template class GLDevice<DV_OPENGL_2_1_MIXED>;
+template class GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>;
 
 #ifdef _WIN32
 #pragma pop_macro("CreateFont")

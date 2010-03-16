@@ -29,8 +29,8 @@ public:
     SGL_HRESULT     SGL_DLLCALL SetSubImage( unsigned int    mipmap,
                                              unsigned int    offsetx,
                                              unsigned int    offsety,
-                                             unsigned int    width, 
-                                             unsigned int    height, 
+                                             unsigned int    width,
+                                             unsigned int    height,
                                              const void*     data );
 
     SGL_HRESULT     SGL_DLLCALL SetImage( unsigned int  mipmap,
@@ -39,9 +39,9 @@ public:
     SGL_HRESULT     SGL_DLLCALL GetImage( unsigned int  mipmap,
                                           void*         data );
 
-    SGL_HRESULT     SGL_DLLCALL BindSamplerState(SamplerState* samplerState)    { return EInvalidCall("Can't setup sampler state to cubemap side."); }
-    SGL_HRESULT     SGL_DLLCALL Bind(unsigned int stage) const                  { return EInvalidCall("Can't bind cube map side as 2D sampler."); }
-    void            SGL_DLLCALL Unbind() const                                  {}
+    SGL_HRESULT     SGL_DLLCALL BindSamplerState(SamplerState*)    { return EInvalidCall("Can't setup sampler state to cubemap side."); }
+    SGL_HRESULT     SGL_DLLCALL Bind(unsigned int) const           { return EInvalidCall("Can't bind cube map side as 2D sampler."); }
+    void            SGL_DLLCALL Unbind() const                     {}
 
 private:
     GLTextureCube*      texture;

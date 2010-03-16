@@ -46,7 +46,7 @@ namespace sgl {
 namespace math {
 
 // Forward
-template<typename ValueType, int n, int m = DEFAULT_INSTRUCTION_SET>
+template<typename ValueType, int n, int m>
 class Matrix;
 
 /** Vector column. */
@@ -614,10 +614,10 @@ typedef Matrix<double, 2, 1>           Vector2d;
 typedef Matrix<float, 4, 1>            FPUVector4f;    /// Vector4f without SSE
 typedef Matrix<float, 4, 1>            SSEVector4f;    /// Vector4f with SSE
 #ifdef SIMPLE_GL_USE_SSE
-typedef Matrix<float, 4, 1>            Vector4f;      
+typedef Matrix<float, 4, 1>            Vector4f;
 #else
-typedef Matrix<float, 4, 1>            Vector4f;      
-#endif 
+typedef Matrix<float, 4, 1>            Vector4f;
+#endif
 
 typedef Matrix<float, 3, 1>            Vector3f;
 typedef Matrix<float, 2, 1>            Vector2f;
@@ -969,16 +969,16 @@ inline Matrix<T, 1, n> operator / (const Matrix<T, 1, n>& lhs, const Matrix<T, 1
 }
 
 /** div per component */
-template<typename T, typename Y, int n>
-inline Matrix<T, n, 1> operator / (const Matrix<T, n, 1>& lhs, Y rhs)
+template<typename T, int n>
+inline Matrix<T, n, 1> operator / (const Matrix<T, n, 1>& lhs, T rhs)
 {
     Matrix<T, n, 1> tmp(lhs);
     return tmp /= rhs;
 }
 
 /** div per component */
-template<typename T, typename Y, int n>
-inline Matrix<T, 1, n> operator / (const Matrix<T, 1, n>& lhs, Y rhs)
+template<typename T, int n>
+inline Matrix<T, 1, n> operator / (const Matrix<T, 1, n>& lhs, T rhs)
 {
     Matrix<T, 1, n> tmp(lhs);
     return tmp /= rhs;

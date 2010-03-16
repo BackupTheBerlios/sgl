@@ -8,9 +8,9 @@ namespace sgl {
 class GLFFPProgram :
     public ResourceImpl<FFPProgram>
 {
-template<typename T> 
+template<typename T>
 friend class GLFFPUniform;
-public:   
+public:
     GLFFPProgram(Device* device);
     ~GLFFPProgram();
 
@@ -19,9 +19,9 @@ public:
     bool                SGL_DLLCALL RemoveShader(Shader* /*shader*/) { return false; }
 
     // Work
-    bool                SGL_DLLCALL IsDirty() const             { return false; }
-    SGL_HRESULT         SGL_DLLCALL Dirty(bool force = false)   { return SGL_OK; }
-    void                SGL_DLLCALL Clear()                     {}
+    bool                SGL_DLLCALL IsDirty() const         { return false; }
+    SGL_HRESULT         SGL_DLLCALL Dirty(bool /*force*/)   { return SGL_OK; }
+    void                SGL_DLLCALL Clear()                 {}
     SGL_HRESULT         SGL_DLLCALL Bind() const;
     void                SGL_DLLCALL Unbind() const;
 
@@ -30,9 +30,9 @@ public:
     bool                SGL_DLLCALL IsActive() const;
 
     // Geometry shaders
-    void                SGL_DLLCALL SetGeometryNumVerticesOut(unsigned int maxNumVertices)  {}
-    void                SGL_DLLCALL SetGeometryInputType(PRIMITIVE_TYPE inputType)          {}
-    void                SGL_DLLCALL SetGeometryOutputType(PRIMITIVE_TYPE outputType)        {}
+    void                SGL_DLLCALL SetGeometryNumVerticesOut(unsigned int /*maxNumVertices*/)  {}
+    void                SGL_DLLCALL SetGeometryInputType(PRIMITIVE_TYPE /*inputType*/)          {}
+    void                SGL_DLLCALL SetGeometryOutputType(PRIMITIVE_TYPE /*outputType*/)        {}
 
     unsigned int        SGL_DLLCALL GeometryNumVerticesOut() const  { return 0; }
     PRIMITIVE_TYPE      SGL_DLLCALL GeometryInputType() const       { return POINTS; }
@@ -40,9 +40,9 @@ public:
 
     /* Attributes */
     SGL_HRESULT         SGL_DLLCALL BindAttributeLocation(const char* name, unsigned index);
-    int                 SGL_DLLCALL AttributeLocation(const char* name) const { return -1; }
-    unsigned            SGL_DLLCALL NumAttributes() const                     { return 0; }
-    ATTRIBUTE           SGL_DLLCALL Attribute(unsigned index) const           { sglSetError(SGLERR_INVALID_CALL, "FFP program doesn't have generic attributes"); return ATTRIBUTE(); }
+    int                 SGL_DLLCALL AttributeLocation(const char* /*name*/) const { return -1; }
+    unsigned            SGL_DLLCALL NumAttributes() const                         { return 0; }
+    ATTRIBUTE           SGL_DLLCALL Attribute(unsigned /*index*/) const           { sglSetError(SGLERR_INVALID_CALL, "FFP program doesn't have generic attributes"); return ATTRIBUTE(); }
 
     /* Standart uniforms */
     Uniform4x4F*        SGL_DLLCALL GetModelViewMatrixUniform() const       { return modelViewMatrixUniform.get(); }
@@ -64,27 +64,27 @@ public:
     UniformF*           SGL_DLLCALL GetMaterialShininessUniform() const     { return materialShininessUniform.get(); }
 
     /* Create int uniform */
-    UniformI*           SGL_DLLCALL GetUniformI(const char* name)           { return 0; }
-    Uniform2I*          SGL_DLLCALL GetUniform2I(const char* name)          { return 0; }
-    Uniform3I*          SGL_DLLCALL GetUniform3I(const char* name)          { return 0; }
-    Uniform4I*          SGL_DLLCALL GetUniform4I(const char* name)          { return 0; }
+    UniformI*           SGL_DLLCALL GetUniformI(const char* /*name*/)           { return 0; }
+    Uniform2I*          SGL_DLLCALL GetUniform2I(const char* /*name*/)          { return 0; }
+    Uniform3I*          SGL_DLLCALL GetUniform3I(const char* /*name*/)          { return 0; }
+    Uniform4I*          SGL_DLLCALL GetUniform4I(const char* /*name*/)          { return 0; }
 
     /* Create float uniform */
-    UniformF*           SGL_DLLCALL GetUniformF(const char* name)           { return 0; }
-    Uniform2F*          SGL_DLLCALL GetUniform2F(const char* name)          { return 0; }
-    Uniform3F*          SGL_DLLCALL GetUniform3F(const char* name)          { return 0; }
-    Uniform4F*          SGL_DLLCALL GetUniform4F(const char* name)          { return 0; }
+    UniformF*           SGL_DLLCALL GetUniformF(const char* /*name*/)           { return 0; }
+    Uniform2F*          SGL_DLLCALL GetUniform2F(const char* /*name*/)          { return 0; }
+    Uniform3F*          SGL_DLLCALL GetUniform3F(const char* /*name*/)          { return 0; }
+    Uniform4F*          SGL_DLLCALL GetUniform4F(const char* /*name*/)          { return 0; }
 
     /* Create matrix uniform */
-    Uniform2x2F*        SGL_DLLCALL GetUniform2x2F(const char* name)        { return 0; }
-    Uniform3x3F*        SGL_DLLCALL GetUniform3x3F(const char* name)        { return 0; }
-    Uniform4x4F*        SGL_DLLCALL GetUniform4x4F(const char* name)        { return 0; }
+    Uniform2x2F*        SGL_DLLCALL GetUniform2x2F(const char* /*name*/)        { return 0; }
+    Uniform3x3F*        SGL_DLLCALL GetUniform3x3F(const char* /*name*/)        { return 0; }
+    Uniform4x4F*        SGL_DLLCALL GetUniform4x4F(const char* /*name*/)        { return 0; }
 
     /* Create texture uniforms */
-    SamplerUniform1D*   SGL_DLLCALL GetSamplerUniform1D(const char* name)   { return 0; }
-    SamplerUniform2D*   SGL_DLLCALL GetSamplerUniform2D(const char* name)   { return 0; }
-    SamplerUniform3D*   SGL_DLLCALL GetSamplerUniform3D(const char* name)   { return 0; }
-    SamplerUniformCube* SGL_DLLCALL GetSamplerUniformCube(const char* name) { return 0; }
+    SamplerUniform1D*   SGL_DLLCALL GetSamplerUniform1D(const char* /*name*/)   { return 0; }
+    SamplerUniform2D*   SGL_DLLCALL GetSamplerUniform2D(const char* /*name*/)   { return 0; }
+    SamplerUniform3D*   SGL_DLLCALL GetSamplerUniform3D(const char* /*name*/)   { return 0; }
+    SamplerUniformCube* SGL_DLLCALL GetSamplerUniformCube(const char* /*name*/) { return 0; }
 
 private:
     ref_ptr<Device>         device;

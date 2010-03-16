@@ -46,7 +46,7 @@ namespace {
     void set_texture_matrix(const math::Matrix4f* matrices, unsigned int quantity)
     {
         glMatrixMode(GL_TEXTURE);
-        for (unsigned int i = 0; i<quantity; ++i) 
+        for (unsigned int i = 0; i<quantity; ++i)
         {
             glActiveTexture(GL_TEXTURE0 + i);
             glLoadTransposeMatrixf( matrices[i].data() );
@@ -55,7 +55,7 @@ namespace {
 
     void set_texture_matrix_direct(const math::Matrix4f* matrices, unsigned int quantity)
     {
-        for (unsigned int i = 0; i<quantity; ++i) 
+        for (unsigned int i = 0; i<quantity; ++i)
         {
             glActiveTexture(GL_TEXTURE0 + i);
             glMatrixLoadTransposefEXT( GL_TEXTURE0 + i, matrices[i].data() );
@@ -64,7 +64,7 @@ namespace {
 
     void get_texture_matrix(math::Matrix4f* matrices, unsigned int quantity)
     {
-        for (unsigned int i = 0; i<quantity; ++i) 
+        for (unsigned int i = 0; i<quantity; ++i)
         {
             glActiveTexture(GL_TEXTURE0 + i);
             glGetFloatv(GL_TEXTURE_MATRIX, (GLfloat*)&matrices[i]);
@@ -252,18 +252,18 @@ GLFFPProgram::GLFFPProgram(Device* _device) :
 
     // modelview
     size_t uniformSize = sizeof(Matrix4f);
-    if (directStateAccess) 
+    if (directStateAccess)
     {
-        modelViewMatrixUniform.reset( new GLFFPUniform4x4F( this, 
-                                                            "ModelViewMatrix", 
-                                                            set_modelview_matrix_direct, 
+        modelViewMatrixUniform.reset( new GLFFPUniform4x4F( this,
+                                                            "ModelViewMatrix",
+                                                            set_modelview_matrix_direct,
                                                             get_modelview_matrix,
                                                             uniformSize ) );
     }
     else {
-        modelViewMatrixUniform.reset( new GLFFPUniform4x4F( this, 
-                                                            "ModelViewMatrix", 
-                                                            set_modelview_matrix, 
+        modelViewMatrixUniform.reset( new GLFFPUniform4x4F( this,
+                                                            "ModelViewMatrix",
+                                                            set_modelview_matrix,
                                                             get_modelview_matrix,
                                                             uniformSize ) );
     }
@@ -271,18 +271,18 @@ GLFFPProgram::GLFFPProgram(Device* _device) :
 
     // projection
     uniformSize = sizeof(Matrix4f);
-    if (directStateAccess) 
+    if (directStateAccess)
     {
-        projectionMatrixUniform.reset( new GLFFPUniform4x4F( this, 
-                                                             "ProjectionMatrix", 
-                                                             set_projection_matrix_direct, 
+        projectionMatrixUniform.reset( new GLFFPUniform4x4F( this,
+                                                             "ProjectionMatrix",
+                                                             set_projection_matrix_direct,
                                                              get_projection_matrix,
                                                              uniformSize ) );
     }
     else {
-        projectionMatrixUniform.reset( new GLFFPUniform4x4F( this, 
-                                                             "ProjectionMatrix", 
-                                                             set_projection_matrix, 
+        projectionMatrixUniform.reset( new GLFFPUniform4x4F( this,
+                                                             "ProjectionMatrix",
+                                                             set_projection_matrix,
                                                              get_projection_matrix,
                                                              uniformSize ) );
     }
@@ -290,18 +290,18 @@ GLFFPProgram::GLFFPProgram(Device* _device) :
 
     // texture
     uniformSize = sizeof(Matrix4f) * Device::NUM_TEXTURE_STAGES;
-    if (directStateAccess) 
+    if (directStateAccess)
     {
-        textureMatrixUniform.reset( new GLFFPUniform4x4F( this, 
-                                                          "TextureMatrix", 
-                                                          set_texture_matrix_direct, 
+        textureMatrixUniform.reset( new GLFFPUniform4x4F( this,
+                                                          "TextureMatrix",
+                                                          set_texture_matrix_direct,
                                                           get_texture_matrix,
                                                           uniformSize ) );
     }
     else {
-        textureMatrixUniform.reset( new GLFFPUniform4x4F( this, 
-                                                          "TextureMatrix", 
-                                                          set_texture_matrix, 
+        textureMatrixUniform.reset( new GLFFPUniform4x4F( this,
+                                                          "TextureMatrix",
+                                                          set_texture_matrix,
                                                           get_texture_matrix,
                                                           uniformSize ) );
     }
@@ -309,89 +309,89 @@ GLFFPProgram::GLFFPProgram(Device* _device) :
 
     // light position
     uniformSize = sizeof(Vector4f) * Device::NUM_FFP_LIGHTS;
-    lightDirectionUniform.reset( new GLFFPUniform4F( this, 
-                                                     "LightPosition", 
-                                                     set_light_position, 
-                                                     get_light_position, 
+    lightDirectionUniform.reset( new GLFFPUniform4F( this,
+                                                     "LightPosition",
+                                                     set_light_position,
+                                                     get_light_position,
                                                      uniformSize ) );
     offset += uniformSize;
 
     // light direction
     uniformSize = sizeof(Vector4f) * Device::NUM_FFP_LIGHTS;
-    lightPositionUniform.reset( new GLFFPUniform4F( this, 
-                                                    "LightDirection", 
-                                                    set_light_direction, 
-                                                    get_light_direction, 
+    lightPositionUniform.reset( new GLFFPUniform4F( this,
+                                                    "LightDirection",
+                                                    set_light_direction,
+                                                    get_light_direction,
                                                     uniformSize ) );
     offset += uniformSize;
 
     // light ambient
     uniformSize = sizeof(Vector4f) * Device::NUM_FFP_LIGHTS;
-    lightAmbientUniform.reset( new GLFFPUniform4F( this, 
-                                                   "LightAmbient", 
-                                                   set_light_ambient, 
+    lightAmbientUniform.reset( new GLFFPUniform4F( this,
+                                                   "LightAmbient",
+                                                   set_light_ambient,
                                                    get_light_ambient,
                                                    uniformSize ) );
     offset += uniformSize;
 
     // light diffuse
     uniformSize = sizeof(Vector4f) * Device::NUM_FFP_LIGHTS;
-    lightDiffuseUniform.reset( new GLFFPUniform4F( this, 
-                                                   "LightDiffuse", 
-                                                   set_light_diffuse, 
+    lightDiffuseUniform.reset( new GLFFPUniform4F( this,
+                                                   "LightDiffuse",
+                                                   set_light_diffuse,
                                                    get_light_diffuse,
                                                    uniformSize ) );
     offset += uniformSize;
 
     // light specular
     uniformSize = sizeof(Vector4f) * Device::NUM_FFP_LIGHTS;
-    lightSpecularUniform.reset( new GLFFPUniform4F( this, 
-                                                    "LightSpecular", 
+    lightSpecularUniform.reset( new GLFFPUniform4F( this,
+                                                    "LightSpecular",
                                                     set_light_specular,
-                                                    get_light_specular, 
+                                                    get_light_specular,
                                                     uniformSize ) );
     offset += uniformSize;
 
     // ambient
     uniformSize = sizeof(Vector4f);
-    ambientUniform.reset( new GLFFPUniform4F( this, 
-                                              "Ambient", 
-                                              set_ambient, 
-                                              get_ambient, 
+    ambientUniform.reset( new GLFFPUniform4F( this,
+                                              "Ambient",
+                                              set_ambient,
+                                              get_ambient,
                                               uniformSize ) );
     offset += uniformSize;
 
     // material ambient
     uniformSize = sizeof(Vector4f);
-    materialAmbientUniform.reset( new GLFFPUniform4F( this, 
-                                                      "MaterialAmbient", 
-                                                      set_material_ambient, 
-                                                      get_material_ambient, 
+    materialAmbientUniform.reset( new GLFFPUniform4F( this,
+                                                      "MaterialAmbient",
+                                                      set_material_ambient,
+                                                      get_material_ambient,
                                                       uniformSize ) );
     offset += uniformSize;
 
     // material diffuse
     uniformSize = sizeof(Vector4f);
-    materialDiffuseUniform.reset( new GLFFPUniform4F( this, 
-                                                      "MaterialDiffuse", 
+    materialDiffuseUniform.reset( new GLFFPUniform4F( this,
+                                                      "MaterialDiffuse",
                                                       set_material_diffuse,
-                                                      get_material_diffuse, 
+                                                      get_material_diffuse,
                                                       uniformSize ) );
     offset += uniformSize;
 
     // material specular
     uniformSize = sizeof(Vector4f);
-    materialSpecularUniform.reset( new GLFFPUniform4F( this, 
-                                                       "MaterialSpecular", 
+    materialSpecularUniform.reset( new GLFFPUniform4F( this,
+                                                       "MaterialSpecular",
                                                        set_material_specular,
-                                                       get_material_specular, 
+                                                       get_material_specular,
                                                        uniformSize ) );
     offset += uniformSize;
 
     // material emission
     uniformSize = sizeof(Vector4f);
-    materialEmissionUniform.reset( new GLFFPUniform4F( this, 
-                                                       "MaterialEmission", 
+    materialEmissionUniform.reset( new GLFFPUniform4F( this,
+                                                       "MaterialEmission",
                                                        set_material_emission,
                                                        get_material_emission,
                                                        uniformSize ) );
@@ -399,38 +399,38 @@ GLFFPProgram::GLFFPProgram(Device* _device) :
 
     // material shininess
     uniformSize = sizeof(float);
-    materialShininessUniform.reset( new GLFFPUniformF( this, 
-                                                       "MaterialShininess", 
+    materialShininessUniform.reset( new GLFFPUniformF( this,
+                                                       "MaterialShininess",
                                                        set_material_shininess,
-                                                       get_material_shininess, 
+                                                       get_material_shininess,
                                                        uniformSize ) );
     offset += uniformSize;
 
     // lighting toggle
     uniformSize = sizeof(bool);
-    lightingToggleUniform.reset( new GLFFPUniformI( this, 
-                                                    "LightingToggle", 
+    lightingToggleUniform.reset( new GLFFPUniformI( this,
+                                                    "LightingToggle",
                                                     set_lighting_toggle,
-                                                    get_lighting_toggle, 
+                                                    get_lighting_toggle,
                                                     uniformSize ) );
     offset += uniformSize;
 
     // light toggles
     uniformSize = sizeof(bool) * Device::NUM_FFP_LIGHTS;
-    lightToggleUniform.reset( new GLFFPUniformI( this, 
-                                                 "LightToggle", 
+    lightToggleUniform.reset( new GLFFPUniformI( this,
+                                                 "LightToggle",
                                                  set_light_toggle,
-                                                 get_light_toggle, 
+                                                 get_light_toggle,
                                                  uniformSize ) );
     offset += uniformSize;
 }
 
 GLFFPProgram::~GLFFPProgram()
-{   
+{
     // Do nothing. Dies with device
 }
 
-SGL_HRESULT GLFFPProgram::BindAttributeLocation(const char* name, unsigned index)
+SGL_HRESULT GLFFPProgram::BindAttributeLocation(const char* /*name*/, unsigned /*index*/)
 {
     return EInvalidCall("Can't bind attribute location for ffp program.");
 }

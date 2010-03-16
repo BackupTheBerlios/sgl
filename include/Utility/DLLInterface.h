@@ -1,10 +1,10 @@
 #ifndef SIMPLE_GL_DLL_INTERFACE_H
 #define SIMPLE_GL_DLL_INTERFACE_H
 
-#include "Config.h"
+#include "../Config.h"
 
 #ifdef SIMPLE_GL_USE_SSE
-#include "Utility/Aligned.h"
+#include "Aligned.h"
 #endif // SIMPLE_GL_USE_SSE
 
 namespace sgl {
@@ -21,9 +21,9 @@ public:
 	*/
 	virtual void SGL_DLLCALL Destroy() = 0;
 
-    void operator delete(void* ptr) 
+    void operator delete(void* ptr)
     {
-        if (ptr) 
+        if (ptr)
         {
             DLLInterface* pInterface = static_cast<DLLInterface*>(ptr);
             pInterface->Destroy();
@@ -69,7 +69,7 @@ public:
 #endif // SIMPLE_GL_USE_SSE
 
     /** From this point will be used default delete */
-    void operator delete(void* p) 
+    void operator delete(void* p)
     {
     #ifdef SIMPLE_GL_USE_SSE
         if (p) {

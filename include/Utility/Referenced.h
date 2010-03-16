@@ -9,8 +9,8 @@ namespace sgl {
 
 struct ref_counter;
 
-/** Interface for reference counted objects which allows only 
- * weak_ptr and scoped_ptr. 
+/** Interface for reference counted objects which allows only
+ * weak_ptr and scoped_ptr.
  */
 class WeakReferenced :
     public DLLInterface
@@ -31,10 +31,10 @@ public:
 };
 
 /** Counter for ref and weak references */
-struct SGL_DLLEXPORT ref_counter
+struct ref_counter
 {
-    inline ref_counter( WeakReferenced* _ptr, 
-                        int             _refCount  = 0, 
+    inline ref_counter( WeakReferenced* _ptr,
+                        int             _refCount  = 0,
                         int             _weakCount = 0 ) :
         ptr(_ptr),
         refCount(_refCount),

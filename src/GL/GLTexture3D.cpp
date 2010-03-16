@@ -29,29 +29,29 @@ GLTexture3D::GLTexture3D(Device* device, const DESC& desc) :
 #endif // SGL_NO_STATUS_CHECK
 
     // copy image
-    if (compressed) 
+    if (compressed)
     {
-        glCompressedTexImage3D( glTarget, 
-                                0, 
-                                glFormat, 
-                                width, 
-                                height, 
+        glCompressedTexImage3D( glTarget,
+                                0,
+                                glFormat,
+                                width,
+                                height,
                                 depth,
-                                0, 
-                                Image::SizeOfData(format, width, height, 1), 
+                                0,
+                                Image::SizeOfData(format, width, height, 1),
                                 desc.data );
     }
-    else 
+    else
     {
-        glTexImage3D( glTarget, 
-                      0, 
-                      glFormat, 
+        glTexImage3D( glTarget,
+                      0,
+                      glFormat,
                       width,
                       height,
                       depth,
-                      0, 
-                      glUsage, 
-                      glPixelType, 
+                      0,
+                      glUsage,
+                      glPixelType,
                       desc.data );
     }
 
@@ -91,11 +91,11 @@ GLTexture3D::GLTexture3D(Device* device, const DESC_MS& desc) :
 #endif // SGL_NO_STATUS_CHECK
 
     // create image
-    glTexImage3DMultisample( glTarget, 
-                             numSamples, 
-                             glFormat, 
-                             width, 
-                             height, 
+    glTexImage3DMultisample( glTarget,
+                             numSamples,
+                             glFormat,
+                             width,
+                             height,
                              depth,
                              GL_TRUE );
 
@@ -112,8 +112,8 @@ SGL_HRESULT GLTexture3D::SetSubImage( unsigned int  mipmap,
                                       unsigned int  offsetx,
                                       unsigned int  offsety,
                                       unsigned int  offsetz,
-                                      unsigned int  regionWidth, 
-                                      unsigned int  regionHeight, 
+                                      unsigned int  regionWidth,
+                                      unsigned int  regionHeight,
                                       unsigned int  regionDepth,
                                       const void*   data )
 {
@@ -133,32 +133,32 @@ SGL_HRESULT GLTexture3D::SetSubImage( unsigned int  mipmap,
 #endif // SGL_NO_STATUS_CHECK
 
     // copy image
-    if (compressed) 
+    if (compressed)
     {
-        glCompressedTexSubImage3D( glTarget, 
-                                   mipmap, 
+        glCompressedTexSubImage3D( glTarget,
+                                   mipmap,
                                    offsetx,
                                    offsety,
                                    offsetz,
-                                   regionWidth, 
+                                   regionWidth,
                                    regionHeight,
                                    regionDepth,
-                                   glFormat, 
-                                   Image::SizeOfData(format, regionWidth, regionHeight, 1), 
+                                   glFormat,
+                                   Image::SizeOfData(format, regionWidth, regionHeight, 1),
                                    data );
     }
-    else 
+    else
     {
-        glTexSubImage3D( glTarget, 
-                         mipmap, 
+        glTexSubImage3D( glTarget,
+                         mipmap,
                          offsetx,
                          offsety,
                          offsetz,
-                         regionWidth, 
-                         regionHeight, 
+                         regionWidth,
+                         regionHeight,
                          regionDepth,
-                         glFormat, 
-                         glPixelType, 
+                         glFormat,
+                         glPixelType,
                          data );
     }
 
@@ -181,7 +181,6 @@ SGL_HRESULT GLTexture3D::GetImage( unsigned int  mipmap,
     GLenum glError;
 	GLenum glUsage     = BIND_GL_FORMAT_USAGE[format];
 	GLenum glPixelType = BIND_GL_FORMAT_PIXEL_TYPE[format];
-    GLenum glFormat    = BIND_GL_FORMAT[format];
 
     bool   compressed  = Texture::FORMAT_TRAITS[format].compressed;
 
@@ -254,11 +253,11 @@ SGL_HRESULT GLTexture3D::Bind(unsigned int _stage) const
     glActiveTexture(GL_TEXTURE0 + stage);
     glBindTexture(glTarget, glTexture);
 
-    if ( boundSamplerState != device->CurrentSamplerState(stage) ) 
+    if ( boundSamplerState != device->CurrentSamplerState(stage) )
     {
         boundSamplerState               = static_cast<const GLSamplerState*>( device->CurrentSamplerState(stage) );
         const SamplerState::DESC& desc  = boundSamplerState->Desc();
-        if (numSamples == 0) 
+        if (numSamples == 0)
         {
             glTexParameteri( glTarget, GL_TEXTURE_MIN_FILTER,       BIND_TEXTURE_MIN_FILTER[ (desc.filter[0] << 1) | (desc.filter[2]) ] );
             glTexParameteri( glTarget, GL_TEXTURE_MAG_FILTER,       BIND_TEXTURE_FILTER[ desc.filter[1] ] );
@@ -280,7 +279,7 @@ SGL_HRESULT GLTexture3D::Bind(unsigned int _stage) const
 
 void GLTexture3D::Unbind() const
 {
-    if ( stage > 0 && device->CurrentTexture(stage) == this ) 
+    if ( stage > 0 && device->CurrentTexture(stage) == this )
     {
         glActiveTexture(GL_TEXTURE0 + stage);
         glBindTexture(glTarget, 0);

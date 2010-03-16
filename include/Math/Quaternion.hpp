@@ -70,7 +70,7 @@ public:
 
     Quaternion(float _x, float _y, float _z, float _w) :
         x(_x), y(_y), z(_z), w(_w) {}
-    
+
     explicit Quaternion(const __m128& _m128) :
         m128(_m128)
     {}
@@ -349,7 +349,7 @@ template<typename T>
 inline Quaternion<T> from_axis_angle(const Matrix<T, 3, 1>& axis)
 {
     T angle = length(axis);
-    return Quaternion<T>( axis / angle * sin(angle/2), cos(angle/2) );
+    return Quaternion<T>( axis * T(sin(angle * T(0.5))) / angle, cos(angle * T(0.5)) );
 }
 
 template<typename T>
@@ -462,7 +462,7 @@ void to_axis_angle(const Quaternion<float>& quat, Matrix<float, 3, 1>& axis, flo
 typedef Quaternion<float>      Quaternionf;    /// Quaternion with SSE
 #else
 typedef Quaternion<float>      Quaternionf;    /// Quaternion with default instruction set
-#endif 
+#endif
 typedef Quaternion<double>          Quaterniond;
 
 template<typename T>

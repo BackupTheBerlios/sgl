@@ -10,7 +10,7 @@ namespace sgl {
 namespace math {
 
 /** Axis aligned bounding box. */
-template<typename   ValueType, 
+template<typename   ValueType,
          int        Dimension>
 class AABB
 {
@@ -62,7 +62,7 @@ public:
     /** Make minimum size aabb */
     inline AABB& reset_min()
     {
-        for (int i = 0; i<Dimension; ++i) 
+        for (int i = 0; i<Dimension; ++i)
         {
             minVec[i] =  std::numeric_limits<value_type>::max();
             maxVec[i] = -std::numeric_limits<value_type>::max();
@@ -74,7 +74,7 @@ public:
     /** Make maximum size aabb */
     inline AABB& reset_max()
     {
-        for (int i = 0; i<Dimension; ++i) 
+        for (int i = 0; i<Dimension; ++i)
         {
             minVec[i] = -std::numeric_limits<value_type>::max();
             maxVec[i] =  std::numeric_limits<value_type>::max();
@@ -129,8 +129,8 @@ inline Matrix<T, n, 1> center(const AABB<T, n>& aabb)
 template<typename T>
 inline AABB<T, 3>& operator *= (AABB<T, 3>& aabb, const Matrix<T, 3, 3>& matrix)
 {
-    AABB<T, 3>::vec_type    aMin, aMax;
-    float                       a, b;
+    typename AABB<T, 3>::vec_type   aMin, aMax;
+    float                           a, b;
 
     // Copy box A into min and max array.
     aMin = aabb.minVec;
@@ -141,7 +141,7 @@ inline AABB<T, 3>& operator *= (AABB<T, 3>& aabb, const Matrix<T, 3, 3>& matrix)
     aabb.minVec.y = aabb.maxVec.y = T(0);
     aabb.minVec.z = aabb.maxVec.z = T(0);
 
-    // Find extreme points by considering product of 
+    // Find extreme points by considering product of
     // min and max with each component of M.
     for(int j=0; j<3; ++j)
     {
@@ -166,25 +166,24 @@ inline AABB<T, 3>& operator *= (AABB<T, 3>& aabb, const Matrix<T, 3, 3>& matrix)
     return aabb;
 }
 
-/** Transform plane by matrix */
 template<typename T>
 inline AABB<T, 3>& operator *= (AABB<T, 3>& aabb, const Matrix<T, 4, 4>& matrix)
 {
-    AABB<T, 3>::vec_type    aMin, aMax;
-    float                       a, b;
+    typename AABB<T, 3>::vec_type   aMin, aMax;
+    float                           a, b;
 
     // Copy box A into min and max array.
     aMin = aabb.minVec;
     aMax = aabb.maxVec;
 
     // Begin at translation
-    AABB<T, 3>::vec_type trans = get_translation(matrix);
+    typename AABB<T, 3>::vec_type trans = get_translation(matrix);
     aabb.minVec.x = aabb.maxVec.x = trans.x;
     aabb.minVec.y = aabb.maxVec.y = trans.y;
     aabb.minVec.z = aabb.maxVec.z = trans.z;
 
 
-    // Find extreme points by considering product of 
+    // Find extreme points by considering product of
     // min and max with each component of M.
     for(int j=0; j<3; ++j)
     {
@@ -211,43 +210,47 @@ inline AABB<T, 3>& operator *= (AABB<T, 3>& aabb, const Matrix<T, 4, 4>& matrix)
 
 // Compare AABB
 template<typename T, int n>
-inline bool operator == (const AABB<T, n>& lhs, const AABB<T, n>& rhs) 
-{ 
-    return lhs.minVec == rhs.minVec && lhs.maxVec == rhs.maxVec; 
+inline bool operator == (const AABB<T, n>& lhs, const AABB<T, n>& rhs)
+{
+    return lhs.minVec == rhs.minVec && lhs.maxVec == rhs.maxVec;
 }
 
 template<typename T, int n>
-inline bool operator != (const AABB<T, n>& lhs, const AABB<T, n>& rhs) 
-{ 
-    return lhs.minVec != rhs.minVec || lhs.maxVec != rhs.maxVec; 
+inline bool operator != (const AABB<T, n>& lhs, const AABB<T, n>& rhs)
+{
+    return lhs.minVec != rhs.minVec || lhs.maxVec != rhs.maxVec;
 }
 
 /** Transform aabb by matrix */
 template<typename T>
 inline AABB<T, 3> operator * (const Matrix<T, 3, 3>& matrix, const AABB<T, 3>& aabb)
 {
-    return AABB<T, 3>(aabb) *= matrix;
+    AABB<T, 3> tmp(aabb);
+    return tmp *= matrix;
 }
 
 /** Transform aabb by matrix */
 template<typename T>
 inline AABB<T, 3> operator * (const AABB<T, 3>& aabb, const Matrix<T, 3, 3>& matrix)
 {
-    return AABB<T, 3>(aabb) *= matrix;
+    AABB<T, 3> tmp(aabb);
+    return tmp *= matrix;
 }
 
 /** Transform aabb by matrix */
 template<typename T>
 inline AABB<T, 3> operator * (const Matrix<T, 4, 4>& matrix, const AABB<T, 3>& aabb)
 {
-    return AABB<T, 3>(aabb) *= matrix;
+    AABB<T, 3> tmp(aabb);
+    return tmp *= matrix;
 }
 
 /** Transform aabb by matrix */
 template<typename T>
 inline AABB<T, 3> operator * (const AABB<T, 3>& aabb, const Matrix<T, 4, 4>& matrix)
 {
-    return AABB<T, 3>(aabb) *= matrix;
+    AABB<T, 3> tmp(aabb);
+    return tmp *= matrix;
 }
 
 /** Make minimum size AABB containing two aabbs */
@@ -262,19 +265,19 @@ template<typename T>
 inline Matrix<T, 3, 1> get_nearest_direction(const AABB<T, 3>& aabb, const Matrix<T, 3, 1>& vec)
 {
     Matrix<T, 3, 1> direction;
-    for(int i = 0; i<3; ++i) 
+    for(int i = 0; i<3; ++i)
     {
-        if (vec[i] > minVec[i])
+        if (vec[i] > aabb.minVec[i])
         {
-            if (vec[i] < maxVec[i]) {
+            if (vec[i] < aabb.maxVec[i]) {
                 direction[i] = 0;
             }
             else {
-                direction[i] = vec[i] - maxVec[i];
+                direction[i] = vec[i] - aabb.maxVec[i];
             }
         }
         else {
-            direction[i] = minVec[i] - vec[i];
+            direction[i] = aabb.minVec[i] - vec[i];
         }
     }
 

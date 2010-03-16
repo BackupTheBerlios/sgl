@@ -48,7 +48,7 @@ GLRenderTarget::~GLRenderTarget()
 }
 
 SGL_HRESULT GLRenderTarget::SetDepthStencil( bool             toggle,
-                                             Texture::FORMAT  format, 
+                                             Texture::FORMAT  format,
                                              unsigned int     samples )
 {
 #ifndef SGL_NO_STATUS_CHECK
@@ -66,7 +66,7 @@ SGL_HRESULT GLRenderTarget::SetDepthStencil( bool             toggle,
 }
 
 SGL_HRESULT GLRenderTarget::SetColorAttachment( unsigned int    mrtIndex,
-                                                Texture2D*      texture, 
+                                                Texture2D*      texture,
                                                 unsigned int    level )
 {
 #ifndef SGL_NO_STATUS_CHECK
@@ -82,7 +82,7 @@ SGL_HRESULT GLRenderTarget::SetColorAttachment( unsigned int    mrtIndex,
 }
 
 SGL_HRESULT GLRenderTarget::SetColorAttachment( unsigned int    mrtIndex,
-                                                Texture3D*      texture, 
+                                                Texture3D*      texture,
                                                 unsigned int    level,
                                                 unsigned int    layer )
 {
@@ -146,8 +146,8 @@ SGL_HRESULT GLRenderTarget::Dirty(bool force)
     // bind
     GLenum error;
     GLuint oldFBO               = GuardedBind(fbo);
-    size_t maxAttachmentWidth   = 0;
-    size_t maxAttachmentHeight  = 0;
+    GLuint maxAttachmentWidth   = 0;
+    GLuint maxAttachmentHeight  = 0;
     bool   fillDrawBuffers      = drawBuffers.empty();
     for(size_t i = 0; i<attachments.size(); ++i)
     {
@@ -163,7 +163,7 @@ SGL_HRESULT GLRenderTarget::Dirty(bool force)
             maxAttachmentWidth  = std::max(maxAttachmentHeight, attachment.height);
 
             // attach color buffer
-            switch (attachment.glTarget) 
+            switch (attachment.glTarget)
             {
             case GL_TEXTURE_2D:
             case GL_TEXTURE_CUBE_MAP_POSITIVE_X:
@@ -194,7 +194,7 @@ SGL_HRESULT GLRenderTarget::Dirty(bool force)
 
 #ifndef SGL_NO_STATUS_CHECK
             error = glGetError();
-            if ( error != GL_NO_ERROR ) 
+            if ( error != GL_NO_ERROR )
             {
                 GuardedUnbind(oldFBO);
                 return CheckGLError("GLRenderTarget::Dirty failed. Failed to attach color attachment: ", error);
@@ -214,7 +214,7 @@ SGL_HRESULT GLRenderTarget::Dirty(bool force)
 
 #ifndef SGL_NO_STATUS_CHECK
         error = glGetError();
-        if ( error != GL_NO_ERROR ) 
+        if ( error != GL_NO_ERROR )
         {
             GuardedUnbind(oldFBO);
             return CheckGLError("GLRenderTarget::Dirty failed. Failed to attach depth-stencil attachment: ", error);
@@ -242,7 +242,7 @@ SGL_HRESULT GLRenderTarget::Dirty(bool force)
 
 #ifndef SGL_NO_STATUS_CHECK
         error = glGetError();
-        if ( error != GL_NO_ERROR ) 
+        if ( error != GL_NO_ERROR )
         {
             GuardedUnbind(oldFBO);
             return CheckGLError("GLRenderTarget::Dirty failed. Failed to create depth-stencil renderbuffer: ", error);
@@ -251,17 +251,17 @@ SGL_HRESULT GLRenderTarget::Dirty(bool force)
 
         glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
         glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT,
-                                      GL_DEPTH_ATTACHMENT_EXT, 
-                                      GL_RENDERBUFFER_EXT, 
+                                      GL_DEPTH_ATTACHMENT_EXT,
+                                      GL_RENDERBUFFER_EXT,
                                       dsRenderBuffer );
         glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT,
-                                      GL_STENCIL_ATTACHMENT_EXT, 
-                                      GL_RENDERBUFFER_EXT, 
+                                      GL_STENCIL_ATTACHMENT_EXT,
+                                      GL_RENDERBUFFER_EXT,
                                       dsRenderBuffer );
-    
+
 #ifndef SGL_NO_STATUS_CHECK
         error = glGetError();
-        if ( error != GL_NO_ERROR ) 
+        if ( error != GL_NO_ERROR )
         {
             GuardedUnbind(oldFBO);
             return CheckGLError("GLRenderTarget::Dirty failed. Failed to attach depth-stencil renderbuffer: ", error);
@@ -299,13 +299,13 @@ SGL_HRESULT GLRenderTarget::SetDrawBuffers(unsigned int numTargets, unsigned int
 {
     // copy draw buffers
     drawBuffers.resize(numTargets);
-    std::transform( targets, 
-                    targets + numTargets, 
-                    drawBuffers.begin(), 
+    std::transform( targets,
+                    targets + numTargets,
+                    drawBuffers.begin(),
                     std::bind1st(std::plus<int>(), GL_COLOR_ATTACHMENT0) );
 
     // setup to openGL
-    if ( device->CurrentRenderTarget() == this ) 
+    if ( device->CurrentRenderTarget() == this )
     {
         if ( drawBuffers.empty() ) {
             glDrawBuffer(GL_NONE);
@@ -335,11 +335,11 @@ unsigned int GLRenderTarget::ReadBuffer() const
 
 unsigned int GLRenderTarget::DrawBuffers(unsigned int* targets) const
 {
-    if (targets) 
+    if (targets)
     {
-        std::transform( drawBuffers.begin(), 
-                        drawBuffers.end(), 
-                        targets, 
+        std::transform( drawBuffers.begin(),
+                        drawBuffers.end(),
+                        targets,
                         std::bind1st(std::minus<int>(), GL_COLOR_ATTACHMENT0) );
     }
 

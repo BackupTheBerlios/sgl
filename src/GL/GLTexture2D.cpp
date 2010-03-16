@@ -28,27 +28,27 @@ GLTexture2D::GLTexture2D(Device* device, const DESC& desc) :
 #endif // SGL_NO_STATUS_CHECK
 
     // copy image
-    if (compressed) 
+    if (compressed)
     {
-        glCompressedTexImage2D( glTarget, 
-                                0, 
-                                glFormat, 
-                                width, 
-                                height, 
-                                0, 
-                                Image::SizeOfData(format, width, height, 1), 
+        glCompressedTexImage2D( glTarget,
+                                0,
+                                glFormat,
+                                width,
+                                height,
+                                0,
+                                Image::SizeOfData(format, width, height, 1),
                                 desc.data );
     }
-    else 
+    else
     {
-        glTexImage2D( glTarget, 
-                      0, 
-                      glFormat, 
-                      width, 
-                      height, 
-                      0, 
-                      glUsage, 
-                      glPixelType, 
+        glTexImage2D( glTarget,
+                      0,
+                      glFormat,
+                      width,
+                      height,
+                      0,
+                      glUsage,
+                      glPixelType,
                       desc.data );
     }
 
@@ -70,10 +70,7 @@ GLTexture2D::GLTexture2D(Device* device, const DESC_MS& desc) :
 {
     // image settings
     GLenum glError;
-	GLenum glUsage     = BIND_GL_FORMAT_USAGE[format];
-	GLenum glPixelType = BIND_GL_FORMAT_PIXEL_TYPE[format];
-    GLenum glFormat    = BIND_GL_FORMAT[format];
-    bool   compressed  = Texture::FORMAT_TRAITS[format].compressed;
+    GLenum glFormat = BIND_GL_FORMAT[format];
 
     // save previous state & bind texture
     guarded_binding_ptr guardedTexture( new guarded_binding(device, this, 0) );
@@ -85,11 +82,11 @@ GLTexture2D::GLTexture2D(Device* device, const DESC_MS& desc) :
 #endif // SGL_NO_STATUS_CHECK
 
     // create image
-    glTexImage2DMultisample( glTarget, 
-                             numSamples, 
-                             glFormat, 
-                             width, 
-                             height, 
+    glTexImage2DMultisample( glTarget,
+                             numSamples,
+                             glFormat,
+                             width,
+                             height,
                              GL_TRUE );
 
 #ifndef SGL_NO_STATUS_CHECK
@@ -103,8 +100,8 @@ GLTexture2D::GLTexture2D(Device* device, const DESC_MS& desc) :
 SGL_HRESULT GLTexture2D::SetSubImage( unsigned int  mipmap,
                                       unsigned int  offsetx,
                                       unsigned int  offsety,
-                                      unsigned int  regionWidth, 
-                                      unsigned int  regionHeight, 
+                                      unsigned int  regionWidth,
+                                      unsigned int  regionHeight,
                                       const void*   data )
 {
     // image settings
@@ -123,28 +120,28 @@ SGL_HRESULT GLTexture2D::SetSubImage( unsigned int  mipmap,
 #endif // SGL_NO_STATUS_CHECK
 
     // copy image
-    if (compressed) 
+    if (compressed)
     {
-        glCompressedTexSubImage2D( glTarget, 
-                                   mipmap, 
+        glCompressedTexSubImage2D( glTarget,
+                                   mipmap,
                                    offsetx,
                                    offsety,
-                                   regionWidth, 
-                                   regionHeight, 
-                                   glFormat, 
-                                   Image::SizeOfData(format, regionWidth, regionHeight, 1), 
+                                   regionWidth,
+                                   regionHeight,
+                                   glFormat,
+                                   Image::SizeOfData(format, regionWidth, regionHeight, 1),
                                    data );
     }
-    else 
+    else
     {
-        glTexSubImage2D( glTarget, 
-                         mipmap, 
+        glTexSubImage2D( glTarget,
+                         mipmap,
                          offsetx,
                          offsety,
-                         regionWidth, 
-                         regionHeight, 
-                         glFormat, 
-                         glPixelType, 
+                         regionWidth,
+                         regionHeight,
+                         glFormat,
+                         glPixelType,
                          data );
     }
 
@@ -167,7 +164,6 @@ SGL_HRESULT GLTexture2D::GetImage( unsigned int  mipmap,
     GLenum glError;
 	GLenum glUsage     = BIND_GL_FORMAT_USAGE[format];
 	GLenum glPixelType = BIND_GL_FORMAT_PIXEL_TYPE[format];
-    GLenum glFormat    = BIND_GL_FORMAT[format];
 
     bool   compressed  = Texture::FORMAT_TRAITS[format].compressed;
 
@@ -236,7 +232,7 @@ SGL_HRESULT GLTexture2D::BindSamplerState(sgl::SamplerState* _samplerState)
     {
         guarded_binding_ptr guardedTexture( new guarded_binding(device.get(), this, 0) );
         const SamplerState::DESC& desc = samplerState->Desc();
-        if (numSamples == 0) 
+        if (numSamples == 0)
         {
             glTexParameteri( glTarget, GL_TEXTURE_MIN_FILTER,       BIND_TEXTURE_MIN_FILTER[ desc.filter[2] * 3 + desc.filter[0] ] );
             glTexParameteri( glTarget, GL_TEXTURE_MAG_FILTER,       BIND_TEXTURE_FILTER[ desc.filter[1] ] );
@@ -266,11 +262,11 @@ SGL_HRESULT GLTexture2D::Bind(unsigned int _stage) const
     glEnable(glTarget);
     glBindTexture(glTarget, glTexture);
 /*
-    if ( boundSamplerState != device->CurrentSamplerState(stage) ) 
+    if ( boundSamplerState != device->CurrentSamplerState(stage) )
     {
         boundSamplerState               = static_cast<const GLSamplerState*>( device->CurrentSamplerState(stage) );
         const SamplerState::DESC& desc  = boundSamplerState->Desc();
-        if (numSamples == 0) 
+        if (numSamples == 0)
         {
             glTexParameteri( glTarget, GL_TEXTURE_MIN_FILTER,       BIND_TEXTURE_MIN_FILTER[ (desc.filter[0] << 1) | (desc.filter[2]) ] );
             glTexParameteri( glTarget, GL_TEXTURE_MAG_FILTER,       BIND_TEXTURE_FILTER[ desc.filter[1] ] );
@@ -290,7 +286,7 @@ SGL_HRESULT GLTexture2D::Bind(unsigned int _stage) const
 
 void GLTexture2D::Unbind() const
 {
-    if ( stage >= 0 && device->CurrentTexture(stage) == this ) 
+    if ( stage >= 0 && device->CurrentTexture(stage) == this )
     {
         glActiveTexture(GL_TEXTURE0 + stage);
         glBindTexture(glTarget, 0);

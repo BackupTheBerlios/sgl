@@ -61,7 +61,7 @@ private:
             level(_level),
             layer(-1)
         {}
-        
+
         attachment( GLTexture<Texture3D>*   _texture,
                     unsigned int            _level,
                     unsigned int            _layer ) :
@@ -106,38 +106,38 @@ public:
 
     // Override RenderTarget
     SGL_HRESULT     SGL_DLLCALL SetDepthStencil( bool             toggle,
-                                                 Texture::FORMAT  format   = Texture::D24S8, 
+                                                 Texture::FORMAT  format   = Texture::D24S8,
                                                  unsigned int     samples  = 0 );
 
-    SGL_HRESULT     SGL_DLLCALL SetColorAttachment( unsigned int    mrtIndex,
-                                                    Texture1D*      texture, 
-                                                    unsigned int    level )         { return EUnsupported(); } // !
+    SGL_HRESULT     SGL_DLLCALL SetColorAttachment( unsigned int    /*mrtIndex*/,
+                                                    Texture1D*      /*texture*/,
+                                                    unsigned int    /*level*/ )     { return EUnsupported(); } // !
 
     SGL_HRESULT     SGL_DLLCALL SetColorAttachment( unsigned int    mrtIndex,
-                                                    Texture2D*      texture, 
+                                                    Texture2D*      texture,
                                                     unsigned int    level );
 
     SGL_HRESULT     SGL_DLLCALL SetColorAttachment( unsigned int    mrtIndex,
-                                                    Texture3D*      texture, 
+                                                    Texture3D*      texture,
                                                     unsigned int    level,
                                                     unsigned int    layer );
 
-    SGL_HRESULT     SGL_DLLCALL SetColorAttachmentLayered( unsigned int    mrtIndex,
-                                                           Texture3D*      texture, 
-                                                           unsigned int    level )  { return EUnsupported(); } // !
+    SGL_HRESULT     SGL_DLLCALL SetColorAttachmentLayered( unsigned int    /*mrtIndex*/,
+                                                           Texture3D*      /*texture*/,
+                                                           unsigned int    /*level*/ )  { return EUnsupported(); } // !
 
-    SGL_HRESULT     SGL_DLLCALL SetColorAttachmentLayered( unsigned int     mrtIndex,
-                                                           TextureCube*     texture, 
-                                                           unsigned int     level ) { return EUnsupported(); } // !
+    SGL_HRESULT     SGL_DLLCALL SetColorAttachmentLayered( unsigned int     /*mrtIndex*/,
+                                                           TextureCube*     /*texture*/,
+                                                           unsigned int     /*level*/ ) { return EUnsupported(); } // !
 
     SGL_HRESULT     SGL_DLLCALL SetDepthStencilAttachment( Texture2D*       depthStencilTexture,
                                                            unsigned int     level );
 
-    SGL_HRESULT     SGL_DLLCALL SetDepthStencilAttachmentLayered( Texture3D*       depthStencilTexture,
-                                                                  unsigned int     level ) { return EUnsupported(); } // !
-    
-    SGL_HRESULT     SGL_DLLCALL SetDepthStencilAttachmentLayered( TextureCube*     depthStencilTexture,
-                                                                  unsigned int     level ) { return EUnsupported(); } // !
+    SGL_HRESULT     SGL_DLLCALL SetDepthStencilAttachmentLayered( Texture3D*       /*depthStencilTexture*/,
+                                                                  unsigned int     /*level*/ ) { return EUnsupported(); } // !
+
+    SGL_HRESULT     SGL_DLLCALL SetDepthStencilAttachmentLayered( TextureCube*     /*depthStencilTexture*/,
+                                                                  unsigned int     /*level*/ ) { return EUnsupported(); } // !
 
     Texture*        SGL_DLLCALL ColorAttachment(unsigned int mrtIndex) const;
     Texture*        SGL_DLLCALL DepthStencilAttachment() const;
@@ -147,7 +147,7 @@ public:
 
     SGL_HRESULT     SGL_DLLCALL SetReadBuffer(unsigned int target);
     SGL_HRESULT     SGL_DLLCALL SetDrawBuffer(unsigned int target);
-    SGL_HRESULT     SGL_DLLCALL SetDrawBuffers( unsigned int    numTargets, 
+    SGL_HRESULT     SGL_DLLCALL SetDrawBuffers( unsigned int    numTargets,
                                                 unsigned int*   targets );
 
     unsigned int    SGL_DLLCALL ReadBuffer() const;

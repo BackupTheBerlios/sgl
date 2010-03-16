@@ -30,23 +30,23 @@ class Plane;
 
 /** Check wether Sphere contains point */
 template<typename T, int n>
-inline bool contains(const Sphere<T, n>& sphere, const Matrix<T, n, 1>& point) 
+inline bool contains(const Sphere<T, n>& sphere, const Matrix<T, n, 1>& point)
 {
     return length(sphere.center - point) < sphere.radius;
 }
 
 /** Check wether Sphere contains sphere */
 template<typename T, int n>
-inline bool contains(const Sphere<T, n>& sphere, const Sphere<T, n>& other) 
+inline bool contains(const Sphere<T, n>& sphere, const Sphere<T, n>& other)
 {
     return length(sphere.center - other.center) + other.radius < sphere.radius;
 }
 
 /** Check wether this AABB contains point */
 template<typename T, int n>
-inline bool contains(const AABB<T, n>& aabb, const typename AABB<T, n>::vec_type& point) 
+inline bool contains(const AABB<T, n>& aabb, const typename AABB<T, n>::vec_type& point)
 {
-    for (int i = 0; i<n; ++i) 
+    for (int i = 0; i<n; ++i)
     {
         if (point[i] < aabb.minVec[i] || point[i] > aabb.maxVec[i]) {
             return false;
@@ -58,9 +58,9 @@ inline bool contains(const AABB<T, n>& aabb, const typename AABB<T, n>::vec_type
 
 /** Check wether this AABB contains another aabb */
 template<typename T, int n>
-inline bool contains(const AABB<T, n>& aabb, const AABB<T, n>& other) 
+inline bool contains(const AABB<T, n>& aabb, const AABB<T, n>& other)
 {
-    for (int i = 0; i<n; ++i) 
+    for (int i = 0; i<n; ++i)
     {
         if (other.minVec[i] < aabb.minVec[i] || other.maxVec[i] > aabb.maxVec[i]) {
             return false;
@@ -69,23 +69,24 @@ inline bool contains(const AABB<T, n>& aabb, const AABB<T, n>& other)
 
     return true;
 }
-
-/** Check wether this AABB contains another aabb */
+/*
+#ifdef SIMPLE_GL_USE_SSE
 template<>
-inline bool contains(const AABB<float, 4>& aabb, const AABB<float, 4>& other) 
+inline bool contains(const AABB<float, 4>& aabb, const AABB<float, 4>& other)
 {
     __m128 minCmp = _mm_cmpge_ps(aabb.maxVec.m128, other.maxVec.m128);
     __m128 maxCmp = _mm_cmple_ps(aabb.minVec.m128, other.minVec.m128);
     __m128 res    = _mm_and_ps(minCmp, maxCmp);
     return res.m128_i32[0] && res.m128_i32[1] && res.m128_i32[2] && res.m128_i32[3];
 }
-
+#endif
+*/
 /** Check wether instersection is not empty */
 template<typename T, int n>
 inline bool test_intersection( const AABB<T, n>&  a,
-                               const AABB<T, n>&  b ) 
+                               const AABB<T, n>&  b )
 {
-    for (int i = 0; i<n; ++i) 
+    for (int i = 0; i<n; ++i)
     {
         if (a.maxVec[i] < b.minVec[i] || a.minVec[i] > b.maxVec[i]) {
             return false;
@@ -99,7 +100,7 @@ inline bool test_intersection( const AABB<T, n>&  a,
 template<typename T, int n>
 inline bool test_intersection( const AABB<T, n>&    aabb,
                                const Ray<T, n>&     ray,
-                               T                    epsilon = static_cast<T>(1e-7) ) 
+                               T                    epsilon = static_cast<T>(1e-7) )
 
 {
     T tMin = -std::numeric_limits<T>::max();
@@ -117,7 +118,7 @@ inline bool test_intersection( const AABB<T, n>&    aabb,
 
             tMin = std::max(tMin, t1);
             tMax = std::min(tMax, t2);
-  			
+
             if (tMin > tMax) {
                 return false;
             }
@@ -132,15 +133,15 @@ template<typename T, int n>
 inline bool test_intersection( const AABB<T, n>&        aabb,
                                const Matrix<T, n, 1>&   a,
                                const Matrix<T, n, 1>&   b,
-                               T                        epsilon = static_cast<T>(1e-7) ) 
+                               T                        epsilon = static_cast<T>(1e-7) )
 
 {
     return test_intersection(aabb, math::Ray<T,n>(a, b-a), epsilon) && test_intersection(aabb, math::Ray<T,n>(b, a-b), epsilon);
 }
 
 template<typename T, int n>
-bool find_intersection( const Plane<T, n>&  plane, 
-                        const Ray<T, n>&    ray, 
+bool find_intersection( const Plane<T, n>&  plane,
+                        const Ray<T, n>&    ray,
                         Matrix<T, n, 1>&    out,
                         T                   threshold = std::numeric_limits<T>::epsilon() )
 {
@@ -149,7 +150,7 @@ bool find_intersection( const Plane<T, n>&  plane,
         return false;
     }
 
-    T nDotOrigin = dot(plane.normal, ray.origin); 
+    T nDotOrigin = dot(plane.normal, ray.origin);
     T t = -(nDotOrigin + plane.distance) / nDotDir;
     if ( t < 0.0 ) {
         return false;
@@ -182,7 +183,7 @@ inline bool find_intersection( const AABB<T, n>&   aabb,
 
             tMin = std::max(tMin, t1);
             tMax = std::min(tMax, t2);
-  			
+
             if (tMin > tMax) {
                 return false;
             }
@@ -199,7 +200,7 @@ inline bool find_intersection( const AABB<T, n>&        aabb,
                                const Matrix<T, n, 1>&   a,
                                const Matrix<T, n, 1>&   b,
                                Matrix<T, n, 1>&         intPoint,
-                               T                        epsilon = static_cast<T>(1e-7) ) 
+                               T                        epsilon = static_cast<T>(1e-7) )
 
 {
     return test_intersection(aabb, math::Ray<T,n>(a, b-a), epsilon) && find_intersection(aabb, math::Ray<T,n>(b, a-b), intPoint, epsilon);
@@ -208,7 +209,7 @@ inline bool find_intersection( const AABB<T, n>&        aabb,
 /** Check wether intersection is not empty */
 template<typename T, int n>
 inline bool test_intersection( const Sphere<T, n>&  a,
-                               const Sphere<T, n>&  b ) 
+                               const Sphere<T, n>&  b )
 {
     return length(a.center - b.center) <= a.radius + b.radius;
 }
@@ -232,7 +233,7 @@ bool test_intersection(const KDop<T, 3, m>& kdop, const AABB<T, 3>& aabb)
         }
     }
 
-    return true; 
+    return true;
 }
 
 } // namesapce math

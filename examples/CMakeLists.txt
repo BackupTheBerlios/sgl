@@ -7,9 +7,9 @@ SET ( EXAMPLE_DIR               ${PROJECT_SOURCE_DIR}/examples )
 
 # list here all example dirs
 ADD_SUBDIRECTORY( Fractal )
-ADD_SUBDIRECTORY( MarchingCubes )
-ADD_SUBDIRECTORY( RenderToVBO )
-ADD_SUBDIRECTORY( SkeletalAnimation)
+#ADD_SUBDIRECTORY( MarchingCubes )
+#ADD_SUBDIRECTORY( RenderToVBO )
+#ADD_SUBDIRECTORY( SkeletalAnimation)
 
 # copy data on install
 INSTALL ( DIRECTORY data

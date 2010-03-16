@@ -17,7 +17,7 @@ class GLTexture1D :
 public:
     GLTexture1D(Device* _pDevice);
     ~GLTexture1D();
-
+/*
     // type of the texture
     TYPE SGL_DLLCALL Type() const { return TEXTURE_1D; }
 
@@ -37,9 +37,8 @@ public:
     FORMAT          SGL_DLLCALL Format() const                  { return format; }
     bool            SGL_DLLCALL ResizeNonPowerOfTwoHint() const { return resizeNonPowerOfTwo; }
 
-    /** Get OpenGL texture format */
     GLenum SGL_DLLCALL GLFormat() const;
-
+*/
 protected:
     // settings
     unsigned int	size;
