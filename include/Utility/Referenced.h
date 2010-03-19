@@ -31,7 +31,7 @@ public:
 };
 
 /** Counter for ref and weak references */
-struct ref_counter
+struct SGL_DLLEXPORT ref_counter
 {
     inline ref_counter( WeakReferenced* _ptr,
                         int             _refCount  = 0,

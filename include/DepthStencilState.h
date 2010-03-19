@@ -75,7 +75,7 @@ public:
 
 public:
     // Override state
-    virtual TYPE SGL_DLLCALL SGL_DLLCALL Type() const { return DEPTH_STENCIL_STATE; }
+    virtual TYPE SGL_DLLCALL Type() const { return DEPTH_STENCIL_STATE; }
 
     /** Get description of the state */
     virtual const DESC& SGL_DLLCALL Desc() const = 0;

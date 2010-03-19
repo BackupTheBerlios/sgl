@@ -2,11 +2,15 @@
 #define SIMPLE_GL_CONFIG_H
 
 #ifndef __GNUC__
-	#define SGL_DLLCALL __stdcall
+	#ifndef __INTEL_COMPILER
+		#define SGL_DLLCALL __stdcall
+	#else
+		#define SGL_DLLCALL
+	#endif
 	#ifdef SGL_EXPORT
 		#define SGL_DLLEXPORT __declspec(dllexport)
 	#else
-		#define SGL_DLLEXPORT _declspec(dllimport)
+		#define SGL_DLLEXPORT __declspec(dllimport)
 	#endif
 #else
 	#define SGL_DLLEXPORT

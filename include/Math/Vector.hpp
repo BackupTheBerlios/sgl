@@ -1422,9 +1422,9 @@ inline void min_max( const Matrix<float, 1, 4>& a,
 inline Matrix<float, 4, 1> clamp(const Matrix<float, 4, 1>& vec, float minVal, float maxVal)
 {
     __m128 valPacked   = _mm_set1_ps(minVal);
-    __m128 clampPacked = _mm_max_ps(vec.m128, clampPacked);
+    __m128 clampPacked = _mm_max_ps(vec.m128, valPacked);
     valPacked          = _mm_set1_ps(maxVal);
-    clampPacked        = _mm_min_ps(vec.m128, clampPacked);
+    clampPacked        = _mm_min_ps(valPacked, clampPacked);
 
     return Matrix<float, 4, 1>(clampPacked);
 }
@@ -1433,9 +1433,9 @@ inline Matrix<float, 4, 1> clamp(const Matrix<float, 4, 1>& vec, float minVal, f
 inline Matrix<float, 1, 4> clamp(const Matrix<float, 1, 4>& vec, float minVal, float maxVal)
 {
     __m128 valPacked   = _mm_set1_ps(minVal);
-    __m128 clampPacked = _mm_max_ps(vec.m128, clampPacked);
+    __m128 clampPacked = _mm_max_ps(vec.m128, valPacked);
     valPacked          = _mm_set1_ps(maxVal);
-    clampPacked        = _mm_min_ps(vec.m128, clampPacked);
+    clampPacked        = _mm_min_ps(valPacked, clampPacked);
 
     return Matrix<float, 1, 4>(clampPacked);
 }

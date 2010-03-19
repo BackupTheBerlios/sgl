@@ -5,7 +5,7 @@
 #include "../Utility/Aligned.h"
 
 #ifdef SIMPLE_GL_USE_SSE
-#   ifdef MSVC
+#   ifdef _MSC_VER
 #       include <mmintrin.h>
 #   else // __GNUC__
 #       include <xmmintrin.h>

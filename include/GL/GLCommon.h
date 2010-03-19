@@ -21,12 +21,15 @@ SGL_HRESULT CheckGLError(const std::string& preMsg, GLenum error);
 SGL_HRESULT CheckGLUError(const std::string& preMsg, GLenum error);
 SGL_HRESULT CheckGLFramebufferStatus(const std::string& preMsg, GLenum status);
 
-struct gl_error :
+class gl_error :
     public std::runtime_error
 {
-    gl_error(const std::string& msg) :
+public:
+    explicit gl_error(const std::string& msg) :
         std::runtime_error(msg)
     {}
+
+	~gl_error() throw() {}
 };
 
 } // namesapce sgl
