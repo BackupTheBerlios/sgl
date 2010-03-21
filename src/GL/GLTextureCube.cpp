@@ -4,10 +4,11 @@
 namespace sgl {
 
 //================================= GLTextureCubeSide =================================//
-GLTextureCubeSide::GLTextureCubeSide( GLTextureCube*            texture,
-                                      const Texture2D::DESC&    desc,
-                                      TextureCube::SIDE         _side ) :
-    GLTexture<Texture2D>(texture->device, GL_TEXTURE_CUBE_MAP, false),
+template<DEVICE_VERSION DeviceVersion>
+GLTextureCubeSide<DeviceVersion>::GLTextureCubeSide( GLTextureCube<DeviceVersion>*  texture,
+                                                     const Texture2D::DESC&         desc,
+                                                     TextureCube::SIDE              _side ) :
+    GLTexture<DeviceVersion, Texture2D>(texture->device, GL_TEXTURE_CUBE_MAP, false),
     side(_side),
     format(desc.format),
     width(desc.width),
@@ -23,11 +24,11 @@ GLTextureCubeSide::GLTextureCubeSide( GLTextureCube*            texture,
     bool   compressed  = Texture::FORMAT_TRAITS[format].compressed;
 
     // save previous state & bind texture
-    GLTexture<TextureCube>::guarded_binding_ptr guardedTexture( new GLTexture<TextureCube>::guarded_binding(device, texture, 0) );
+    GLTexture<DeviceVersion, TextureCube>::guarded_binding_ptr guardedTexture( new GLTexture<DeviceVersion, TextureCube>::guarded_binding(device, texture, 0) );
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
-        throw gl_error("GLTextureCubeSide::GLTextureCubeSide failed: ");
+        throw gl_error("GLTextureCubeSide<DeviceVersion>::GLTextureCubeSide failed: ");
     }
 #endif // SGL_NO_STATUS_CHECK
 
@@ -59,17 +60,18 @@ GLTextureCubeSide::GLTextureCubeSide( GLTextureCube*            texture,
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
-        throw gl_error("GLTextureCubeSide::GLTextureCubeSide failed: ");
+        throw gl_error("GLTextureCubeSide<DeviceVersion>::GLTextureCubeSide failed: ");
     }
 #endif // SGL_NO_STATUS_CHECK
 }
 
-SGL_HRESULT GLTextureCubeSide::SetSubImage( unsigned int  mipmap,
-                                            unsigned int  offsetx,
-                                            unsigned int  offsety,
-                                            unsigned int  regionWidth,
-                                            unsigned int  regionHeight,
-                                            const void*   data )
+template<DEVICE_VERSION DeviceVersion>
+SGL_HRESULT GLTextureCubeSide<DeviceVersion>::SetSubImage( unsigned int  mipmap,
+                                                           unsigned int  offsetx,
+                                                           unsigned int  offsety,
+                                                           unsigned int  regionWidth,
+                                                           unsigned int  regionHeight,
+                                                           const void*   data )
 {
     // image settings
     GLenum glError;
@@ -78,11 +80,11 @@ SGL_HRESULT GLTextureCubeSide::SetSubImage( unsigned int  mipmap,
     bool   compressed  = Texture::FORMAT_TRAITS[format].compressed;
 
     // save previous state & bind texture
-    guarded_binding_ptr guardedTexture( new guarded_binding(device.get(), this, 0) );
+    guarded_binding_ptr guardedTexture( new guarded_binding(device, this, 0) );
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
-        return CheckGLError( "GLTextureCubeSide::SetSubImage failed: ", glError );
+        return CheckGLError( "GLTextureCubeSide<DeviceVersion>::SetSubImage failed: ", glError );
     }
 #endif // SGL_NO_STATUS_CHECK
 
@@ -115,7 +117,7 @@ SGL_HRESULT GLTextureCubeSide::SetSubImage( unsigned int  mipmap,
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
-        return CheckGLError( "GLTextureCubeSide::SetSubImage failed: ", glError );
+        return CheckGLError( "GLTextureCubeSide<DeviceVersion>::SetSubImage failed: ", glError );
     }
 #endif // SGL_NO_STATUS_CHECK
 
@@ -124,8 +126,9 @@ SGL_HRESULT GLTextureCubeSide::SetSubImage( unsigned int  mipmap,
     return SGL_OK;
 }
 
-SGL_HRESULT GLTextureCubeSide::GetImage( unsigned int  mipmap,
-                                   void*         data )
+template<DEVICE_VERSION DeviceVersion>
+SGL_HRESULT GLTextureCubeSide<DeviceVersion>::GetImage( unsigned int  mipmap,
+                                                        void*         data )
 {
     GLenum glError;
 	GLenum glUsage     = BIND_GL_FORMAT_USAGE[format];
@@ -134,11 +137,11 @@ SGL_HRESULT GLTextureCubeSide::GetImage( unsigned int  mipmap,
     bool   compressed  = Texture::FORMAT_TRAITS[format].compressed;
 
     // save previous state & bind texture
-    guarded_binding_ptr guardedTexture( new guarded_binding(device.get(), this, 0) );
+    guarded_binding_ptr guardedTexture( new guarded_binding(device, this, 0) );
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
-        return CheckGLError( "GLTextureCubeSide::GetImage failed: ", glError );
+        return CheckGLError( "GLTextureCubeSide<DeviceVersion>::GetImage failed: ", glError );
     }
 #endif // SGL_NO_STATUS_CHECK
 
@@ -161,7 +164,7 @@ SGL_HRESULT GLTextureCubeSide::GetImage( unsigned int  mipmap,
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
-        return CheckGLError( "GLTextureCubeSide::GetImage failed: ", glError );
+        return CheckGLError( "GLTextureCubeSide<DeviceVersion>::GetImage failed: ", glError );
     }
 #endif // SGL_NO_STATUS_CHECK
 
@@ -170,19 +173,21 @@ SGL_HRESULT GLTextureCubeSide::GetImage( unsigned int  mipmap,
 
 //================================= GLTextureCube =================================//
 
-GLTextureCube::GLTextureCube( Device*       device,
-                              const DESC&   desc ) :
-    GLTexture<TextureCube>(device, GL_TEXTURE_CUBE_MAP)
+template<DEVICE_VERSION DeviceVersion>
+GLTextureCube<DeviceVersion>::GLTextureCube( GLDevice<DeviceVersion>*  device,
+                                             const TextureCube::DESC&  desc ) :
+    GLTexture<DeviceVersion, TextureCube>(device, GL_TEXTURE_CUBE_MAP)
 {
     // create sides
     for (int i = 0; i<6; ++i) {
-        sides[i].reset( new GLTextureCubeSide( this, desc.sides[i], SIDE(i) ) );
+        sides[i].reset( new GLTextureCubeSide<DeviceVersion>( this, desc.sides[i], SIDE(i) ) );
     }
 }
 
-SGL_HRESULT GLTextureCube::GenerateMipmap()
+template<DEVICE_VERSION DeviceVersion>
+SGL_HRESULT GLTextureCube<DeviceVersion>::GenerateMipmap()
 {
-    guarded_binding_ptr guardedTexture( new guarded_binding(device.get(), this, 0) );
+    guarded_binding_ptr guardedTexture( new guarded_binding(device, this, 0) );
 
 #ifndef SGL_NO_STATUS_CHECK
     GLenum glError = glGetError();
@@ -202,13 +207,14 @@ SGL_HRESULT GLTextureCube::GenerateMipmap()
     return SGL_OK;
 }
 
-SGL_HRESULT GLTextureCube::BindSamplerState(SamplerState* _samplerState)
+template<DEVICE_VERSION DeviceVersion>
+SGL_HRESULT GLTextureCube<DeviceVersion>::BindSamplerState(SamplerState* _samplerState)
 {
-    samplerState.reset( static_cast<GLSamplerState*>(_samplerState) );
+    samplerState.reset( static_cast<GLSamplerState<DeviceVersion>*>(_samplerState) );
 
     if (samplerState)
     {
-        guarded_binding_ptr       guardedTexture( new guarded_binding(device.get(), this, 0) );
+        guarded_binding_ptr       guardedTexture( new guarded_binding(device, this, 0) );
         const SamplerState::DESC& desc           = samplerState->Desc();
 
         glTexParameteri( glTarget, GL_TEXTURE_MIN_FILTER,           BIND_TEXTURE_MIN_FILTER[ desc.filter[2] * 3 + desc.filter[0] ] );
@@ -225,7 +231,8 @@ SGL_HRESULT GLTextureCube::BindSamplerState(SamplerState* _samplerState)
     return SGL_OK;
 }
 
-SGL_HRESULT GLTextureCube::Bind(unsigned int _stage) const
+template<DEVICE_VERSION DeviceVersion>
+SGL_HRESULT GLTextureCube<DeviceVersion>::Bind(unsigned int _stage) const
 {
 #ifndef SGL_NO_STATUS_CHECK
     if ( stage >= Device::NUM_TEXTURE_STAGES ) {
@@ -237,37 +244,41 @@ SGL_HRESULT GLTextureCube::Bind(unsigned int _stage) const
     glActiveTexture(GL_TEXTURE0 + stage);
     glEnable(glTarget);
     glBindTexture(glTarget, glTexture);
-/*
-    if ( boundSamplerState != device->CurrentSamplerState(stage) )
-    {
-        boundSamplerState               = static_cast<const GLSamplerState*>( device->CurrentSamplerState(stage) );
-        const SamplerState::DESC& desc  = boundSamplerState->Desc();
 
-        glTexParameteri( glTarget, GL_TEXTURE_MIN_FILTER,           BIND_TEXTURE_MIN_FILTER[ (desc.filter[0] << 1) | (desc.filter[2]) ] );
-        glTexParameteri( glTarget, GL_TEXTURE_MAG_FILTER,           BIND_TEXTURE_FILTER[ desc.filter[1] ] );
-        glTexParameterf( glTarget, GL_TEXTURE_MIN_LOD,              desc.minLod );
-        glTexParameterf( glTarget, GL_TEXTURE_MAX_LOD,              desc.maxLod );
-        glTexParameterf( glTarget, GL_TEXTURE_LOD_BIAS,             desc.lodBias );
-        glTexParameteri( glTarget, GL_TEXTURE_WRAP_S,               BIND_TEXTURE_CLAMP[ desc.wrapping[0] ] );
-        glTexParameteri( glTarget, GL_TEXTURE_WRAP_T,               BIND_TEXTURE_CLAMP[ desc.wrapping[1] ] );
-        glTexParameteri( glTarget, GL_TEXTURE_WRAP_R,               BIND_TEXTURE_CLAMP[ desc.wrapping[2] ] );
-        glTexParameteri( glTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT,   desc.maxAnisotropy);
-    }
-*/
-    static_cast< GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>* >(device.get())->SetTexture(stage, this);
+    device->SetTexture(stage, this);
     return SGL_OK;
 }
 
-void GLTextureCube::Unbind() const
+template<DEVICE_VERSION DeviceVersion>
+void GLTextureCube<DeviceVersion>::Unbind() const
 {
     if ( stage >= 0 && device->CurrentTexture(stage) == this )
     {
         glActiveTexture(GL_TEXTURE0 + stage);
         glBindTexture(glTarget, 0);
         glDisable(glTarget);
-        static_cast< GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>* >(device.get())->SetTexture(stage, 0);
+        device->SetTexture(stage, 0);
         stage = -1;
     }
 }
+
+// explicit template instantiation
+template class GLTextureCubeSide<DV_OPENGL_1_3>;
+template class GLTextureCubeSide<DV_OPENGL_1_4>;
+template class GLTextureCubeSide<DV_OPENGL_1_5>;
+template class GLTextureCubeSide<DV_OPENGL_2_0>;
+template class GLTextureCubeSide<DV_OPENGL_2_1>;
+template class GLTextureCubeSide<DV_OPENGL_3_0>;
+template class GLTextureCubeSide<DV_OPENGL_3_1>;
+template class GLTextureCubeSide<DV_OPENGL_3_2>;
+
+template class GLTextureCube<DV_OPENGL_1_3>;
+template class GLTextureCube<DV_OPENGL_1_4>;
+template class GLTextureCube<DV_OPENGL_1_5>;
+template class GLTextureCube<DV_OPENGL_2_0>;
+template class GLTextureCube<DV_OPENGL_2_1>;
+template class GLTextureCube<DV_OPENGL_3_0>;
+template class GLTextureCube<DV_OPENGL_3_1>;
+template class GLTextureCube<DV_OPENGL_3_2>;
 
 } // namespace sgl

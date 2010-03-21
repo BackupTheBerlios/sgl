@@ -21,14 +21,14 @@ using namespace math;
     TYPE GLUniform<TYPE>::Value() const\
     {\
         TYPE v;\
-        getFunction(program->glProgram, glLocation, (CAST_TYPE*)&v);\
+        getFunction(glProgram, glLocation, (CAST_TYPE*)&v);\
         return v;\
     }\
     template<>\
     void GLUniform<TYPE>::QueryValues(TYPE* values) const\
     {\
         for(size_t i = 0; i<numValues; ++i)\
-            getFunction(program->glProgram, glLocation, (CAST_TYPE*)&values[i]);\
+            getFunction(glProgram, glLocation, (CAST_TYPE*)&values[i]);\
     }
 
     DEFINE_UNIFORM(int,      int,   glUniform1iv, glGetUniformiv)
@@ -58,14 +58,14 @@ using namespace math;
     TYPE GLUniform<TYPE>::Value() const\
     {\
         TYPE v;\
-        getFunction(program->glProgram, glLocation, (CAST_TYPE*)&v);\
+        getFunction(glProgram, glLocation, (CAST_TYPE*)&v);\
         return v;\
     }\
     template<>\
     void GLUniform<TYPE>::QueryValues(TYPE* values) const\
     {\
         for(size_t i = 0; i<numValues; ++i)\
-            getFunction(program->glProgram, glLocation, (CAST_TYPE*)&values[i]);\
+            getFunction(glProgram, glLocation, (CAST_TYPE*)&values[i]);\
     }
 
     DEFINE_MATRIX_UNIFORM(Matrix2f, float, glUniformMatrix2fv, glGetUniformfv)

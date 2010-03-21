@@ -6,16 +6,17 @@
 
 namespace sgl {
 
+template<DEVICE_VERSION DeviceVersion>
 class GLTexture2D :
-    public GLTexture<Texture2D>
+    public GLTexture<DeviceVersion, Texture2D>
 {
 public:
-    GLTexture2D(Device* device, const DESC& desc);
-    GLTexture2D(Device* device, const DESC_MS& desc);
+    GLTexture2D(GLDevice<DeviceVersion>* device, const Texture2D::DESC& desc);
+    GLTexture2D(GLDevice<DeviceVersion>* device, const Texture2D::DESC_MS& desc);
 
     // Override Texture2
-    TYPE            SGL_DLLCALL Type() const        { return TEXTURE_2D; }
-    FORMAT          SGL_DLLCALL Format() const      { return format; }
+    Texture::TYPE   SGL_DLLCALL Type() const        { return TEXTURE_2D; }
+    Texture::FORMAT SGL_DLLCALL Format() const      { return format; }
     unsigned int    SGL_DLLCALL Samples() const     { return numSamples; }
     unsigned int    SGL_DLLCALL Width() const       { return width; }
     unsigned int    SGL_DLLCALL Height() const      { return height; }

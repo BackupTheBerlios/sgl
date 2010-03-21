@@ -27,13 +27,20 @@ namespace {
 
 } // anonymous namespace
 
-GLSamplerState::GLSamplerState( sgl::Device*    _device, 
-                                const DESC&     _desc ) :
-    device(_device),
-    desc(_desc)
+template<DEVICE_VERSION DeviceVersion>
+GLSamplerState<DeviceVersion>::GLSamplerState( GLDevice<DeviceVersion>*    device_, 
+                                               const DESC&                 desc_ ) :
+    device(device_),
+    desc(desc_)
 {
 }
 
-GLSamplerState::~GLSamplerState()
-{
-}
+// explicit template instantiation
+template class GLSamplerState<DV_OPENGL_1_3>;
+template class GLSamplerState<DV_OPENGL_1_4>;
+template class GLSamplerState<DV_OPENGL_1_5>;
+template class GLSamplerState<DV_OPENGL_2_0>;
+template class GLSamplerState<DV_OPENGL_2_1>;
+template class GLSamplerState<DV_OPENGL_3_0>;
+template class GLSamplerState<DV_OPENGL_3_1>;
+template class GLSamplerState<DV_OPENGL_3_2>;

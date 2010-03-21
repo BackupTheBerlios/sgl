@@ -3,8 +3,9 @@
 
 namespace sgl {
 
-GLTexture2D::GLTexture2D(Device* device, const DESC& desc) :
-    GLTexture<Texture2D>(device, GL_TEXTURE_2D),
+template<DEVICE_VERSION DeviceVersion>
+GLTexture2D<DeviceVersion>::GLTexture2D(GLDevice<DeviceVersion>* device, const Texture2D::DESC& desc) :
+    GLTexture<DeviceVersion, Texture2D>(device, GL_TEXTURE_2D),
     format(desc.format),
     width(desc.width),
     height(desc.height),
@@ -23,7 +24,7 @@ GLTexture2D::GLTexture2D(Device* device, const DESC& desc) :
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
-        throw gl_error("GLTexture2D::GLTexture2D failed: ");
+        throw gl_error("GLTexture2D<DeviceVersion>::GLTexture2D failed: ");
     }
 #endif // SGL_NO_STATUS_CHECK
 
@@ -55,13 +56,14 @@ GLTexture2D::GLTexture2D(Device* device, const DESC& desc) :
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
-        throw gl_error("GLTexture2D::GLTexture2D failed: ");
+        throw gl_error("GLTexture2D<DeviceVersion>::GLTexture2D failed: ");
     }
 #endif // SGL_NO_STATUS_CHECK
 }
 
-GLTexture2D::GLTexture2D(Device* device, const DESC_MS& desc) :
-    GLTexture<Texture2D>(device, GL_TEXTURE_2D_MULTISAMPLE),
+template<DEVICE_VERSION DeviceVersion>
+GLTexture2D<DeviceVersion>::GLTexture2D(GLDevice<DeviceVersion>* device, const Texture2D::DESC_MS& desc) :
+    GLTexture<DeviceVersion, Texture2D>(device, GL_TEXTURE_2D_MULTISAMPLE),
     format(desc.format),
     width(desc.width),
     height(desc.height),
@@ -77,7 +79,7 @@ GLTexture2D::GLTexture2D(Device* device, const DESC_MS& desc) :
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
-        throw gl_error("GLTexture2D::GLTexture2D failed: ");
+        throw gl_error("GLTexture2D<DeviceVersion>::GLTexture2D failed: ");
     }
 #endif // SGL_NO_STATUS_CHECK
 
@@ -92,17 +94,18 @@ GLTexture2D::GLTexture2D(Device* device, const DESC_MS& desc) :
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
-        throw gl_error("GLTexture2D::GLTexture2D failed: ");
+        throw gl_error("GLTexture2D<DeviceVersion>::GLTexture2D failed: ");
     }
 #endif // SGL_NO_STATUS_CHECK
 }
 
-SGL_HRESULT GLTexture2D::SetSubImage( unsigned int  mipmap,
-                                      unsigned int  offsetx,
-                                      unsigned int  offsety,
-                                      unsigned int  regionWidth,
-                                      unsigned int  regionHeight,
-                                      const void*   data )
+template<DEVICE_VERSION DeviceVersion>
+SGL_HRESULT GLTexture2D<DeviceVersion>::SetSubImage( unsigned int  mipmap,
+                                                     unsigned int  offsetx,
+                                                     unsigned int  offsety,
+                                                     unsigned int  regionWidth,
+                                                     unsigned int  regionHeight,
+                                                     const void*   data )
 {
     // image settings
     GLenum glError;
@@ -111,11 +114,11 @@ SGL_HRESULT GLTexture2D::SetSubImage( unsigned int  mipmap,
     bool   compressed  = Texture::FORMAT_TRAITS[format].compressed;
 
     // save previous state & bind texture
-    guarded_binding_ptr guardedTexture( new guarded_binding(device.get(), this, 0) );
+    guarded_binding_ptr guardedTexture( new guarded_binding(device, this, 0) );
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
-        return CheckGLError( "GLTexture2D::SetSubImage failed: ", glError );
+        return CheckGLError( "GLTexture2D<DeviceVersion>::SetSubImage failed: ", glError );
     }
 #endif // SGL_NO_STATUS_CHECK
 
@@ -148,7 +151,7 @@ SGL_HRESULT GLTexture2D::SetSubImage( unsigned int  mipmap,
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
-        return CheckGLError( "GLTexture2D::SetSubImage failed: ", glError );
+        return CheckGLError( "GLTexture2D<DeviceVersion>::SetSubImage failed: ", glError );
     }
 #endif // SGL_NO_STATUS_CHECK
 
@@ -158,8 +161,9 @@ SGL_HRESULT GLTexture2D::SetSubImage( unsigned int  mipmap,
     return SGL_OK;
 }
 
-SGL_HRESULT GLTexture2D::GetImage( unsigned int  mipmap,
-                                   void*         data )
+template<DEVICE_VERSION DeviceVersion>
+SGL_HRESULT GLTexture2D<DeviceVersion>::GetImage( unsigned int  mipmap,
+                                                  void*         data )
 {
     GLenum glError;
 	GLenum glUsage     = BIND_GL_FORMAT_USAGE[format];
@@ -168,11 +172,11 @@ SGL_HRESULT GLTexture2D::GetImage( unsigned int  mipmap,
     bool   compressed  = Texture::FORMAT_TRAITS[format].compressed;
 
     // save previous state & bind texture
-    guarded_binding_ptr guardedTexture( new guarded_binding(device.get(), this, 0) );
+    guarded_binding_ptr guardedTexture( new guarded_binding(device, this, 0) );
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
-        return CheckGLError( "GLTexture2D::GetImage failed: ", glError );
+        return CheckGLError( "GLTexture2D<DeviceVersion>::GetImage failed: ", glError );
     }
 #endif // SGL_NO_STATUS_CHECK
 
@@ -195,21 +199,22 @@ SGL_HRESULT GLTexture2D::GetImage( unsigned int  mipmap,
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
-        return CheckGLError( "GLTexture2D::GetImage failed: ", glError );
+        return CheckGLError( "GLTexture2D<DeviceVersion>::GetImage failed: ", glError );
     }
 #endif // SGL_NO_STATUS_CHECK
 
     return SGL_OK;
 }
 
-SGL_HRESULT GLTexture2D::GenerateMipmap()
+template<DEVICE_VERSION DeviceVersion>
+SGL_HRESULT GLTexture2D<DeviceVersion>::GenerateMipmap()
 {
-    guarded_binding_ptr guardedTexture( new guarded_binding(device.get(), this, 0) );
+    guarded_binding_ptr guardedTexture( new guarded_binding(device, this, 0) );
 
 #ifndef SGL_NO_STATUS_CHECK
     GLenum glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
-        return CheckGLError( "GLTexture2D::GenerateMipmap failed: ", glError );
+        return CheckGLError( "GLTexture2D<DeviceVersion>::GenerateMipmap failed: ", glError );
     }
 #endif // SGL_NO_STATUS_CHECK
 
@@ -217,20 +222,21 @@ SGL_HRESULT GLTexture2D::GenerateMipmap()
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
-        return CheckGLError( "GLTexture2D::GenerateMipmap failed: ", glError );
+        return CheckGLError( "GLTexture2D<DeviceVersion>::GenerateMipmap failed: ", glError );
     }
 #endif // SGL_NO_STATUS_CHECK
 
     return SGL_OK;
 }
 
-SGL_HRESULT GLTexture2D::BindSamplerState(sgl::SamplerState* _samplerState)
+template<DEVICE_VERSION DeviceVersion>
+SGL_HRESULT GLTexture2D<DeviceVersion>::BindSamplerState(sgl::SamplerState* _samplerState)
 {
-    samplerState.reset( static_cast<GLSamplerState*>(_samplerState) );
+    samplerState.reset( static_cast<GLSamplerState<DeviceVersion>*>(_samplerState) );
 
     if (samplerState)
     {
-        guarded_binding_ptr guardedTexture( new guarded_binding(device.get(), this, 0) );
+        guarded_binding_ptr guardedTexture( new guarded_binding(device, this, 0) );
         const SamplerState::DESC& desc = samplerState->Desc();
         if (numSamples == 0)
         {
@@ -249,11 +255,12 @@ SGL_HRESULT GLTexture2D::BindSamplerState(sgl::SamplerState* _samplerState)
     return SGL_OK;
 }
 
-SGL_HRESULT GLTexture2D::Bind(unsigned int _stage) const
+template<DEVICE_VERSION DeviceVersion>
+SGL_HRESULT GLTexture2D<DeviceVersion>::Bind(unsigned int _stage) const
 {
 #ifndef SGL_NO_STATUS_CHECK
     if ( stage >= Device::NUM_TEXTURE_STAGES ) {
-        return EInvalidCall("GLTexture2D::Bind failed. Stage is too large.");
+        return EInvalidCall("GLTexture2D<DeviceVersion>::Bind failed. Stage is too large.");
     }
 #endif
 
@@ -261,39 +268,32 @@ SGL_HRESULT GLTexture2D::Bind(unsigned int _stage) const
     glActiveTexture(GL_TEXTURE0 + stage);
     glEnable(glTarget);
     glBindTexture(glTarget, glTexture);
-/*
-    if ( boundSamplerState != device->CurrentSamplerState(stage) )
-    {
-        boundSamplerState               = static_cast<const GLSamplerState*>( device->CurrentSamplerState(stage) );
-        const SamplerState::DESC& desc  = boundSamplerState->Desc();
-        if (numSamples == 0)
-        {
-            glTexParameteri( glTarget, GL_TEXTURE_MIN_FILTER,       BIND_TEXTURE_MIN_FILTER[ (desc.filter[0] << 1) | (desc.filter[2]) ] );
-            glTexParameteri( glTarget, GL_TEXTURE_MAG_FILTER,       BIND_TEXTURE_FILTER[ desc.filter[1] ] );
-            glTexParameterf( glTarget, GL_TEXTURE_MIN_LOD,          desc.minLod );
-            glTexParameterf( glTarget, GL_TEXTURE_MAX_LOD,          desc.maxLod );
-            glTexParameterf( glTarget, GL_TEXTURE_LOD_BIAS,         desc.lodBias );
-        }
 
-        glTexParameteri( glTarget, GL_TEXTURE_WRAP_S,               BIND_TEXTURE_CLAMP[ desc.wrapping[0] ] );
-        glTexParameteri( glTarget, GL_TEXTURE_WRAP_T,               BIND_TEXTURE_CLAMP[ desc.wrapping[1] ] );
-        glTexParameteri( glTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT,   desc.maxAnisotropy);
-    }
-*/
-    static_cast< GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>* >(device.get())->SetTexture(stage, this);
+    device->SetTexture(stage, this);
     return SGL_OK;
 }
 
-void GLTexture2D::Unbind() const
+template<DEVICE_VERSION DeviceVersion>
+void GLTexture2D<DeviceVersion>::Unbind() const
 {
     if ( stage >= 0 && device->CurrentTexture(stage) == this )
     {
         glActiveTexture(GL_TEXTURE0 + stage);
         glBindTexture(glTarget, 0);
         glDisable(glTarget);
-        static_cast< GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>* >(device.get())->SetTexture(stage, 0);
+        device->SetTexture(stage, 0);
         stage = -1;
     }
 }
+
+// explicit template instantiation
+template class GLTexture2D<DV_OPENGL_1_3>;
+template class GLTexture2D<DV_OPENGL_1_4>;
+template class GLTexture2D<DV_OPENGL_1_5>;
+template class GLTexture2D<DV_OPENGL_2_0>;
+template class GLTexture2D<DV_OPENGL_2_1>;
+template class GLTexture2D<DV_OPENGL_3_0>;
+template class GLTexture2D<DV_OPENGL_3_1>;
+template class GLTexture2D<DV_OPENGL_3_2>;
 
 } // namespace sgl

@@ -1,33 +1,14 @@
 #ifndef SIMPLE_GL_GL_DEPTH_STENCIL_STATE_H
 #define SIMPLE_GL_GL_DEPTH_STENCIL_STATE_H
 
+#include "GLForward.h"
 #include "../DepthStencilState.h"
-#include "GLDevice.h"
 
 namespace sgl {
 
-class GLDepthStencilState :
-    public ReferencedImpl<DepthStencilState>
-{
-public:
-    GLDepthStencilState(sgl::Device* device, const DESC& desc);
-    ~GLDepthStencilState();
-
-    // Override State
-    void SGL_DLLCALL Bind() const;
-
-    // Override RasterizerState
-    const DESC& SGL_DLLCALL Desc() const { return desc; }
-
-private:
-    ref_ptr<Device>     device;
-
-    // setup display list
-    GLuint              bindDisplayList;
-
-    // properties
-    DESC                desc;
-};
+/** Make suitable depth stencil state */
+template<DEVICE_VERSION DeviceVersion>
+sgl::DepthStencilState* sglCreateDepthStencilState(GLDevice<DeviceVersion>* device, const DepthStencilState::DESC& desc);
 
 } // namepsace sgl
 

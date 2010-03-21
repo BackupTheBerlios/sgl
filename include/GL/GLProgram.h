@@ -1,7 +1,9 @@
 #ifndef SIMPLE_GL_GL_PROGRAM_H
 #define SIMPLE_GL_GL_PROGRAM_H
 
+#include "GLCommon.h"
 #include "GLShader.h"
+#include "../Program.h"
 
 namespace sgl {
 
@@ -12,16 +14,16 @@ template<typename T>
 class GLSamplerUniform;
 
 /* Wraps gl function for working with shader programs */
+template<DEVICE_VERSION DeviceVersion> 
 class GLProgram :
     public ResourceImpl<Program>
 {
-template<typename T>
-friend class GLUniform;
-template<typename T>
-friend class GLSamplerUniform;
 private:
     typedef scoped_ptr<AbstractUniform>         uniform_ptr;
-    typedef std::vector< ref_ptr<GLShader> >    shader_vector;
+
+    typedef GLShader<DeviceVersion>             shader_type;
+    typedef ref_ptr<shader_type>                shader_ptr;
+    typedef std::vector<shader_ptr>             shader_vector;
     
     struct attribute
     {
@@ -53,7 +55,7 @@ private:
                                     size_t      size );
 
 public:
-    GLProgram(Device* _pDevice);
+    GLProgram(GLDevice<DeviceVersion>* deviceState);
     ~GLProgram();
 
     // Override Program
@@ -113,11 +115,14 @@ public:
     SamplerUniform3D*   SGL_DLLCALL GetSamplerUniform3D(const char* name);
     SamplerUniformCube* SGL_DLLCALL GetSamplerUniformCube(const char* name);
 
+    /** Get OpenGL program handle */
+    GLuint SGL_DLLCALL Handle() const { return glProgram; }
+
 private:
-    ref_ptr<Device>     device;
-    shader_vector       shaders;
-    attribute_vector    attributes;
-    uniform_ptr*        uniforms;
+    GLDevice<DeviceVersion>*    device;
+    shader_vector               shaders;
+    attribute_vector            attributes;
+    uniform_ptr*                uniforms;
 
     // geometry shaders
     unsigned int        numActiveUniforms;
@@ -133,8 +138,9 @@ private:
     std::string         compilationLog;
 };
 
+template<DEVICE_VERSION DeviceVersion>
 template<typename T>
-inline GLUniform<T>* GLProgram::GetUniform(const char* name)
+inline GLUniform<T>* GLProgram<DeviceVersion>::GetUniform(const char* name)
 {
     if (dirty) 
     {
@@ -151,7 +157,7 @@ inline GLUniform<T>* GLProgram::GetUniform(const char* name)
     for(size_t i = 0; i<numActiveUniforms; ++i)
     {
         GLUniform<T>* pUniform = dynamic_cast< GLUniform<T>* >( uniforms[i].get() );
-        if ( pUniform && GLuint(uniform) == pUniform->glLocation ) {
+        if ( pUniform && GLuint(uniform) == pUniform->Location() ) {
             return pUniform;
         }
     }
@@ -159,8 +165,9 @@ inline GLUniform<T>* GLProgram::GetUniform(const char* name)
     return 0;
 }
 
+template<DEVICE_VERSION DeviceVersion>
 template<typename T>
-inline GLSamplerUniform<T>* GLProgram::GetSamplerUniform(const char* name)
+inline GLSamplerUniform<T>* GLProgram<DeviceVersion>::GetSamplerUniform(const char* name)
 {
     if (dirty) 
     {
@@ -177,13 +184,17 @@ inline GLSamplerUniform<T>* GLProgram::GetSamplerUniform(const char* name)
     for(size_t i = 0; i<numActiveUniforms; ++i)
     {
         GLSamplerUniform<T>* pUniform = dynamic_cast< GLSamplerUniform<T>* >( uniforms[i].get() );
-        if ( pUniform && GLuint(uniform) == pUniform->glLocation ) {
+        if ( pUniform && GLuint(uniform) == pUniform->Location() ) {
             return pUniform;
         }
     }
 
     return 0;
 }
+
+/** Try to make shader program */
+template<DEVICE_VERSION DeviceVersion>
+sgl::Program* sglCreateProgram(GLDevice<DeviceVersion>* device);
 
 } // namespaec sgl
 

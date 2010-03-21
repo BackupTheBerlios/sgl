@@ -11,21 +11,24 @@ using namespace math;
 
 namespace {
 
-// get number of uniforms and summary size
-struct uniform_desc
-{
-    GLenum      type;
-    GLsizei     size;
-    GLuint      index;
-    GLuint      location;
-    std::string name;
-};
+    // get number of uniforms and summary size
+    struct uniform_desc
+    {
+        GLenum      type;
+        GLsizei     size;
+        GLuint      index;
+        GLuint      location;
+        std::string name;
+    };
 
-}
+} // anonymous namespace
+
+namespace sgl {
 
 // program
-GLProgram::GLProgram(Device* _device) :
-    device(_device),
+template<DEVICE_VERSION DeviceVersion> 
+GLProgram<DeviceVersion>::GLProgram(GLDevice<DeviceVersion>* device_) :
+    device(device_),
     uniforms(0),
     numVerticesOut(3),
     inputType(TRIANGLES),
@@ -36,7 +39,8 @@ GLProgram::GLProgram(Device* _device) :
     glProgram = glCreateProgram();
 }
 
-GLProgram::~GLProgram()
+template<DEVICE_VERSION DeviceVersion> 
+GLProgram<DeviceVersion>::~GLProgram()
 {
     glDeleteProgram(glProgram);
     if (uniforms) {
@@ -45,20 +49,22 @@ GLProgram::~GLProgram()
 }
 
 // shaders
-SGL_HRESULT GLProgram::AddShader(Shader* shader)
+template<DEVICE_VERSION DeviceVersion> 
+SGL_HRESULT GLProgram<DeviceVersion>::AddShader(Shader* shader)
 {
 #ifndef SGL_NO_STATUS_CHECK
     if (!shader) {
 		return EInvalidCall("GLProgram::AddShader failed. Shader is NULL");
     }
 #endif
-    shaders.push_back( ref_ptr<GLShader>( static_cast<GLShader*>(shader) ) );
+    shaders.push_back( ref_ptr<shader_type>( static_cast<shader_type*>(shader) ) );
     dirty = true;
 
     return SGL_OK;
 }
 
-bool GLProgram::RemoveShader(Shader* shader)
+template<DEVICE_VERSION DeviceVersion> 
+bool GLProgram<DeviceVersion>::RemoveShader(Shader* shader)
 {
     shader_vector::iterator iter = std::find( shaders.begin(), shaders.end(), ref_ptr<Shader>(shader) );
     if ( iter != shaders.end() ) 
@@ -72,12 +78,13 @@ bool GLProgram::RemoveShader(Shader* shader)
     return false;
 }
 
-AbstractUniform* GLProgram::CreateUniform( GLProgram*   program,
-                                           const char*  name,
-                                           GLuint       glIndex,
-                                           GLuint       glLocation,
-                                           GLenum       glUniformType,
-                                           size_t       size )
+template<DEVICE_VERSION DeviceVersion> 
+AbstractUniform* GLProgram<DeviceVersion>::CreateUniform( GLProgram*   program,
+                                                          const char*  name,
+                                                          GLuint       glIndex,
+                                                          GLuint       glLocation,
+                                                          GLenum       glUniformType,
+                                                          size_t       size )
 {
     typedef GLUniform<float>      uniform1f;
     typedef GLUniform<Vector2f>   uniform2f;
@@ -93,11 +100,17 @@ AbstractUniform* GLProgram::CreateUniform( GLProgram*   program,
     typedef GLUniform<Matrix3f>   uniform3x3f;
     typedef GLUniform<Matrix4f>   uniform4x4f;
 
+    typedef GLSamplerUniform<Texture1D>     sampler_uniform_1d;
+    typedef GLSamplerUniform<Texture2D>     sampler_uniform_2d;
+    typedef GLSamplerUniform<Texture3D>     sampler_uniform_3d;
+    typedef GLSamplerUniform<TextureCube>   sampler_uniform_cube;
+
     switch(glUniformType)
     {
     case GL_FLOAT:
         return new uniform1f( program,
                               name,
+                              glProgram,
                               glIndex,
                               glLocation,
                               size );
@@ -105,6 +118,7 @@ AbstractUniform* GLProgram::CreateUniform( GLProgram*   program,
     case GL_FLOAT_VEC2:
         return new uniform2f( program,
                               name,
+                              glProgram,
                               glIndex,
                               glLocation,
                               size );
@@ -112,6 +126,7 @@ AbstractUniform* GLProgram::CreateUniform( GLProgram*   program,
     case GL_FLOAT_VEC3:
         return new uniform3f( program,
                               name,
+                              glProgram,
                               glIndex,
                               glLocation,
                               size );
@@ -119,6 +134,7 @@ AbstractUniform* GLProgram::CreateUniform( GLProgram*   program,
     case GL_FLOAT_VEC4:
         return new uniform4f( program,
                               name,
+                              glProgram,
                               glIndex,
                               glLocation,
                               size );
@@ -126,6 +142,7 @@ AbstractUniform* GLProgram::CreateUniform( GLProgram*   program,
     case GL_INT:
         return new uniform1i( program,
                               name,
+                              glProgram,
                               glIndex,
                               glLocation,
                               size );
@@ -133,6 +150,7 @@ AbstractUniform* GLProgram::CreateUniform( GLProgram*   program,
     case GL_INT_VEC2:
         return new uniform2i( program,
                               name,
+                              glProgram,
                               glIndex,
                               glLocation,
                               size );
@@ -140,6 +158,7 @@ AbstractUniform* GLProgram::CreateUniform( GLProgram*   program,
     case GL_INT_VEC3:
         return new uniform3i( program,
                               name,
+                              glProgram,
                               glIndex,
                               glLocation,
                               size );
@@ -147,6 +166,7 @@ AbstractUniform* GLProgram::CreateUniform( GLProgram*   program,
     case GL_INT_VEC4:
         return new uniform4i( program,
                               name,
+                              glProgram,
                               glIndex,
                               glLocation,
                               size );
@@ -154,6 +174,7 @@ AbstractUniform* GLProgram::CreateUniform( GLProgram*   program,
     case GL_BOOL:
         return new uniform1i( program,
                               name,
+                              glProgram,
                               glIndex,
                               glLocation,
                               size );
@@ -161,6 +182,7 @@ AbstractUniform* GLProgram::CreateUniform( GLProgram*   program,
     case GL_BOOL_VEC2:
         return new uniform2i( program,
                               name,
+                              glProgram,
                               glIndex,
                               glLocation,
                               size );
@@ -168,6 +190,7 @@ AbstractUniform* GLProgram::CreateUniform( GLProgram*   program,
     case GL_BOOL_VEC3:
         return new uniform3i( program,
                               name,
+                              glProgram,
                               glIndex,
                               glLocation,
                               size );
@@ -175,6 +198,7 @@ AbstractUniform* GLProgram::CreateUniform( GLProgram*   program,
     case GL_BOOL_VEC4:
         return new uniform4i( program,
                               name,
+                              glProgram,
                               glIndex,
                               glLocation,
                               size );
@@ -182,6 +206,7 @@ AbstractUniform* GLProgram::CreateUniform( GLProgram*   program,
     case GL_FLOAT_MAT2:
         return new uniform2x2f( program,
                                 name,
+                                glProgram,
                                 glIndex,
                                 glLocation,
                                 size );
@@ -189,6 +214,7 @@ AbstractUniform* GLProgram::CreateUniform( GLProgram*   program,
     case GL_FLOAT_MAT3:
         return new uniform3x3f( program,
                                 name,
+                                glProgram,
                                 glIndex,
                                 glLocation,
                                 size );
@@ -196,6 +222,7 @@ AbstractUniform* GLProgram::CreateUniform( GLProgram*   program,
     case GL_FLOAT_MAT4:
         return new uniform4x4f( program,
                                 name,
+                                glProgram,
                                 glIndex,
                                 glLocation,
                                 size );
@@ -204,45 +231,41 @@ AbstractUniform* GLProgram::CreateUniform( GLProgram*   program,
     case GL_INT_SAMPLER_1D_EXT:
     case GL_SAMPLER_1D:
     {
-        GLSamplerUniform<Texture1D>* uniform;
-        uniform = new GLSamplerUniform<Texture1D>( program,
-                                                   name,
-                                                   glIndex,
-                                                   glLocation );
-        return uniform;
+        return new sampler_uniform_1d( program,
+                                       name,
+                                       glProgram,
+                                       glIndex,
+                                       glLocation );
     }
 
     case GL_SAMPLER_2D_SHADOW:
     case GL_INT_SAMPLER_2D_EXT:
     case GL_SAMPLER_2D:
     {
-        GLSamplerUniform<Texture2D>* uniform;
-        uniform = new GLSamplerUniform<Texture2D>( program,
-                                                   name,
-                                                   glIndex,
-                                                   glLocation );
-        return uniform;
+        return new sampler_uniform_2d( program,
+                                       name,
+                                       glProgram,
+                                       glIndex,
+                                       glLocation );
     }
 
     case GL_INT_SAMPLER_3D_EXT:
     case GL_SAMPLER_3D:
     {
-        GLSamplerUniform<Texture3D>* uniform;
-        uniform = new GLSamplerUniform<Texture3D>( program,
-                                                   name,
-                                                   glIndex,
-                                                   glLocation );
-        return uniform;
+        return new sampler_uniform_3d( program,
+                                       name,
+                                       glProgram,
+                                       glIndex,
+                                       glLocation );
     }
 
     case GL_SAMPLER_CUBE:
     {
-        GLSamplerUniform<TextureCube>* uniform;
-        uniform = new GLSamplerUniform<TextureCube>( program,
-                                                     name,
-                                                     glIndex,
-                                                     glLocation );
-        return uniform;
+        return new sampler_uniform_cube( program,
+                                         name,
+                                         glProgram,
+                                         glIndex,
+                                         glLocation );
     }
 
     default:
@@ -253,7 +276,8 @@ AbstractUniform* GLProgram::CreateUniform( GLProgram*   program,
 }
 
 // Work
-SGL_HRESULT GLProgram::Dirty(bool force)
+template<DEVICE_VERSION DeviceVersion> 
+SGL_HRESULT GLProgram<DeviceVersion>::Dirty(bool force)
 {
     if ( !force && !dirty ) {
         return SGL_OK;
@@ -284,7 +308,7 @@ SGL_HRESULT GLProgram::Dirty(bool force)
 
         std::vector<GLuint> programShaders( shaders.size() );
         for (size_t i = 0; i<shaders.size(); ++i) {
-            programShaders[i] = shaders[i]->shader;
+            programShaders[i] = shaders[i]->Handle();
         }
         std::sort( programShaders.begin(), programShaders.end() );
 
@@ -431,7 +455,8 @@ SGL_HRESULT GLProgram::Dirty(bool force)
 	return SGL_OK;
 }
 
-void GLProgram::Clear()
+template<DEVICE_VERSION DeviceVersion> 
+void GLProgram<DeviceVersion>::Clear()
 {
     dirty = true;
     shaders.clear();
@@ -441,7 +466,8 @@ void GLProgram::Clear()
     compilationLog.clear();
 }
 
-SGL_HRESULT GLProgram::Bind() const
+template<DEVICE_VERSION DeviceVersion> 
+SGL_HRESULT GLProgram<DeviceVersion>::Bind() const
 {
 #ifndef SGL_NO_STATUS_CHECK
     if (dirty) {
@@ -452,22 +478,24 @@ SGL_HRESULT GLProgram::Bind() const
     if (device->CurrentProgram() != this) 
     {
         glUseProgram(glProgram);
-        static_cast< GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>* >(device.get())->SetProgram(this);
+        device->SetProgram(this);
     }
 
 	return SGL_OK;
 }
 
-void GLProgram::Unbind() const
+template<DEVICE_VERSION DeviceVersion> 
+void GLProgram<DeviceVersion>::Unbind() const
 {
-    if ( device->CurrentProgram() == this )
+    if (device->CurrentProgram() == this) 
     {
         glUseProgram(0);
-        static_cast< GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>* >(device.get())->SetProgram(0);
+        device->SetProgram(0);
     }
 }
 
-const char* SGL_DLLCALL GLProgram::CompilationLog() const
+template<DEVICE_VERSION DeviceVersion> 
+const char* GLProgram<DeviceVersion>::CompilationLog() const
 {
     if (dirty) {
 		return 0;
@@ -476,26 +504,30 @@ const char* SGL_DLLCALL GLProgram::CompilationLog() const
     return compilationLog.c_str();
 }
 
-void SGL_DLLCALL GLProgram::SetGeometryNumVerticesOut(unsigned int _numVerticesOut)
+template<DEVICE_VERSION DeviceVersion> 
+void GLProgram<DeviceVersion>::SetGeometryNumVerticesOut(unsigned int _numVerticesOut)
 {
     numVerticesOut = _numVerticesOut;
     dirty          = true;
 }
 
-void SGL_DLLCALL GLProgram::SetGeometryInputType(PRIMITIVE_TYPE _inputType)
+template<DEVICE_VERSION DeviceVersion> 
+void GLProgram<DeviceVersion>::SetGeometryInputType(PRIMITIVE_TYPE _inputType)
 {
     inputType = _inputType;
     dirty     = true;
 }
 
-void SGL_DLLCALL GLProgram::SetGeometryOutputType(PRIMITIVE_TYPE _outputType)
+template<DEVICE_VERSION DeviceVersion> 
+void GLProgram<DeviceVersion>::SetGeometryOutputType(PRIMITIVE_TYPE _outputType)
 {
     outputType = _outputType;
     dirty      = true;
 }
 
 // Attributes
-SGL_HRESULT SGL_DLLCALL GLProgram::BindAttributeLocation(const char* name, unsigned index)
+template<DEVICE_VERSION DeviceVersion> 
+SGL_HRESULT GLProgram<DeviceVersion>::BindAttributeLocation(const char* name, unsigned index)
 {
     glBindAttribLocation(glProgram, index, name);
 #ifndef SGL_NO_STATUS_CHECK
@@ -509,13 +541,15 @@ SGL_HRESULT SGL_DLLCALL GLProgram::BindAttributeLocation(const char* name, unsig
     return SGL_OK;
 }
 
-int SGL_DLLCALL GLProgram::AttributeLocation(const char* name) const
+template<DEVICE_VERSION DeviceVersion> 
+int GLProgram<DeviceVersion>::AttributeLocation(const char* name) const
 {
     int location = glGetAttribLocation(glProgram, name);
     return location;
 }
 
-Program::ATTRIBUTE SGL_DLLCALL GLProgram::Attribute(unsigned index) const
+template<DEVICE_VERSION DeviceVersion> 
+Program::ATTRIBUTE GLProgram<DeviceVersion>::Attribute(unsigned index) const
 {
 #ifndef SGL_NO_STATUS_CHECK
     if (index >= attributes.size() ) 
@@ -529,77 +563,120 @@ Program::ATTRIBUTE SGL_DLLCALL GLProgram::Attribute(unsigned index) const
 }
 
 // Uniforms
-UniformI* SGL_DLLCALL GLProgram::GetUniformI(const char* name)
+template<DEVICE_VERSION DeviceVersion> 
+UniformI* GLProgram<DeviceVersion>::GetUniformI(const char* name)
 {
     return GetUniform<int>(name);
 }
 
-Uniform2I* SGL_DLLCALL GLProgram::GetUniform2I(const char* name)
+template<DEVICE_VERSION DeviceVersion> 
+Uniform2I* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform2I(const char* name)
 {
     return GetUniform<Vector2i>(name);
 }
 
-Uniform3I* SGL_DLLCALL GLProgram::GetUniform3I(const char* name)
+template<DEVICE_VERSION DeviceVersion> 
+Uniform3I* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform3I(const char* name)
 {
     return GetUniform<Vector3i>(name);
 }
 
-Uniform4I* SGL_DLLCALL GLProgram::GetUniform4I(const char* name)
+template<DEVICE_VERSION DeviceVersion> 
+Uniform4I* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform4I(const char* name)
 {
     return GetUniform<Vector4i>(name);
 }
 
-UniformF* SGL_DLLCALL GLProgram::GetUniformF(const char* name)
+template<DEVICE_VERSION DeviceVersion> 
+UniformF* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniformF(const char* name)
 {
     return GetUniform<float>(name);
 }
 
-Uniform2F* SGL_DLLCALL GLProgram::GetUniform2F(const char* name)
+template<DEVICE_VERSION DeviceVersion> 
+Uniform2F* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform2F(const char* name)
 {
     return GetUniform<Vector2f>(name);
 }
 
-Uniform3F* SGL_DLLCALL GLProgram::GetUniform3F(const char* name)
+template<DEVICE_VERSION DeviceVersion> 
+Uniform3F* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform3F(const char* name)
 {
     return GetUniform<Vector3f>(name);
 }
 
-Uniform4F* SGL_DLLCALL GLProgram::GetUniform4F(const char* name)
+template<DEVICE_VERSION DeviceVersion> 
+Uniform4F* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform4F(const char* name)
 {
     return GetUniform<Vector4f>(name);
 }
 
-Uniform2x2F* SGL_DLLCALL GLProgram::GetUniform2x2F(const char* name)
+template<DEVICE_VERSION DeviceVersion> 
+Uniform2x2F* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform2x2F(const char* name)
 {
     return GetUniform<Matrix2f>(name);
 }
 
-Uniform3x3F* SGL_DLLCALL GLProgram::GetUniform3x3F(const char* name)
+template<DEVICE_VERSION DeviceVersion> 
+Uniform3x3F* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform3x3F(const char* name)
 {
     return GetUniform<Matrix3f>(name);
 }
 
-Uniform4x4F* SGL_DLLCALL GLProgram::GetUniform4x4F(const char* name)
+template<DEVICE_VERSION DeviceVersion> 
+Uniform4x4F* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform4x4F(const char* name)
 {
     return GetUniform<Matrix4f>(name);
 }
 
-SamplerUniform1D* SGL_DLLCALL GLProgram::GetSamplerUniform1D(const char* name)
+template<DEVICE_VERSION DeviceVersion> 
+SamplerUniform1D* SGL_DLLCALL GLProgram<DeviceVersion>::GetSamplerUniform1D(const char* name)
 {
     return GetSamplerUniform<Texture1D>(name);
 }
 
-SamplerUniform2D* SGL_DLLCALL GLProgram::GetSamplerUniform2D(const char* name)
+template<DEVICE_VERSION DeviceVersion> 
+SamplerUniform2D* SGL_DLLCALL GLProgram<DeviceVersion>::GetSamplerUniform2D(const char* name)
 {
     return GetSamplerUniform<Texture2D>(name);
 }
 
-SamplerUniform3D* SGL_DLLCALL GLProgram::GetSamplerUniform3D(const char* name)
+template<DEVICE_VERSION DeviceVersion> 
+SamplerUniform3D* SGL_DLLCALL GLProgram<DeviceVersion>::GetSamplerUniform3D(const char* name)
 {
     return GetSamplerUniform<Texture3D>(name);
 }
 
-SamplerUniformCube* SGL_DLLCALL GLProgram::GetSamplerUniformCube(const char* name)
+template<DEVICE_VERSION DeviceVersion> 
+SamplerUniformCube* SGL_DLLCALL GLProgram<DeviceVersion>::GetSamplerUniformCube(const char* name)
 {
     return GetSamplerUniform<TextureCube>(name);
 }
+
+template<DEVICE_VERSION DeviceVersion>
+sgl::Program* sglCreateProgram(GLDevice<DeviceVersion>* device)
+{
+    if ( device_traits<DeviceVersion>::support_programmable_pipeline() ) {
+        return new GLProgram<DeviceVersion>(device);
+    }
+
+    throw gl_error("Device profile doesn't programmable pipeline", SGLERR_UNSUPPORTED);
+}
+
+// explicit template instantiation
+template class GLProgram<DV_OPENGL_2_0>;
+template class GLProgram<DV_OPENGL_2_1>;
+template class GLProgram<DV_OPENGL_3_0>;
+template class GLProgram<DV_OPENGL_3_1>;
+template class GLProgram<DV_OPENGL_3_2>;
+
+template sgl::Program* sglCreateProgram<DV_OPENGL_1_3>(GLDevice<DV_OPENGL_1_3>*);
+template sgl::Program* sglCreateProgram<DV_OPENGL_1_4>(GLDevice<DV_OPENGL_1_4>*);
+template sgl::Program* sglCreateProgram<DV_OPENGL_1_5>(GLDevice<DV_OPENGL_1_5>*);
+template sgl::Program* sglCreateProgram<DV_OPENGL_2_0>(GLDevice<DV_OPENGL_2_0>*);
+template sgl::Program* sglCreateProgram<DV_OPENGL_2_1>(GLDevice<DV_OPENGL_2_1>*);
+template sgl::Program* sglCreateProgram<DV_OPENGL_3_0>(GLDevice<DV_OPENGL_3_0>*);
+template sgl::Program* sglCreateProgram<DV_OPENGL_3_1>(GLDevice<DV_OPENGL_3_1>*);
+template sgl::Program* sglCreateProgram<DV_OPENGL_3_2>(GLDevice<DV_OPENGL_3_2>*);
+
+} // namespace sgl

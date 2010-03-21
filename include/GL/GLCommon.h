@@ -25,11 +25,18 @@ class gl_error :
     public std::runtime_error
 {
 public:
-    explicit gl_error(const std::string& msg) :
-        std::runtime_error(msg)
+    explicit gl_error(const std::string& msg,
+                      SGL_HRESULT        res_ = SGLERR_UNKNOWN) :
+        std::runtime_error(msg),
+        res(res_)
     {}
 
+    SGL_HRESULT result() const { return res; }
+
 	~gl_error() throw() {}
+
+public:
+    SGL_HRESULT res;
 };
 
 } // namesapce sgl

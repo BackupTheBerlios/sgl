@@ -44,7 +44,6 @@ public:
     const BlendState*           SGL_DLLCALL CurrentBlendState() const                       { return currentBlendState; }
     const DepthStencilState*    SGL_DLLCALL CurrentDepthStencilState() const                { return currentDepthStencilState; }
     const RasterizerState*      SGL_DLLCALL CurrentRasterizerState() const                  { return currentRasterizerState; }
-    const SamplerState*         SGL_DLLCALL CurrentSamplerState(unsigned int stage) const   { return currentSamplerState[stage]; }
     const Texture*              SGL_DLLCALL CurrentTexture(unsigned int stage) const        { return currentTexture[stage]; }
     const VertexBuffer*         SGL_DLLCALL CurrentVertexBuffer() const                     { return currentVertexBuffer; }
     const VertexLayout*         SGL_DLLCALL CurrentVertexLayout() const                     { return currentVertexLayout; }
@@ -56,7 +55,6 @@ public:
     void                        SGL_DLLCALL SetBlendState(const BlendState* blendState);
     void                        SGL_DLLCALL SetDepthStencilState(const DepthStencilState* depthStencilState);
     void                        SGL_DLLCALL SetRasterizerState(const RasterizerState* rasterizerState);
-    void                        SGL_DLLCALL SetSamplerState(unsigned int stage, const SamplerState* samplerState);
     void                        SGL_DLLCALL SetTexture(unsigned int stage, const Texture* texture); 
     void                        SGL_DLLCALL SetVertexBuffer(const VertexBuffer* vertexBuffer);
     void                        SGL_DLLCALL SetVertexLayout(const VertexLayout* vertexLayout);
@@ -164,18 +162,17 @@ protected:
     const BlendState*           currentBlendState;
     const DepthStencilState*    currentDepthStencilState;
     const RasterizerState*      currentRasterizerState;
-    const SamplerState*         currentSamplerState[NUM_TEXTURE_STAGES];
     IndexBuffer::INDEX_TYPE     currentIndexFormat;
     GLuint                      glIndexType;
     GLsizei                     glIndexSize;
     sgl::rectangle              viewport;
 
     // states
-    state_stack                 stateStack[State::__NUMBER_OF_STATES_WITH_SAMPLERS__];
+    state_stack             stateStack[State::__NUMBER_OF_STATES_WITH_SAMPLERS__];
 
     // unique device objects
-    ref_ptr<FFPProgram>         ffpProgram;
-    ref_ptr<DeviceTraits>       deviceTraits;
+    ref_ptr<FFPProgram>     ffpProgram;
+    ref_ptr<DeviceTraits>   deviceTraits;
 
     #ifdef _WIN32
     HDC			hDC;

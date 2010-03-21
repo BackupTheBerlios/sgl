@@ -1,32 +1,14 @@
 #ifndef SIMPLE_GL_GL_BLEND_STATE_H
 #define SIMPLE_GL_GL_BLEND_STATE_H
 
-#include "GLDevice.h"
+#include "GLForward.h"
+#include "../BlendState.h"
 
 namespace sgl {
 
-class GLBlendState :
-    public ReferencedImpl<BlendState>
-{
-public:
-    GLBlendState(Device* device, const DESC& desc);
-    ~GLBlendState();
-
-    // Override State
-    void SGL_DLLCALL Bind() const;
-
-    // Override RasterizerState
-    const DESC& SGL_DLLCALL Desc() const { return desc; }
-
-private:
-    ref_ptr<Device>     device;
-
-    // setup display list
-    GLuint              bindDisplayList;
-
-    // properties
-    DESC                desc;
-};
+/** Make suitable blend state */
+template<DEVICE_VERSION DeviceVersion>
+sgl::BlendState* sglCreateBlendState(GLDevice<DeviceVersion>* device, const BlendState::DESC& desc);
 
 } // namepsace sgl
 

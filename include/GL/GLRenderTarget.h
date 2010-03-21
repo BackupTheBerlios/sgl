@@ -9,6 +9,7 @@
 namespace sgl {
 
 /* GL fbo wrapper */
+template<DEVICE_VERSION DeviceVersion>
 class GLRenderTarget :
     public ReferencedImpl<RenderTarget>
 {
@@ -51,23 +52,23 @@ private:
             layer(_layer)
         {}
 
-        attachment( GLTexture<Texture2D>*   _texture,
-                    unsigned int            _level ) :
+        attachment( GLTexture<DeviceVersion, Texture2D>*    _texture,
+                    unsigned int                            _level ) :
             texture(_texture),
-            glTarget(_texture->glTarget),
-            glTexture(_texture->glTexture),
+            glTarget( _texture->Target() ),
+            glTexture( _texture->Handle() ),
             width( _texture->Width() ),
             height( _texture->Height() ),
             level(_level),
             layer(-1)
         {}
 
-        attachment( GLTexture<Texture3D>*   _texture,
-                    unsigned int            _level,
-                    unsigned int            _layer ) :
+        attachment( GLTexture<DeviceVersion, Texture3D>*    _texture,
+                    unsigned int                            _level,
+                    unsigned int                            _layer ) :
             texture(_texture),
-            glTarget(_texture->glTarget),
-            glTexture(_texture->glTexture),
+            glTarget( _texture->Target() ),
+            glTexture( _texture->Handle() ),
             width( _texture->Width() ),
             height( _texture->Height() ),
             level(_level),
@@ -79,7 +80,7 @@ private:
     struct guarded_binding :
         public ReferencedImpl<Referenced>
     {
-        guarded_binding(const Device* device, const GLRenderTarget* target)
+        guarded_binding(const GLDevice<DeviceVersion>* device, const GLRenderTarget* target)
         {
             assert(device && target);
             if (device->CurrentRenderTarget() != target)
@@ -101,7 +102,7 @@ private:
     typedef ref_ptr<guarded_binding>    guarded_binding_ptr;
 
 public:
-    GLRenderTarget(Device* device);
+    GLRenderTarget(GLDevice<DeviceVersion>* deviceState);
     ~GLRenderTarget();
 
     // Override RenderTarget
@@ -158,7 +159,7 @@ public:
 
 private:
     // device
-    ref_ptr<Device>     device;
+    GLDevice<DeviceVersion>* device;
 
     // settings
     bool                dirty;

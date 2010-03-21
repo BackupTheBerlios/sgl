@@ -31,26 +31,18 @@ public:
     /** Description of the state */
     struct DESC 
     {
-        FILL_MODE   fillMode      : 3;
+        FILL_MODE   fillMode      : 4;
         CULL_MODE   cullMode      : 4;
-        bool        scissorEnable : 1;
 
         DESC() :
             fillMode(SOLID),
-            cullMode(BACK),
-            scissorEnable(false)
+            cullMode(BACK)
         {}
     };
 
 public:
     // Override State
     virtual TYPE SGL_DLLCALL Type() const { return RASTERIZER_STATE; }
-
-    /** Get scissor rectangle used for the scissor test */
-    virtual const math::Vector4i& SGL_DLLCALL ScissorRectangle() const = 0;
-    
-    /** Set scissor rectangle for the scissor test */
-    virtual void SGL_DLLCALL SetScissorRectangle(const math::Vector4i& rect) = 0;
 
     /** Get description of the state */
     virtual const DESC& SGL_DLLCALL Desc() const = 0;

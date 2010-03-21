@@ -23,8 +23,9 @@ namespace {
 
 namespace sgl {
 
-GLRenderTarget::GLRenderTarget(Device* _device) :
-    device(_device),
+template<DEVICE_VERSION DeviceVersion>
+GLRenderTarget<DeviceVersion>::GLRenderTarget(GLDevice<DeviceVersion>* device_) :
+    device(device_),
     dirty(true),
     useDepthStencilRenderbuffer(false),
     fbo(0),
@@ -37,7 +38,8 @@ GLRenderTarget::GLRenderTarget(Device* _device) :
     glGenRenderbuffersEXT(1, &dsRenderBuffer);
 }
 
-GLRenderTarget::~GLRenderTarget()
+template<DEVICE_VERSION DeviceVersion>
+GLRenderTarget<DeviceVersion>::~GLRenderTarget()
 {
     if (fbo) {
         glDeleteFramebuffersEXT(1, &fbo);
@@ -47,9 +49,10 @@ GLRenderTarget::~GLRenderTarget()
     }
 }
 
-SGL_HRESULT GLRenderTarget::SetDepthStencil( bool             toggle,
-                                             Texture::FORMAT  format,
-                                             unsigned int     samples )
+template<DEVICE_VERSION DeviceVersion>
+SGL_HRESULT GLRenderTarget<DeviceVersion>::SetDepthStencil( bool             toggle,
+                                                            Texture::FORMAT  format,
+                                                            unsigned int     samples )
 {
 #ifndef SGL_NO_STATUS_CHECK
     if ( !Texture::FORMAT_TRAITS[format].depth ) {
@@ -65,9 +68,10 @@ SGL_HRESULT GLRenderTarget::SetDepthStencil( bool             toggle,
     return SGL_OK;
 }
 
-SGL_HRESULT GLRenderTarget::SetColorAttachment( unsigned int    mrtIndex,
-                                                Texture2D*      texture,
-                                                unsigned int    level )
+template<DEVICE_VERSION DeviceVersion>
+SGL_HRESULT GLRenderTarget<DeviceVersion>::SetColorAttachment( unsigned int    mrtIndex,
+                                                               Texture2D*      texture,
+                                                               unsigned int    level )
 {
 #ifndef SGL_NO_STATUS_CHECK
     if ( mrtIndex >= attachments.size() ) {
@@ -76,15 +80,16 @@ SGL_HRESULT GLRenderTarget::SetColorAttachment( unsigned int    mrtIndex,
 #endif
 
 	dirty                 = true;
-	attachments[mrtIndex] = attachment(static_cast<GLTexture<Texture2D>*>(texture), level);
+	attachments[mrtIndex] = attachment(static_cast<GLTexture<DeviceVersion, Texture2D>*>(texture), level);
 
     return SGL_OK;
 }
 
-SGL_HRESULT GLRenderTarget::SetColorAttachment( unsigned int    mrtIndex,
-                                                Texture3D*      texture,
-                                                unsigned int    level,
-                                                unsigned int    layer )
+template<DEVICE_VERSION DeviceVersion>
+SGL_HRESULT GLRenderTarget<DeviceVersion>::SetColorAttachment( unsigned int    mrtIndex,
+                                                               Texture3D*      texture,
+                                                               unsigned int    level,
+                                                               unsigned int    layer )
 {
 #ifndef SGL_NO_STATUS_CHECK
     if ( mrtIndex >= attachments.size() ) {
@@ -93,13 +98,14 @@ SGL_HRESULT GLRenderTarget::SetColorAttachment( unsigned int    mrtIndex,
 #endif
 
 	dirty                 = true;
-	attachments[mrtIndex] = attachment(static_cast<GLTexture<Texture3D>*>(texture), level, layer);
+	attachments[mrtIndex] = attachment(static_cast<GLTexture<DeviceVersion, Texture3D>*>(texture), level, layer);
 
     return SGL_OK;
 }
 
-SGL_HRESULT GLRenderTarget::SetDepthStencilAttachment( Texture2D*   depthStencilTexture,
-                                                       unsigned int level )
+template<DEVICE_VERSION DeviceVersion>
+SGL_HRESULT GLRenderTarget<DeviceVersion>::SetDepthStencilAttachment( Texture2D*   depthStencilTexture,
+                                                                      unsigned int level )
 {
 #ifndef SGL_NO_STATUS_CHECK
     if ( !Texture::FORMAT_TRAITS[ depthStencilTexture->Format() ].depth ) {
@@ -108,12 +114,13 @@ SGL_HRESULT GLRenderTarget::SetDepthStencilAttachment( Texture2D*   depthStencil
 #endif
 
     dirty        = true;
-    dsAttachment = attachment(static_cast<GLTexture<Texture2D>*>(depthStencilTexture), level);
+    dsAttachment = attachment(static_cast<GLTexture<DeviceVersion, Texture2D>*>(depthStencilTexture), level);
 
     return SGL_OK;
 }
 
-Texture* GLRenderTarget::ColorAttachment(unsigned int mrtIndex) const
+template<DEVICE_VERSION DeviceVersion>
+Texture* GLRenderTarget<DeviceVersion>::ColorAttachment(unsigned int mrtIndex) const
 {
     if ( mrtIndex < attachments.size() ) {
         return attachments[mrtIndex].texture.get();
@@ -122,22 +129,26 @@ Texture* GLRenderTarget::ColorAttachment(unsigned int mrtIndex) const
     return 0;
 }
 
-Texture* GLRenderTarget::DepthStencilAttachment() const
+template<DEVICE_VERSION DeviceVersion>
+Texture* GLRenderTarget<DeviceVersion>::DepthStencilAttachment() const
 {
     return dsAttachment.texture.get();
 }
 
-bool GLRenderTarget::HaveDepthStencil() const
+template<DEVICE_VERSION DeviceVersion>
+bool GLRenderTarget<DeviceVersion>::HaveDepthStencil() const
 {
     return (dsAttachment.texture != 0) || useDepthStencilRenderbuffer;
 }
 
-bool GLRenderTarget::IsDirty() const
+template<DEVICE_VERSION DeviceVersion>
+bool GLRenderTarget<DeviceVersion>::IsDirty() const
 {
     return dirty;
 }
 
-SGL_HRESULT GLRenderTarget::Dirty(bool force)
+template<DEVICE_VERSION DeviceVersion>
+SGL_HRESULT GLRenderTarget<DeviceVersion>::Dirty(bool force)
 {
     if (!dirty && !force) {
         return SGL_OK;
@@ -151,7 +162,7 @@ SGL_HRESULT GLRenderTarget::Dirty(bool force)
     bool   fillDrawBuffers      = drawBuffers.empty();
     for(size_t i = 0; i<attachments.size(); ++i)
     {
-        const GLRenderTarget::attachment& attachment = attachments[i];
+        const GLRenderTarget<DeviceVersion>::attachment& attachment = attachments[i];
         if (attachment.glTarget)
         {
             if (fillDrawBuffers) {
@@ -197,7 +208,7 @@ SGL_HRESULT GLRenderTarget::Dirty(bool force)
             if ( error != GL_NO_ERROR )
             {
                 GuardedUnbind(oldFBO);
-                return CheckGLError("GLRenderTarget::Dirty failed. Failed to attach color attachment: ", error);
+                return CheckGLError("GLRenderTarget<DeviceVersion>::Dirty failed. Failed to attach color attachment: ", error);
             }
 #endif
         }
@@ -217,7 +228,7 @@ SGL_HRESULT GLRenderTarget::Dirty(bool force)
         if ( error != GL_NO_ERROR )
         {
             GuardedUnbind(oldFBO);
-            return CheckGLError("GLRenderTarget::Dirty failed. Failed to attach depth-stencil attachment: ", error);
+            return CheckGLError("GLRenderTarget<DeviceVersion>::Dirty failed. Failed to attach depth-stencil attachment: ", error);
         }
 #endif
     }
@@ -245,7 +256,7 @@ SGL_HRESULT GLRenderTarget::Dirty(bool force)
         if ( error != GL_NO_ERROR )
         {
             GuardedUnbind(oldFBO);
-            return CheckGLError("GLRenderTarget::Dirty failed. Failed to create depth-stencil renderbuffer: ", error);
+            return CheckGLError("GLRenderTarget<DeviceVersion>::Dirty failed. Failed to create depth-stencil renderbuffer: ", error);
         }
 #endif
 
@@ -264,7 +275,7 @@ SGL_HRESULT GLRenderTarget::Dirty(bool force)
         if ( error != GL_NO_ERROR )
         {
             GuardedUnbind(oldFBO);
-            return CheckGLError("GLRenderTarget::Dirty failed. Failed to attach depth-stencil renderbuffer: ", error);
+            return CheckGLError("GLRenderTarget<DeviceVersion>::Dirty failed. Failed to attach depth-stencil renderbuffer: ", error);
         }
 #endif
     }
@@ -275,7 +286,7 @@ SGL_HRESULT GLRenderTarget::Dirty(bool force)
         if (status != GL_FRAMEBUFFER_COMPLETE_EXT)
         {
             GuardedUnbind(oldFBO);
-            return CheckGLFramebufferStatus("GLRenderTarget::Dirty failed: ", status);
+            return CheckGLFramebufferStatus("GLRenderTarget<DeviceVersion>::Dirty failed: ", status);
         }
     }
 #endif
@@ -284,7 +295,8 @@ SGL_HRESULT GLRenderTarget::Dirty(bool force)
     return SGL_OK;
 }
 
-SGL_HRESULT GLRenderTarget::SetDrawBuffer(unsigned int drawBuffer)
+template<DEVICE_VERSION DeviceVersion>
+SGL_HRESULT GLRenderTarget<DeviceVersion>::SetDrawBuffer(unsigned int drawBuffer)
 {
     drawBuffers.resize(1);
     drawBuffers[0] = GL_COLOR_ATTACHMENT0_EXT + drawBuffer;
@@ -295,7 +307,8 @@ SGL_HRESULT GLRenderTarget::SetDrawBuffer(unsigned int drawBuffer)
     return SGL_OK;
 }
 
-SGL_HRESULT GLRenderTarget::SetDrawBuffers(unsigned int numTargets, unsigned int* targets)
+template<DEVICE_VERSION DeviceVersion>
+SGL_HRESULT GLRenderTarget<DeviceVersion>::SetDrawBuffers(unsigned int numTargets, unsigned int* targets)
 {
     // copy draw buffers
     drawBuffers.resize(numTargets);
@@ -318,7 +331,8 @@ SGL_HRESULT GLRenderTarget::SetDrawBuffers(unsigned int numTargets, unsigned int
     return SGL_OK;
 }
 
-SGL_HRESULT GLRenderTarget::SetReadBuffer(unsigned int _readBuffer)
+template<DEVICE_VERSION DeviceVersion>
+SGL_HRESULT GLRenderTarget<DeviceVersion>::SetReadBuffer(unsigned int _readBuffer)
 {
     readBuffer = _readBuffer + GL_COLOR_ATTACHMENT0;
     if ( device->CurrentRenderTarget() == this ) {
@@ -328,12 +342,14 @@ SGL_HRESULT GLRenderTarget::SetReadBuffer(unsigned int _readBuffer)
     return SGL_OK;
 }
 
-unsigned int GLRenderTarget::ReadBuffer() const
+template<DEVICE_VERSION DeviceVersion>
+unsigned int GLRenderTarget<DeviceVersion>::ReadBuffer() const
 {
     return readBuffer - GL_COLOR_ATTACHMENT0_EXT;
 }
 
-unsigned int GLRenderTarget::DrawBuffers(unsigned int* targets) const
+template<DEVICE_VERSION DeviceVersion>
+unsigned int GLRenderTarget<DeviceVersion>::DrawBuffers(unsigned int* targets) const
 {
     if (targets)
     {
@@ -346,11 +362,12 @@ unsigned int GLRenderTarget::DrawBuffers(unsigned int* targets) const
     return drawBuffers.size();
 }
 
-SGL_HRESULT GLRenderTarget::Bind() const
+template<DEVICE_VERSION DeviceVersion>
+SGL_HRESULT GLRenderTarget<DeviceVersion>::Bind() const
 {
 #ifndef SGL_NO_STATUS_CHECK
     if (dirty) {
-        return EInvalidCall("GLRenderTarget::Bind failed. Render target is dirty.");
+        return EInvalidCall("GLRenderTarget<DeviceVersion>::Bind failed. Render target is dirty.");
     }
 #endif
 
@@ -363,20 +380,31 @@ SGL_HRESULT GLRenderTarget::Bind() const
         glDrawBuffers(drawBuffers.size(), &drawBuffers[0]);
     }
     glReadBuffer(readBuffer);
-    static_cast< GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>* >(device.get())->SetRenderTarget(this);
+    device->SetRenderTarget(this);
 
     return SGL_OK;
 }
 
-void GLRenderTarget::Unbind() const
+template<DEVICE_VERSION DeviceVersion>
+void GLRenderTarget<DeviceVersion>::Unbind() const
 {
     if ( device->CurrentRenderTarget() == this )
     {
         glBindFramebufferEXT(GL_FRAMEBUFFER, 0);
         glDrawBuffer(GL_BACK);
         glReadBuffer(GL_BACK);
-        static_cast< GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>* >(device.get())->SetRenderTarget(0);
+        device->SetRenderTarget(0);
     }
 }
+
+// explicit template instantiation
+template class GLRenderTarget<DV_OPENGL_1_3>;
+template class GLRenderTarget<DV_OPENGL_1_4>;
+template class GLRenderTarget<DV_OPENGL_1_5>;
+template class GLRenderTarget<DV_OPENGL_2_0>;
+template class GLRenderTarget<DV_OPENGL_2_1>;
+template class GLRenderTarget<DV_OPENGL_3_0>;
+template class GLRenderTarget<DV_OPENGL_3_1>;
+template class GLRenderTarget<DV_OPENGL_3_2>;
 
 } // namespace sgl

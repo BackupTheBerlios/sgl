@@ -34,33 +34,97 @@ namespace sgl {
 /// Device type according to the library used for rendering
 enum DEVICE_VERSION
 {
-    DV_OPENGL_1_4_FFP,
-    DV_OPENGL_2_1_MIXED,
-    DV_OPENGL_2_1_PROGRAMMABLE,
-    DV_OPENGL_3_0_MIXED,
-    DV_OPENGL_3_0_PROGRAMMABLE,
+    DV_OPENGL_1_3,
+    DV_OPENGL_1_4,
+    DV_OPENGL_1_5,
+    DV_OPENGL_2_0,
+    DV_OPENGL_2_1,
+    DV_OPENGL_3_0,
+    DV_OPENGL_3_1,
     DV_OPENGL_3_2
 };
 
-enum PIPELINE_TYPE
-{
-    PT_FIXED,
-    PT_PROGRAMMABLE
-};
-
-template <DEVICE_VERSION deviceType>
+template <DEVICE_VERSION>
 struct device_traits;
 
 template<>
-struct device_traits<DV_OPENGL_2_1_MIXED>
+struct device_traits<DV_OPENGL_1_3>
 {
-    static const PIPELINE_TYPE pipeline = PT_PROGRAMMABLE;
+    static bool support_fixed_pipeline()        { return true; }
+    static bool support_programmable_pipeline() { return false; }
+    static bool support_generic_attributes()    { return false; }
+    static bool support_fixed_attributes()      { return true; }
+    static bool support_display_lists()         { return true; }
 };
 
 template<>
-struct device_traits<DV_OPENGL_2_1_PROGRAMMABLE>
+struct device_traits<DV_OPENGL_1_4>
 {
-    static const PIPELINE_TYPE pipeline = PT_PROGRAMMABLE;
+    static bool support_fixed_pipeline()        { return true; }
+    static bool support_programmable_pipeline() { return false; }
+    static bool support_generic_attributes()    { return false; }
+    static bool support_fixed_attributes()      { return true; }
+    static bool support_display_lists()         { return true; }
+};
+
+template<>
+struct device_traits<DV_OPENGL_1_5>
+{
+    static bool support_fixed_pipeline()        { return true; }
+    static bool support_programmable_pipeline() { return false; }
+    static bool support_generic_attributes()    { return false; }
+    static bool support_fixed_attributes()      { return true; }
+    static bool support_display_lists()         { return true; }
+};
+
+template<>
+struct device_traits<DV_OPENGL_2_0>
+{
+    static bool support_fixed_pipeline()        { return true; }
+    static bool support_programmable_pipeline() { return true; }
+    static bool support_generic_attributes()    { return true; }
+    static bool support_fixed_attributes()      { return true; }
+    static bool support_display_lists()         { return true; }
+};
+
+template<>
+struct device_traits<DV_OPENGL_2_1>
+{
+    static bool support_fixed_pipeline()        { return true; }
+    static bool support_programmable_pipeline() { return true; }
+    static bool support_generic_attributes()    { return true; }
+    static bool support_fixed_attributes()      { return true; }
+    static bool support_display_lists()         { return true; }
+};
+
+template<>
+struct device_traits<DV_OPENGL_3_0>
+{
+    static bool support_fixed_pipeline()        { return true; }
+    static bool support_programmable_pipeline() { return true; }
+    static bool support_generic_attributes()    { return true; }
+    static bool support_fixed_attributes()      { return true; }
+    static bool support_display_lists()         { return false; }
+};
+
+template<>
+struct device_traits<DV_OPENGL_3_1>
+{
+    static bool support_fixed_pipeline()        { return false; }
+    static bool support_programmable_pipeline() { return true; }
+    static bool support_generic_attributes()    { return true; }
+    static bool support_fixed_attributes()      { return false; }
+    static bool support_display_lists()         { return false; }
+};
+
+template<>
+struct device_traits<DV_OPENGL_3_2>
+{
+    static bool support_fixed_pipeline()        { return false; }
+    static bool support_programmable_pipeline() { return true; }
+    static bool support_generic_attributes()    { return true; }
+    static bool support_fixed_attributes()      { return false; }
+    static bool support_display_lists()         { return false; }
 };
 
 /** Device class wraps graphics functions */
@@ -113,9 +177,6 @@ public:
 
     /** Retrieve current device rasterizer state. */
     virtual const RasterizerState*      SGL_DLLCALL CurrentRasterizerState() const = 0;
-
-    /** Retrieve current device sampler state. */
-    virtual const SamplerState*         SGL_DLLCALL CurrentSamplerState(unsigned int stage) const = 0;
 
     /** Retrieve bound texture. */
     virtual const Texture*              SGL_DLLCALL CurrentTexture(unsigned int stage) const = 0;

@@ -1,8 +1,10 @@
 #include "GL/GLRasterizerState.h"
-
-using namespace sgl;
+#include "GL/GLCommon.h"
+#include "GL/GLDevice.h"
 
 namespace {
+
+    using namespace sgl;
 
     GLenum BIND_CULL_MODE[] =
     {
@@ -18,51 +20,70 @@ namespace {
 	    GL_LINE
     };
 
+    template<DEVICE_VERSION DeviceVersion>
+    class GLRasterizerStateDefault :
+        public ReferencedImpl<RasterizerState>
+    {
+    public:
+        GLRasterizerStateDefault(GLDevice<DeviceVersion>* device_, const DESC& desc_) :
+            device(device_),
+            desc(desc_)
+        {
+            glCullMode = BIND_CULL_MODE[desc.cullMode];
+            glFillMode = BIND_FILL_MODE[desc.fillMode];
+        }
+
+        // Override RasterizerState
+        const DESC& SGL_DLLCALL Desc() const 
+        { 
+            return desc; 
+        }
+
+        void SGL_DLLCALL Bind() const
+        {
+            if (device->CurrentRasterizerState() != this)
+            {
+                if (desc.cullMode != NONE)
+                {
+                    glEnable(GL_CULL_FACE);
+                    glCullFace(glCullMode);
+                }
+                else {
+                    glDisable(GL_CULL_FACE);
+                }
+                glPolygonMode(GL_FRONT_AND_BACK, glFillMode);
+
+                device->SetRasterizerState(this);
+            }
+        }
+
+    private:
+        GLDevice<DeviceVersion>*    device;
+        DESC                        desc;
+
+        // gl primitives
+        GLuint  glCullMode;
+        GLuint  glFillMode;
+    };
+
 } // anonymous namespace
 
-GLRasterizerState::GLRasterizerState( sgl::Device*  _device, 
-                                      const DESC&   _desc ) :
-    device(_device),
-    desc(_desc),
-    scissorRect(0, 0, 0, 0)
-{
-    bindDisplayList = glGenLists(1);
+namespace sgl {
 
-    // generate setup list
-    glNewList(bindDisplayList, GL_COMPILE);
-    {
-        if (desc.cullMode != NONE)
-        {
-            glEnable(GL_CULL_FACE);
-            glCullFace(BIND_CULL_MODE[desc.cullMode]);
-        }
-        else {
-            glDisable(GL_CULL_FACE);
-        }
-        glPolygonMode(GL_FRONT_AND_BACK, BIND_FILL_MODE[desc.fillMode]);
-        if (desc.scissorEnable) 
-        {
-            glEnable(GL_SCISSOR_TEST);
-            glScissor(scissorRect[0], scissorRect[1], scissorRect[2] - scissorRect[0], scissorRect[3] - scissorRect[1]);
-        }
-        else {
-            glDisable(GL_SCISSOR_TEST);
-        }
-    }
-    glEndList();
+template<DEVICE_VERSION DeviceVersion>
+sgl::RasterizerState* sglCreateRasterizerState(GLDevice<DeviceVersion>* device, const RasterizerState::DESC& desc)
+{
+    return new GLRasterizerStateDefault<DeviceVersion>(device, desc);
 }
 
-GLRasterizerState::~GLRasterizerState()
-{
-    glDeleteLists(bindDisplayList, 1);
-}
+// explicit template instantiation
+template sgl::RasterizerState* sglCreateRasterizerState<DV_OPENGL_1_3>(GLDevice<DV_OPENGL_1_3>*, const RasterizerState::DESC&);
+template sgl::RasterizerState* sglCreateRasterizerState<DV_OPENGL_1_4>(GLDevice<DV_OPENGL_1_4>*, const RasterizerState::DESC&);
+template sgl::RasterizerState* sglCreateRasterizerState<DV_OPENGL_1_5>(GLDevice<DV_OPENGL_1_5>*, const RasterizerState::DESC&);
+template sgl::RasterizerState* sglCreateRasterizerState<DV_OPENGL_2_0>(GLDevice<DV_OPENGL_2_0>*, const RasterizerState::DESC&);
+template sgl::RasterizerState* sglCreateRasterizerState<DV_OPENGL_2_1>(GLDevice<DV_OPENGL_2_1>*, const RasterizerState::DESC&);
+template sgl::RasterizerState* sglCreateRasterizerState<DV_OPENGL_3_0>(GLDevice<DV_OPENGL_3_0>*, const RasterizerState::DESC&);
+template sgl::RasterizerState* sglCreateRasterizerState<DV_OPENGL_3_1>(GLDevice<DV_OPENGL_3_1>*, const RasterizerState::DESC&);
+template sgl::RasterizerState* sglCreateRasterizerState<DV_OPENGL_3_2>(GLDevice<DV_OPENGL_3_2>*, const RasterizerState::DESC&);
 
-void GLRasterizerState::SetScissorRectangle(const math::Vector4i& rect)
-{
-}
-
-void GLRasterizerState::Bind() const
-{
-    glCallList(bindDisplayList);
-    static_cast< GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>* >(device.get())->SetRasterizerState(this);
-}
+} // namespace sgl

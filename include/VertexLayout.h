@@ -35,7 +35,9 @@ public:
 	/** Get number of elements in the vertex declaration */
 	virtual unsigned int SGL_DLLCALL NumElements() const = 0;
 
-    /** Get i'th element of the vertex declaration. */
+    /** Get i'th element of the vertex declaration. Elements can be shuffled
+     * for better performance during the initialization. 
+     */
 	virtual ELEMENT SGL_DLLCALL Element(unsigned int index) const = 0;
 
     /** Setup vertex declaration to the device. */

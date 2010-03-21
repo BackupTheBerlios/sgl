@@ -5,18 +5,18 @@
 
 namespace sgl {
 
+template<DEVICE_VERSION DeviceVersion>
 class GLSamplerState :
     public ReferencedImpl<SamplerState>
 {
 public:
-    GLSamplerState(sgl::Device* device, const DESC& desc);
-    ~GLSamplerState();
+    GLSamplerState(sgl::GLDevice<DeviceVersion>* device, const DESC& desc);
 
     // Override SamplerState
     const DESC& SGL_DLLCALL Desc() const { return desc; }
 
 private:
-    mutable ref_ptr<Device> device;
+    GLDevice<DeviceVersion>* device;
 
     // properties
     DESC desc;

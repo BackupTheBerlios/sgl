@@ -4,20 +4,16 @@
 #include "Texture1D.h"
 #include "GLTexture.h"
 
-#ifdef SIMPLE_GL_USE_SDL_IMAGE
-#   include <SDL_image.h>
-#endif
-
 namespace sgl {
 
-/* GL texture wrapper */
+/* GL texture wrapper 
 class GLTexture1D :
     public GLTexture<Texture1D>
 {
 public:
     GLTexture1D(Device* _pDevice);
     ~GLTexture1D();
-/*
+
     // type of the texture
     TYPE SGL_DLLCALL Type() const { return TEXTURE_1D; }
 
@@ -38,14 +34,14 @@ public:
     bool            SGL_DLLCALL ResizeNonPowerOfTwoHint() const { return resizeNonPowerOfTwo; }
 
     GLenum SGL_DLLCALL GLFormat() const;
-*/
+
 protected:
     // settings
     unsigned int	size;
     FORMAT          format;
     bool            resizeNonPowerOfTwo;
 };
-
+*/
 } // namespace sgl
 
 #endif // SIMPLE_GL_GL_TEXTURE_2D_H

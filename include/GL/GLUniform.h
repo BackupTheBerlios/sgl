@@ -1,7 +1,6 @@
 #ifndef SIMPLE_GL_GL_UNIFORM_H
 #define SIMPLE_GL_GL_UNIFORM_H
 
-#include "GLProgram.h"
 #include "GLTexture.h"
 
 namespace sgl {
@@ -10,14 +9,15 @@ template<typename Interface>
 class GLUniformBase :
     public ReferencedImpl<Interface>
 {
-friend class GLProgram;
 public:
-    GLUniformBase( GLProgram*         _program,
-                   const std::string& _name,
-                   GLuint             _glIndex,
-                   GLuint             _glLocation ) :
+    GLUniformBase( Program*             _program,
+                   const std::string&   _name,
+                   GLuint               _glProgram,
+                   GLuint               _glIndex,
+                   GLuint               _glLocation ) :
        program(_program),
        name(_name),
+       glProgram(_glProgram),
        glIndex(_glIndex),
        glLocation(_glLocation)
     {}
@@ -26,14 +26,21 @@ public:
     Program*    SGL_DLLCALL MasterProgram() const { return program; }
     const char* SGL_DLLCALL Name() const          { return name.c_str(); }
 
+    /** Get OpenGL uniform index */
+    GLuint SGL_DLLCALL Index() const { return glIndex; }
+
+    /** Get OpenGL uniform location */
+    GLuint SGL_DLLCALL Location() const { return glLocation; }
+
 protected:
     // master
-    GLProgram*  program;
+    Program*    program;
     std::string name;
 
     // gl
+    GLuint      glProgram;
     GLuint      glIndex;
-    GLuint      glLocation; // location of the uniform
+    GLuint      glLocation;
 };
 
 /* GL typed uniform */
@@ -41,18 +48,17 @@ template<typename T>
 class GLUniform :
     public GLUniformBase< Uniform<T> >
 {
-friend class GLProgram;
 public:
-    typedef GLUniformBase< Uniform<T> >              base_type;
-    typedef GLUniform<T>                             this_type;
+    typedef GLUniformBase< Uniform<T> >  base_type;
 
 public:
-    GLUniform( GLProgram*          program,
-               const std::string&  name,
-               GLuint              glIndex,
-               GLuint              glLocation,
-               size_t              _numValues ) :
-        base_type(program, name, glIndex, glLocation),
+    GLUniform( Program*             program,
+               const std::string&   name,
+               GLuint               glProgram,
+               GLuint               glIndex,
+               GLuint               glLocation,
+               size_t               _numValues ) :
+        base_type(program, name, glProgram, glIndex, glLocation),
         numValues(_numValues)
     {}
 
@@ -74,15 +80,15 @@ class GLSamplerUniform :
     public GLUniformBase< SamplerUniform<T> >
 {
 public:
-    typedef GLUniformBase< SamplerUniform<T> >  base_type;
-    typedef GLSamplerUniform<T>                 this_type;
+    typedef GLUniformBase< SamplerUniform<T> >   base_type;
 
 public:
-    GLSamplerUniform( GLProgram*         program,
-                      const std::string& name,
-                      GLuint             glStage,
-                      GLuint             glLocation ) :
-        base_type(program, name, glStage, glLocation)
+    GLSamplerUniform( Program*              program,
+                      const std::string&    name,
+                      GLuint                glProgram,
+                      GLuint                glStage,
+                      GLuint                glLocation ) :
+        base_type(program, name, glProgram, glStage, glLocation)
     {}
 
     void SGL_DLLCALL Set(unsigned int stage, const T* texture)
@@ -96,7 +102,7 @@ public:
     unsigned int SGL_DLLCALL Value() const
     {
         int value;
-        glGetUniformiv(base_type::program->glProgram, base_type::glLocation, &value);
+        glGetUniformiv(glProgram, base_type::glLocation, &value);
         return value;
     }
 };

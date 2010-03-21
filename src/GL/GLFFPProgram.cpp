@@ -1,3 +1,4 @@
+#include "GL/GLCommon.h"
 #include "GL/GLDevice.h"
 #include "GL/GLFFPProgram.h"
 #include "GL/GLFFPUniform.h"
@@ -241,8 +242,11 @@ namespace {
 
 } // anonymous namespace
 
-GLFFPProgram::GLFFPProgram(Device* _device) :
-    device(_device)
+namespace sgl {
+
+template<DEVICE_VERSION DeviceVersion>
+GLFFPProgram<DeviceVersion>::GLFFPProgram(GLDevice<DeviceVersion>* device_) :
+    device(device_)
 {
     using namespace math;
 
@@ -425,25 +429,52 @@ GLFFPProgram::GLFFPProgram(Device* _device) :
     offset += uniformSize;
 }
 
-GLFFPProgram::~GLFFPProgram()
-{
-    // Do nothing. Dies with device
-}
-
-SGL_HRESULT GLFFPProgram::BindAttributeLocation(const char* /*name*/, unsigned /*index*/)
+template<DEVICE_VERSION DeviceVersion>
+SGL_HRESULT GLFFPProgram<DeviceVersion>::BindAttributeLocation(const char* /*name*/, unsigned /*index*/)
 {
     return EInvalidCall("Can't bind attribute location for ffp program.");
 }
 
-SGL_HRESULT GLFFPProgram::Bind() const
+template<DEVICE_VERSION DeviceVersion>
+SGL_HRESULT GLFFPProgram<DeviceVersion>::Bind() const
 {
     glUseProgram(0);
-    static_cast< GLDevice<DV_OPENGL_2_1_PROGRAMMABLE>* >(device.get())->SetProgram(this);
+    device->SetProgram(this);
 
 	return SGL_OK;
 }
 
-void SGL_DLLCALL GLFFPProgram::Unbind() const
+template<DEVICE_VERSION DeviceVersion>
+void GLFFPProgram<DeviceVersion>::Unbind() const
 {
     // Actually we can't unbind ffp program
 }
+
+template<DEVICE_VERSION DeviceVersion>
+sgl::FFPProgram* sglCreateFFPProgram(GLDevice<DeviceVersion>* device)
+{
+    if ( device_traits<DeviceVersion>::support_fixed_pipeline() ) {
+        return new GLFFPProgram<DeviceVersion>(device);
+    }
+
+    throw gl_error("Device profile doesn't support fixed pipeline", SGLERR_UNSUPPORTED);
+}
+
+// explicit template instantiation
+template class GLFFPProgram<DV_OPENGL_1_3>;
+template class GLFFPProgram<DV_OPENGL_1_4>;
+template class GLFFPProgram<DV_OPENGL_1_5>;
+template class GLFFPProgram<DV_OPENGL_2_0>;
+template class GLFFPProgram<DV_OPENGL_2_1>;
+template class GLFFPProgram<DV_OPENGL_3_0>;
+
+template sgl::FFPProgram* sglCreateFFPProgram<DV_OPENGL_1_3>(GLDevice<DV_OPENGL_1_3>*);
+template sgl::FFPProgram* sglCreateFFPProgram<DV_OPENGL_1_4>(GLDevice<DV_OPENGL_1_4>*);
+template sgl::FFPProgram* sglCreateFFPProgram<DV_OPENGL_1_5>(GLDevice<DV_OPENGL_1_5>*);
+template sgl::FFPProgram* sglCreateFFPProgram<DV_OPENGL_2_0>(GLDevice<DV_OPENGL_2_0>*);
+template sgl::FFPProgram* sglCreateFFPProgram<DV_OPENGL_2_1>(GLDevice<DV_OPENGL_2_1>*);
+template sgl::FFPProgram* sglCreateFFPProgram<DV_OPENGL_3_0>(GLDevice<DV_OPENGL_3_0>*);
+template sgl::FFPProgram* sglCreateFFPProgram<DV_OPENGL_3_1>(GLDevice<DV_OPENGL_3_1>*);
+template sgl::FFPProgram* sglCreateFFPProgram<DV_OPENGL_3_2>(GLDevice<DV_OPENGL_3_2>*);
+
+} // namespace sgl

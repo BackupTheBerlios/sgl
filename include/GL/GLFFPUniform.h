@@ -2,7 +2,6 @@
 #define SIMPLE_GL_GL_FFP_UNIFORM_H
 
 #include "GLUniform.h"
-#include "GLFFPProgram.h"
 
 namespace sgl {
 
@@ -16,7 +15,7 @@ public:
     typedef void (*get_function)(T*, unsigned int);
 
 public:
-    GLFFPUniform( GLFFPProgram*         _program,
+    GLFFPUniform( Program*              _program,
                   const std::string&    _name,
                   set_function          _setFunction,
                   get_function          _getFunction,
@@ -59,7 +58,7 @@ public:
 
 private:
     // program
-    GLFFPProgram*   program;
+    Program*        program;
     std::string     name;
     size_t          numValues;
 

@@ -16,7 +16,6 @@ class Program;
 class AbstractUniform :
     public WeakReferenced
 {
-friend class GLProgram;
 public:
     /** Get name of the uniform */
     virtual const char* SGL_DLLCALL Name() const = 0;

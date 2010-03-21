@@ -1,33 +1,19 @@
 #ifndef SIMPLE_GL_GL_VERTEX_LAYOUT_H
 #define SIMPLE_GL_GL_VERTEX_LAYOUT_H
 
-#include "GLDevice.h"
+#include "GLForward.h"
+#include "../VertexLayout.h"
 
 namespace sgl {
 
-extern const GLenum BIND_SCALAR_TYPE[__NUMBER_OF_SCALAR_TYPES__];
+extern const unsigned BIND_SCALAR_TYPE[__NUMBER_OF_SCALAR_TYPES__];
 
-/* Vertex declaration */
-class GLVertexLayout:
-    public ReferencedImpl<VertexLayout>
-{
-public:
-	GLVertexLayout( Device*         device, 
-                    unsigned int    numElements, 
-                    const ELEMENT*  elements );
-    ~GLVertexLayout();
+/** Make suitable vertex layout */
+template<DEVICE_VERSION DeviceVersion>
+sgl::VertexLayout* sglCreateVertexLayout(GLDevice<DeviceVersion>*       device, 
+                                         unsigned int                   numElements, 
+                                         const VertexLayout::ELEMENT*   element);
 
-    // Override VertexLayout
-    unsigned int    SGL_DLLCALL NumElements() const                 { return elements.size(); }
-    ELEMENT         SGL_DLLCALL Element(unsigned int index) const   { return elements[index]; }
-
-    void            SGL_DLLCALL Bind() const;
-    void            SGL_DLLCALL Unbind() const;
-
-private:
-    ref_ptr<Device>         device;
-	std::vector<ELEMENT>	elements;
-};
 
 } // namespace sgl
 

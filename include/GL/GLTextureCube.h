@@ -6,19 +6,21 @@
 namespace sgl {
 
 // forward
+template<DEVICE_VERSION DeviceVersion>
 class GLTextureCube;
 
+template<DEVICE_VERSION DeviceVersion>
 class GLTextureCubeSide :
-    public GLTexture<Texture2D>
+    public GLTexture<DeviceVersion, Texture2D>
 {
 public:
-    GLTextureCubeSide( GLTextureCube*           texture,
-                       const Texture2D::DESC&   desc,
-                       TextureCube::SIDE        side );
+    GLTextureCubeSide( GLTextureCube<DeviceVersion>*    texture,
+                       const Texture2D::DESC&           desc,
+                       TextureCube::SIDE                side );
 
     // Override Texture2D
-    TYPE            SGL_DLLCALL Type() const    { return TEXTURE_2D; }
-    FORMAT          SGL_DLLCALL Format() const  { return format; }
+    Texture::TYPE   SGL_DLLCALL Type() const    { return TEXTURE_2D; }
+    Texture::FORMAT SGL_DLLCALL Format() const  { return format; }
     unsigned int    SGL_DLLCALL Samples() const { return 0; }
     unsigned int    SGL_DLLCALL Width() const   { return width; }
     unsigned int    SGL_DLLCALL Height() const  { return height; }
@@ -33,9 +35,6 @@ public:
                                              unsigned int    height,
                                              const void*     data );
 
-    SGL_HRESULT     SGL_DLLCALL SetImage( unsigned int  mipmap,
-                                          const void*   data );
-
     SGL_HRESULT     SGL_DLLCALL GetImage( unsigned int  mipmap,
                                           void*         data );
 
@@ -44,24 +43,28 @@ public:
     void            SGL_DLLCALL Unbind() const                     {}
 
 private:
-    GLTextureCube*      texture;
+    // master
+    GLTextureCube<DeviceVersion>* texture;
+
+    // props
     TextureCube::SIDE   side;
     Texture::FORMAT     format;
     unsigned int        width;
     unsigned int        height;
 };
 
+template<DEVICE_VERSION DeviceVersion>
 class GLTextureCube :
-    public GLTexture<TextureCube>
+    public GLTexture<DeviceVersion, TextureCube>
 {
-friend class GLTextureCubeSide;
+friend class GLTextureCubeSide<DeviceVersion>;
 public:
-    GLTextureCube( Device*      device,
-                   const DESC&  desc );
+    GLTextureCube( GLDevice<DeviceVersion>* device,
+                   const TextureCube::DESC& desc );
 
     // Override TextureCube
-    Texture::TYPE   SGL_DLLCALL Type() const    { return Texture::TEXTURE_CUBE_MAP; }
-    Texture2D*      SGL_DLLCALL Side(SIDE side) { return sides[side]; }
+    Texture::TYPE   SGL_DLLCALL Type() const                    { return Texture::TEXTURE_CUBE_MAP; }
+    Texture2D*      SGL_DLLCALL Side(TextureCube::SIDE side)    { return sides[side]; }
 
     SGL_HRESULT     SGL_DLLCALL GenerateMipmap();
 
@@ -70,7 +73,7 @@ public:
     void            SGL_DLLCALL Unbind() const;
 
 private:
-    ref_ptr<GLTextureCubeSide>  sides[6];
+    ref_ptr< GLTextureCubeSide<DeviceVersion> >  sides[6];
 };
 
 } // namesapce sgl

@@ -6,20 +6,17 @@
 
 namespace sgl {
 
+template<DEVICE_VERSION DeviceVersion>
 class GLVertexBuffer :
-    public GLBuffer<VertexBuffer>
+    public GLBuffer<DeviceVersion, VertexBuffer>
 {
 public:
-    GLVertexBuffer(Device* device);
+    GLVertexBuffer(GLDevice<DeviceVersion>* device);
     ~GLVertexBuffer();
 
-    // Override VertexBufferView
-    void    SGL_DLLCALL Bind(const VertexLayout* layout) const;
-    void    SGL_DLLCALL Unbind() const;
-
-protected:
-	// settings
-	mutable ref_ptr<GLVertexLayout> layout;
+    // Override VertexBuffer
+    void SGL_DLLCALL Bind(const VertexLayout* layout) const;
+    void SGL_DLLCALL Unbind() const;
 };
 
 }

@@ -5,14 +5,12 @@
 
 namespace sgl {
 
+template<DEVICE_VERSION DeviceVersion>
 class GLFFPProgram :
     public ResourceImpl<FFPProgram>
 {
-template<typename T>
-friend class GLFFPUniform;
 public:
-    GLFFPProgram(Device* device);
-    ~GLFFPProgram();
+    GLFFPProgram(GLDevice<DeviceVersion>* device);
 
     // shaders
     SGL_HRESULT         SGL_DLLCALL AddShader(Shader* /*shader*/)    { return EInvalidCall("You can't add shaders to the FFP program"); }
@@ -27,7 +25,6 @@ public:
 
     // Info
     const char*         SGL_DLLCALL CompilationLog() const      { return 0; }
-    bool                SGL_DLLCALL IsActive() const;
 
     // Geometry shaders
     void                SGL_DLLCALL SetGeometryNumVerticesOut(unsigned int /*maxNumVertices*/)  {}
@@ -87,7 +84,7 @@ public:
     SamplerUniformCube* SGL_DLLCALL GetSamplerUniformCube(const char* /*name*/) { return 0; }
 
 private:
-    ref_ptr<Device>         device;
+    GLDevice<DeviceVersion>*    device;
 
     // standart uniforms
     scoped_ptr<Uniform4x4F> modelViewMatrixUniform;
@@ -107,6 +104,10 @@ private:
     scoped_ptr<UniformI>    lightingToggleUniform;
     scoped_ptr<UniformI>    lightToggleUniform;
 };
+
+/** Make FFP program if can */
+template<DEVICE_VERSION DeviceVersion>
+sgl::FFPProgram* sglCreateFFPProgram(GLDevice<DeviceVersion>* device);
 
 } // namespaec sgl
 

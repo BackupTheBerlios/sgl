@@ -245,7 +245,7 @@ void CreateScene()
     }
 
     // grab current context for rendering
-    device.reset( sglCreateDeviceFromCurrent(DV_OPENGL_2_1_MIXED) );
+    device.reset( sglCreateDeviceFromCurrent(DV_OPENGL_2_1) );
 
     // Setup error handler
     errorHandler.reset( new PrintErrorHandler() );
@@ -349,7 +349,6 @@ void RenderCommon(float time)
         font->Unbind();
     }
 
-
     static float lastTime = time;
     static int frames = 0;
     ++frames;
@@ -366,6 +365,7 @@ void RenderCommon(float time)
         ostringstream ss;
         ss << "FPS: " << fps << endl;
         font->Print( screenWidth / 2.0f - 40.0f, 10.0f, ss.str().c_str() );
+        font->Unbind();
 	}
     // buttons
     //juliaButton->Draw();

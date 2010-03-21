@@ -10,12 +10,12 @@ class IndexBuffer :
     public Buffer
 {
 public:
-    /** Type of the index in the buffer */
+    /** Type of the indices in the buffer */
     enum INDEX_TYPE
     {
-        UINT_8,  
-        UINT_16, 
-        UINT_32 ,
+        UINT_8,                 /// Commonly emulated in hardware
+        UINT_16,                /// Hardware support by any hardware
+        UINT_32 ,               /// Sometimes emulated in hardware
         __NUM_OF_INDEX_TYPES__
     };
 
