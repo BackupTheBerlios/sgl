@@ -19,6 +19,18 @@ MESSAGE ("Use DevIL: " ${SIMPLE_GL_USE_DEVIL})
 OPTION_DEPENDENT_ON_PACKAGE (BUILD_EXAMPLES "Set to ON to build examples" SDL_FOUND)
 MESSAGE ("Build examples: " ${BUILD_EXAMPLES})
 
+OPTION (INSTALL_EXAMPLES "Set to ON to install examples" NO)
+MESSAGE ("Build examples: " ${BUILD_EXAMPLES})
+
+# check settings
+IF (NOT SDL_FOUND AND BUILD_EXAMPLES)
+	MESSAGE (FATAL_ERROR "Can't build examples without SDL.") 
+ENDIF (NOT SDL_FOUND AND BUILD_EXAMPLES)
+
+IF (NOT BUILD_EXAMPLES AND INSTALL_EXAMPLES)
+	MESSAGE (FATAL_ERROR "You must check in BUILD_EXAMPLES option in order to install them.") 
+ENDIF (NOT BUILD_EXAMPLES AND INSTALL_EXAMPLES)
+
 # documentation
 OPTION_DEPENDENT_ON_PACKAGE (BUILD_DOCUMENTATION "Set to ON to build doxygen reference documentation" DOXYGEN_FOUND)
 MESSAGE ("Build documentation: " ${BUILD_DOCUMENTATION})

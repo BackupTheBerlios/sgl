@@ -12,7 +12,9 @@ ADD_SUBDIRECTORY( Fractal )
 #ADD_SUBDIRECTORY( SkeletalAnimation)
 
 # copy data on install
-INSTALL ( DIRECTORY data
-    DESTINATION     ${EXAMPLE_INSTALL_BINDIR}
-    PATTERN         ".*"        EXCLUDE
-)
+IF (INSTALL_EXAMPLES)
+    INSTALL ( DIRECTORY data
+        DESTINATION     ${EXAMPLE_INSTALL_BINDIR}
+        PATTERN         ".*"        EXCLUDE
+    )
+ENDIF (INSTALL_EXAMPLES)
