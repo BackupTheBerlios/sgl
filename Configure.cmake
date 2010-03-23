@@ -20,7 +20,7 @@ OPTION_DEPENDENT_ON_PACKAGE (BUILD_EXAMPLES "Set to ON to build examples" SDL_FO
 MESSAGE ("Build examples: " ${BUILD_EXAMPLES})
 
 OPTION (INSTALL_EXAMPLES "Set to ON to install examples" NO)
-MESSAGE ("Build examples: " ${BUILD_EXAMPLES})
+MESSAGE ("Install examples: " ${INSTALL_EXAMPLES})
 
 # check settings
 IF (NOT SDL_FOUND AND BUILD_EXAMPLES)
