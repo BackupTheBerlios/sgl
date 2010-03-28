@@ -8,7 +8,6 @@
 #include <QPaintEngine>
 #include <QTimer>
 #include <QVBoxLayout>
-#include "SettingsForm.h"
 #include "ui_settings_form.h"
 
 Scene::Scene(SGLWidget* sglWidget_) :
