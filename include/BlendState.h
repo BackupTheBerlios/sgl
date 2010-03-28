@@ -56,6 +56,16 @@ public:
         FUNCTION        destBlendAlpha  : 4;
         OPERATION       blendOpAlpha    : 4;
 
+        DESC() :
+            blendEnable(false),
+            srcBlend(ONE),
+            destBlend(ONE),
+            blendOp(ADD),
+            srcBlendAlpha(ONE),
+            destBlendAlpha(ONE),
+            blendOpAlpha(ADD)
+        {}
+
         bool operator == (const DESC& rhs) const
         {
             return blendEnable       == rhs.blendEnable
@@ -75,6 +85,13 @@ public:
         FUNCTION        srcBlend    : 4;
         FUNCTION        destBlend   : 4;
         OPERATION       blendOp     : 8;
+
+        DESC_SIMPLE() :
+            blendEnable(false),
+            srcBlend(ONE),
+            destBlend(ONE),
+            blendOp(ADD)
+        {}
 
         bool operator == (const DESC& rhs) const
         {

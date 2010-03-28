@@ -21,16 +21,14 @@
 #ifdef MSVC
 #   include <mmintrin.h>
 #else // __GNUC__
-
-#include <xmmintrin.h>
-#ifdef SIMPLE_GL_USE_SSE4
-#   include <smmintrin.h>
-#elif defined(SIMPLE_GL_USE_SSE3)
-#   include <pmmintrin.h>
-#else
-#   include <emmintrin.h>
-#endif
-
+#   include <xmmintrin.h>
+#   ifdef SIMPLE_GL_USE_SSE4
+#       include <smmintrin.h>
+#   elif defined(SIMPLE_GL_USE_SSE3)
+#       include <pmmintrin.h>
+#   else
+#       include <emmintrin.h>
+#   endif
 #endif // __GNUC__
 
 #endif // SIMPLE_GL_USE_SSE
@@ -40,10 +38,7 @@
 #pragma warning( disable : 4201 )
 #endif
 
-#ifdef SIMPLEGL_MATH_IN_SGL_NAMESPACE
-namespace sgl {
-#endif
-namespace math {
+SGL_BEGIN_MATH_NAMESPACE
 
 // Forward
 template<typename ValueType, int n, int m>
@@ -1526,16 +1521,9 @@ inline float dot( const Matrix<float, 1, 4>& lhs,
     return res;
 }
 
-// TODO: cross product may need to be optimized
-// Length is calculated using dot
-// Normalize is calculated using length
-
 #endif // SIMPLE_GL_USE_SSE
 
-} // namespace math
-#ifdef SIMPLEGL_MATH_IN_SGL_NAMESPACE
-} // namespace sgl
-#endif
+SGL_END_MATH_NAMESPACE
 
 #ifdef MSVC
 #pragma warning( pop )

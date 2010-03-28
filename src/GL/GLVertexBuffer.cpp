@@ -25,11 +25,8 @@ GLVertexBuffer<DeviceVersion>::~GLVertexBuffer()
 template<DEVICE_VERSION DeviceVersion>
 void GLVertexBuffer<DeviceVersion>::Bind(const VertexLayout* layout) const
 {
-    if (device->CurrentVertexBuffer() != this)
-    {
-        glBindBufferARB(GL_ARRAY_BUFFER, glBuffer);
-        device->SetVertexBuffer(this);
-    }
+    glBindBufferARB(GL_ARRAY_BUFFER, base_type::glBuffer);
+    base_type::device->SetVertexBuffer(this);
 
     if (layout) {
         layout->Bind();
@@ -39,11 +36,8 @@ void GLVertexBuffer<DeviceVersion>::Bind(const VertexLayout* layout) const
 template<DEVICE_VERSION DeviceVersion>
 void GLVertexBuffer<DeviceVersion>::Unbind() const
 {
-    if (device->CurrentVertexBuffer() == this)
-    {
-        glBindBufferARB(GL_ARRAY_BUFFER, 0);
-	    device->SetVertexBuffer(0);
-    }
+    glBindBufferARB(GL_ARRAY_BUFFER, 0);
+    base_type::device->SetVertexBuffer(0);
 }
 
 template class GLVertexBuffer<DV_OPENGL_1_3>;

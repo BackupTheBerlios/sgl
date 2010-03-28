@@ -2,10 +2,12 @@
 #define SIMPLE_GL_GL_COMMON_H
 
 #ifdef WIN32
-#define NOMINMAX
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#endif
+#   ifndef NOMINMAX
+#   define NOMINMAX
+#   endif // disable mingw warning
+#   define WIN32_LEAN_AND_MEAN
+#   include <windows.h>
+#endif // WIN32
 #include <GL/glew.h>
 #include <stdexcept>
 #include "../Device.h"

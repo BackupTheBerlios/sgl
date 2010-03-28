@@ -31,19 +31,6 @@
 // sgl - simple graphics library
 namespace sgl {
 
-/// Device type according to the library used for rendering
-enum DEVICE_VERSION
-{
-    DV_OPENGL_1_3,
-    DV_OPENGL_1_4,
-    DV_OPENGL_1_5,
-    DV_OPENGL_2_0,
-    DV_OPENGL_2_1,
-    DV_OPENGL_3_0,
-    DV_OPENGL_3_1,
-    DV_OPENGL_3_2
-};
-
 template <DEVICE_VERSION>
 struct device_traits;
 

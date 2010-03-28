@@ -1,58 +1,11 @@
 #ifndef SIMPLE_GL_RESOURCE_H
 #define SIMPLE_GL_RESOURCE_H
 
+#include "Types.h"
 #include "Utility/Error.h"
 #include "Utility/Referenced.h"
 
 namespace sgl {
-
-/** Type of the scalar value used for texture formats or
- * VertexBuffer data specification.
- */
-enum SCALAR_TYPE
-{
-    UNKNOWN,
-    BIT,
-    BOOL,
-    BYTE,
-	UBYTE,
-    SHORT,
-	USHORT,
-    INT,
-    UINT,
-	FLOAT,
-    DOUBLE,
-    __NUMBER_OF_SCALAR_TYPES__
-};
-
-/** Traits containing information about scalar types for compile-time checks */
-template<SCALAR_TYPE type>
-struct ScalarTypetTraits
-{
-    /** Size of the type in bits */
-    static inline size_t SizeInBits();
-};
-
-/** Structure containing information about scalar type */
-struct scalar_type_desc
-{
-    size_t sizeInBits; /// Size of the type in bits
-};
-
-/** Traits containing scalar type information for runtime checks. */
-static const scalar_type_desc SCALAR_TYPE_TRAITS[] =
-{
-    {0},
-    {1},
-    {8},
-    {8},
-    {8},
-    {16},
-	{16},
-    {32},
-    {32},
-    {32}
-};
 
 /// Viewport or texture region
 struct rectangle

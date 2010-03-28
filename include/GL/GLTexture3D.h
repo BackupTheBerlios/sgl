@@ -11,11 +11,16 @@ class GLTexture3D :
     public GLTexture<DeviceVersion, Texture3D>
 {
 public:
+    typedef GLTexture<DeviceVersion, Texture3D>     base_type;
+    typedef typename base_type::guarded_binding     guarded_binding;
+    typedef typename base_type::guarded_binding_ptr guarded_binding_ptr;
+
+public:
     GLTexture3D(GLDevice<DeviceVersion>* device, const Texture3D::DESC& desc);
     GLTexture3D(GLDevice<DeviceVersion>* device, const Texture3D::DESC_MS& desc);
 
     // Override Texture2
-    Texture::TYPE   SGL_DLLCALL Type() const        { return TEXTURE_3D; }
+    Texture::TYPE   SGL_DLLCALL Type() const        { return Texture::TEXTURE_3D; }
     Texture::FORMAT SGL_DLLCALL Format() const      { return format; }
     unsigned int    SGL_DLLCALL Samples() const     { return numSamples; }
     unsigned int    SGL_DLLCALL Width() const       { return width; }

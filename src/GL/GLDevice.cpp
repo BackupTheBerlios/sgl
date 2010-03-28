@@ -224,7 +224,7 @@ GLDevice<DeviceVersion>::GLDevice() :
         throw gl_error("GLDevice::GLDevice() failed");
     }
 
-#elif __linux__
+#elif defined(__linux__)
     display = glXGetCurrentDisplay();
     if (!display)
     {
@@ -265,7 +265,7 @@ GLDevice<DeviceVersion>::GLDevice(const Device::VIDEO_DESC& desc)
 #endif // SIMPLE_GL_USE_DEVIL
 #ifdef WIN32
 
-#elif __linux__
+#elif defined(__linux__)
     // Open a connection to the X server
     display = XOpenDisplay(0);
     if (!display) {
@@ -486,7 +486,7 @@ GLDevice<DeviceVersion>::~GLDevice()
         wglDeleteContext(hGLRC);
         wglMakeCurrent(0, 0);
         ReleaseDC(hWnd, hDC);
-    #elif __linux__
+    #elif defined(__linux__)
         // If sgl created window by itself
         glXDestroyContext(display, glxContext);
         XUnmapWindow(display, window);
@@ -692,7 +692,7 @@ void GLDevice<DeviceVersion>::Clear(bool colorBuffer, bool depthBuffer, bool ste
     GLbitfield mask = (colorBuffer   ? GL_COLOR_BUFFER_BIT   : 0)
                     | (depthBuffer   ? GL_DEPTH_BUFFER_BIT   : 0)
                     | (stencilBuffer ? GL_STENCIL_BUFFER_BIT : 0);
-    glClear(mask);;
+    glClear(mask);
 }
 
 template<DEVICE_VERSION DeviceVersion>
@@ -700,7 +700,7 @@ void GLDevice<DeviceVersion>::SwapBuffers() const
 {
 #ifdef WIN32
     ::SwapBuffers(hDC);
-#elif __linux__
+#elif defined(__linux__)
     glXSwapBuffers(display, glxDrawable);
 #endif
 
@@ -1008,8 +1008,12 @@ SGL_HRESULT GLDevice<DeviceVersion>::CopyTexture2D( Texture2D*     texture,
     }
 #endif
 
-    GLTexture2D<DeviceVersion>*                     glTexture = static_cast<GLTexture2D<DeviceVersion>*>(texture);
-    GLTexture2D<DeviceVersion>::guarded_binding_ptr texBinding( new GLTexture2D<DeviceVersion>::guarded_binding(this, glTexture, 0) );
+    typedef typename GLTexture2D<DeviceVersion>::guarded_binding     guarded_binding;
+    typedef typename GLTexture2D<DeviceVersion>::guarded_binding_ptr guarded_binding_ptr;
+
+
+    GLTexture2D<DeviceVersion>* glTexture = static_cast<GLTexture2D<DeviceVersion>*>(texture);
+    guarded_binding_ptr         texBinding( new guarded_binding(this, glTexture, 0) );
     {
         glCopyTexSubImage2D(glTexture->Target(), level, offsetx, offsety, 0, 0, width, height);
 

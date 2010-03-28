@@ -61,7 +61,7 @@ namespace {
                     {0, 2, 0, 16, sgl::FLOAT, VertexLayout::VERTEX},
                     {0, 2, 8, 16, sgl::FLOAT, VertexLayout::TEXCOORD}
                 };
-                vertexLayout.reset( device->CreateVertexLayout(2, elements) );
+                base_type::vertexLayout.reset( device->CreateVertexLayout(2, elements) );
             }
         }
 
@@ -71,9 +71,6 @@ namespace {
             if (SGL_OK != result) {
                 return result;
             }
-
-            float charHeight = texture->Height() / 16.0f;
-            float charWidth  = texture->Width()  / 24.0f;
 
             math::vector_of_vector4f vertices;
 	        const float ds = 1.0f / 16.0f;
@@ -93,11 +90,11 @@ namespace {
 		        }
 	        }
 
-	        vbo.reset( device->CreateVertexBuffer() );
-            if (!vbo) {
+            base_type::vbo.reset( base_type::device->CreateVertexBuffer() );
+            if (!base_type::vbo) {
                 return sglGetLastError();
             }
-	        vbo->SetData( vertices.size() * sizeof(Vector4f), &vertices[0] );
+            base_type::vbo->SetData( vertices.size() * sizeof(Vector4f), &vertices[0] );
 
             return SGL_OK;
         }
@@ -109,35 +106,32 @@ namespace {
 	        this->width  = width;
 	        this->height = height;
 
-            float charHeight = texture->Height() / 16.0f;
-            float charWidth  = texture->Width()  / 24.0f;
-
             // setup states
             projectionMatrix = projectionMatrixUniform->Value();
             modelViewMatrix  = modelViewMatrixUniform->Value();
 
-            rectangle vp = device->Viewport();
+            rectangle vp = base_type::device->Viewport();
             projectionMatrixUniform->Set( make_ortho( 0.0f, vp.width / (width / charHeight),
                                                       vp.height / (height / charHeight), 0.0f,
                                                       -1.0f, 1.0f ) );
 
-            device->PushState(State::DEPTH_STENCIL_STATE);
-            device->PushState(State::BLEND_STATE);
+            base_type::device->PushState(State::DEPTH_STENCIL_STATE);
+            base_type::device->PushState(State::BLEND_STATE);
 
             ffpProgram->Bind();
-            depthStencilState->Bind();
-            blendState->Bind();
-            vbo->Bind( vertexLayout.get() );
+            base_type::depthStencilState->Bind();
+            base_type::blendState->Bind();
+            base_type::vbo->Bind( base_type::vertexLayout.get() );
 
-	        return texture->Bind(0);
+            return base_type::texture->Bind(0);
         }
 
         void SGL_DLLCALL Unbind() const
         {
-            vbo->Unbind();
-            texture->Unbind();
-            device->PopState(State::DEPTH_STENCIL_STATE);
-            device->PopState(State::BLEND_STATE);
+            base_type::vbo->Unbind();
+            base_type::texture->Unbind();
+            base_type::device->PopState(State::DEPTH_STENCIL_STATE);
+            base_type::device->PopState(State::BLEND_STATE);
 
             projectionMatrixUniform->Set(projectionMatrix);
             modelViewMatrixUniform->Set(modelViewMatrix);
@@ -145,8 +139,8 @@ namespace {
 
         void SGL_DLLCALL Print(float x, float y, const char* str) const
         {
-            float charHeight = texture->Height() / 16.0f;
-            float charWidth  = texture->Width()  / 24.0f;
+            float charHeight = base_type::texture->Height() / 16.0f;
+            float charWidth  = base_type::texture->Width()  / 24.0f;
 
             float scaleX = charHeight / width;
             float scaleY = charHeight / height;
@@ -174,7 +168,7 @@ namespace {
                 else
                 {
 			        unsigned char i = *reinterpret_cast<const unsigned char*>(str);
-			        device->Draw(QUADS, 4*i, 4);
+                    base_type::device->Draw(QUADS, 4*i, 4);
 			        modelViewMatrixUniform->Set( modelViewMatrixUniform->Value() * make_translation(static_cast<float>(charWidth), 0.0f, 0.0f) );
 		        }
 	        }
@@ -253,7 +247,7 @@ namespace {
                 {
                     {location, 4, 0, 16, sgl::FLOAT, VertexLayout::ATTRIBUTE},
                 };
-                vertexLayout.reset( device->CreateVertexLayout(1, elements) );
+                base_type::vertexLayout.reset( device->CreateVertexLayout(1, elements) );
             }
 
             // create vbo
@@ -275,11 +269,11 @@ namespace {
 		            }
 	            }
 
-	            vbo.reset( device->CreateVertexBuffer() );
-                if (!vbo) {
+                base_type::vbo.reset( device->CreateVertexBuffer() );
+                if (!base_type::vbo) {
                     throw gl_error("GLFont::GLFont failed. Can't create vbo for font.");
                 }
-	            vbo->SetData( vertices.size() * sizeof(Vector4f), &vertices[0] );
+                base_type::vbo->SetData( vertices.size() * sizeof(Vector4f), &vertices[0] );
             }
         }
 
@@ -287,33 +281,33 @@ namespace {
                                      int height,
                                      const math::Vector4f& color) const
         {
-            rectangle vp = device->Viewport();
-            vpWidth    = float(vp.width);
-            vpHeight   = float(vp.height);
-            charWidth  = width * 2.0f / vp.width;
-            charHeight = height * 2.0f / vp.height;
+            rectangle vp = base_type::device->Viewport();
+            vpWidth      = float(vp.width);
+            vpHeight     = float(vp.height);
+            charWidth    = width * 2.0f / vp.width;
+            charHeight   = height * 2.0f / vp.height;
 
             program->Bind();
             colorUniform->Set(color);
             scaleUniform->Set( math::Vector2f(charWidth, charHeight) );
-            textureUniform->Set( 0, texture.get() );
+            textureUniform->Set( 0, base_type::texture.get() );
 
-            device->PushState(State::DEPTH_STENCIL_STATE);
-            device->PushState(State::BLEND_STATE);
+            base_type::device->PushState(State::DEPTH_STENCIL_STATE);
+            base_type::device->PushState(State::BLEND_STATE);
 
-            depthStencilState->Bind();
-            blendState->Bind();
-            vbo->Bind( vertexLayout.get() );
+            base_type::depthStencilState->Bind();
+            base_type::blendState->Bind();
+            base_type::vbo->Bind( base_type::vertexLayout.get() );
 
 	        return SGL_OK;
         }
 
         void SGL_DLLCALL Unbind() const
         {
-            vbo->Unbind();
-            texture->Unbind();
-            device->PopState(State::DEPTH_STENCIL_STATE);
-            device->PopState(State::BLEND_STATE);
+            base_type::vbo->Unbind();
+            base_type::texture->Unbind();
+            base_type::device->PopState(State::DEPTH_STENCIL_STATE);
+            base_type::device->PopState(State::BLEND_STATE);
             program->Unbind();
         }
 
@@ -345,7 +339,7 @@ namespace {
                 else
                 {
 			        unsigned char i = *reinterpret_cast<const unsigned char*>(str);
-			        device->Draw(QUADS, 4*i, 4);
+                    base_type::device->Draw(QUADS, 4*i, 4);
                     positionUniform->Set( positionUniform->Value() + math::Vector2f(charWidth * 0.666667f, 0.0f) );
 		        }
 	        }
@@ -451,6 +445,5 @@ template sgl::Font* sglCreateFont<DV_OPENGL_2_1>(GLDevice<DV_OPENGL_2_1>*);
 template sgl::Font* sglCreateFont<DV_OPENGL_3_0>(GLDevice<DV_OPENGL_3_0>*);
 template sgl::Font* sglCreateFont<DV_OPENGL_3_1>(GLDevice<DV_OPENGL_3_1>*);
 template sgl::Font* sglCreateFont<DV_OPENGL_3_2>(GLDevice<DV_OPENGL_3_2>*);
-
 
 } // namespace sgl

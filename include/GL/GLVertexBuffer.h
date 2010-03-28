@@ -11,6 +11,9 @@ class GLVertexBuffer :
     public GLBuffer<DeviceVersion, VertexBuffer>
 {
 public:
+    typedef GLBuffer<DeviceVersion, VertexBuffer> base_type;
+
+public:
     GLVertexBuffer(GLDevice<DeviceVersion>* device);
     ~GLVertexBuffer();
 

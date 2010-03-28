@@ -18,3 +18,8 @@ FIND_PACKAGE (Glew      REQUIRED)
 
 # Documentation
 FIND_PACKAGE (Doxygen)
+
+# Qt. Module sends FATAL_ERROR, so need to check before use
+IF (BUILD_QT_EXAMPLES)
+	FIND_PACKAGE (Qt4)
+ENDIF (BUILD_QT_EXAMPLES)

@@ -102,7 +102,7 @@ public:
     unsigned int SGL_DLLCALL Value() const
     {
         int value;
-        glGetUniformiv(glProgram, base_type::glLocation, &value);
+        glGetUniformiv(base_type::glProgram, base_type::glLocation, &value);
         return value;
     }
 };

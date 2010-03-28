@@ -86,11 +86,8 @@ namespace {
         // Override State
         void SGL_DLLCALL Bind() const
         {
-            if (device->CurrentDepthStencilState() != this) 
-            {
-                glCallList(bindDisplayList);
-                device->SetDepthStencilState(this);
-            }
+            glCallList(bindDisplayList);
+            device->SetDepthStencilState(this);
         }
 
         // Override RasterizerState
@@ -128,41 +125,38 @@ namespace {
         // Override State
         void SGL_DLLCALL Bind() const
         {
-            if (device->CurrentDepthStencilState() != this) 
+            if (desc.depthEnable)
             {
-                if (desc.depthEnable)
-                {
-                    glEnable(GL_DEPTH_TEST);
-                    glDepthFunc(BIND_COMPARISON_FUNCTION[desc.depthFunc]);
-                }
-                else {
-                    glDisable(GL_DEPTH_TEST);
-                }
-                glDepthMask(desc.depthWriteMask);
-
-                if (desc.stencilEnable)
-                {
-		            glEnable(GL_STENCIL_TEST);
-                    glStencilMask(desc.stencilWriteMask);
-
-                    glStencilFuncSeparate(GL_FRONT, BIND_COMPARISON_FUNCTION[desc.frontFaceOp.stencilFunc], 0, desc.stencilReadMask);
-                    glStencilFuncSeparate(GL_BACK,  BIND_COMPARISON_FUNCTION[desc.backFaceOp.stencilFunc],  0, desc.stencilReadMask);
-
-                    glStencilOpSeparate( GL_FRONT, 
-                                         BIND_OPERATION[desc.frontFaceOp.stencilFailOp], 
-                                         BIND_OPERATION[desc.frontFaceOp.stencilDepthFailOp],
-                                         BIND_OPERATION[desc.frontFaceOp.stencilPassOp] );
-                    glStencilOpSeparate( GL_BACK, 
-                                         BIND_OPERATION[desc.backFaceOp.stencilFailOp], 
-                                         BIND_OPERATION[desc.backFaceOp.stencilDepthFailOp],
-                                         BIND_OPERATION[desc.backFaceOp.stencilPassOp] );
-                }
-                else {
-                    glDisable(GL_STENCIL_TEST);
-                }
-
-                device->SetDepthStencilState(this);
+                glEnable(GL_DEPTH_TEST);
+                glDepthFunc(BIND_COMPARISON_FUNCTION[desc.depthFunc]);
             }
+            else {
+                glDisable(GL_DEPTH_TEST);
+            }
+            glDepthMask(desc.depthWriteMask);
+
+            if (desc.stencilEnable)
+            {
+                glEnable(GL_STENCIL_TEST);
+                glStencilMask(desc.stencilWriteMask);
+
+                glStencilFuncSeparate(GL_FRONT, BIND_COMPARISON_FUNCTION[desc.frontFaceOp.stencilFunc], 0, desc.stencilReadMask);
+                glStencilFuncSeparate(GL_BACK,  BIND_COMPARISON_FUNCTION[desc.backFaceOp.stencilFunc],  0, desc.stencilReadMask);
+
+                glStencilOpSeparate( GL_FRONT,
+                                     BIND_OPERATION[desc.frontFaceOp.stencilFailOp],
+                                     BIND_OPERATION[desc.frontFaceOp.stencilDepthFailOp],
+                                     BIND_OPERATION[desc.frontFaceOp.stencilPassOp] );
+                glStencilOpSeparate( GL_BACK,
+                                     BIND_OPERATION[desc.backFaceOp.stencilFailOp],
+                                     BIND_OPERATION[desc.backFaceOp.stencilDepthFailOp],
+                                     BIND_OPERATION[desc.backFaceOp.stencilPassOp] );
+            }
+            else {
+                glDisable(GL_STENCIL_TEST);
+            }
+
+            device->SetDepthStencilState(this);
         }
 
         // Override RasterizerState

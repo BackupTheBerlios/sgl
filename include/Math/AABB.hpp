@@ -4,10 +4,7 @@
 #include "../Utility/Meta.h"
 #include "MatrixFunctions.hpp"
 
-#ifdef SIMPLEGL_MATH_IN_SGL_NAMESPACE
-namespace sgl {
-#endif
-namespace math {
+SGL_BEGIN_MATH_NAMESPACE
 
 /** Axis aligned bounding box. */
 template<typename   ValueType,
@@ -292,9 +289,6 @@ inline Matrix<T, 4, 1> get_nearest_direction(const AABB<T, 3>& aabb, const Matri
     return Matrix<T, 4, 1>(get_nearest_direction( xyz(vec) ), 0);
 }
 
-} // namespace math
-#ifdef SIMPLEGL_MATH_IN_SGL_NAMESPACE
-} // namespace sgl
-#endif
+SGL_END_MATH_NAMESPACE
 
 #endif // SIMPLE_GL_MATH_AABB_H

@@ -3,10 +3,7 @@
 
 #include "KDop.hpp"
 
-#ifdef SIMPLEGL_MATH_IN_SGL_NAMESPACE
-namespace sgl {
-#endif
-namespace math {
+SGL_BEGIN_MATH_NAMESPACE
 
 typedef KDop<float, 3, 6>  Frustumf;
 typedef KDop<double, 3, 6> Frustumd;
@@ -46,9 +43,6 @@ KDop<T, 3, 6> make_frustum(const Matrix<T, 4, 4>& clip)
     return frustum;
 }
 
-} // namespace math
-#ifdef SIMPLEGL_MATH_IN_SGL_NAMESPACE
-} // namespace sgl
-#endif
+SGL_END_MATH_NAMESPACE
 
 #endif // SIMPLE_GL_MATH_FRUSTUM_H

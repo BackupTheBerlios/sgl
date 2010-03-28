@@ -3,10 +3,7 @@
 
 #include "Plane.hpp"
 
-#ifdef SIMPLEGL_MATH_IN_SGL_NAMESPACE
-namespace sgl {
-#endif
-namespace math {
+SGL_BEGIN_MATH_NAMESPACE
 
 template<typename           ValueType, 
          int                Dimension,
@@ -23,9 +20,6 @@ public:
     plane_type planes[NumPlanes];
 };
 
-} // namespace math
-#ifdef SIMPLEGL_MATH_IN_SGL_NAMESPACE
-} // namespace sgl
-#endif
+SGL_END_MATH_NAMESPACE
 
 #endif // SIMPLE_GL_MATH_KDOP_H

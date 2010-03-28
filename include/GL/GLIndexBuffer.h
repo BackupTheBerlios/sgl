@@ -10,6 +10,9 @@ class GLIndexBuffer :
     public GLBuffer<DeviceVersion, IndexBuffer>
 {
 public:
+    typedef GLBuffer<DeviceVersion, IndexBuffer> base_type;
+
+public:
     GLIndexBuffer(GLDevice<DeviceVersion>* device);
     ~GLIndexBuffer();
 

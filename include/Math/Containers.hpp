@@ -17,10 +17,7 @@
 #include <algorithm>
 #include <vector>
 
-#ifdef SIMPLEGL_MATH_IN_SGL_NAMESPACE
-namespace sgl {
-#endif
-namespace math {
+SGL_BEGIN_MATH_NAMESPACE
 
 #ifdef SIMPLE_GL_USE_SSE
 
@@ -121,9 +118,6 @@ typedef std::vector<Matrix3b> vector_of_matrix3b;
 /// std::vector of Matrix2b
 typedef std::vector<Matrix2b> vector_of_matrix2b;
 
-} // namespace math
-#ifdef SIMPLEGL_MATH_IN_SGL_NAMESPACE
-} // namespace sgl
-#endif
+SGL_END_MATH_NAMESPACE
 
 #endif // SIMPLE_GL_MATH_CONTAINERS_HPP

@@ -41,20 +41,17 @@ namespace {
 
         void SGL_DLLCALL Bind() const
         {
-            if (device->CurrentRasterizerState() != this)
+            if (desc.cullMode != NONE)
             {
-                if (desc.cullMode != NONE)
-                {
-                    glEnable(GL_CULL_FACE);
-                    glCullFace(glCullMode);
-                }
-                else {
-                    glDisable(GL_CULL_FACE);
-                }
-                glPolygonMode(GL_FRONT_AND_BACK, glFillMode);
-
-                device->SetRasterizerState(this);
+                glEnable(GL_CULL_FACE);
+                glCullFace(glCullMode);
             }
+            else {
+                glDisable(GL_CULL_FACE);
+            }
+            glPolygonMode(GL_FRONT_AND_BACK, glFillMode);
+
+            device->SetRasterizerState(this);
         }
 
     private:

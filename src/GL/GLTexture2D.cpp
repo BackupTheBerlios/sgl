@@ -20,7 +20,7 @@ GLTexture2D<DeviceVersion>::GLTexture2D(GLDevice<DeviceVersion>* device, const T
     bool   compressed  = Texture::FORMAT_TRAITS[format].compressed;
 
     // save previous state & bind texture
-    guarded_binding_ptr guardedTexture( new guarded_binding(device, this, 0) );
+    guarded_binding_ptr guardedTexture( new guarded_binding(base_type::device, this, 0) );
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
@@ -31,7 +31,7 @@ GLTexture2D<DeviceVersion>::GLTexture2D(GLDevice<DeviceVersion>* device, const T
     // copy image
     if (compressed)
     {
-        glCompressedTexImage2D( glTarget,
+        glCompressedTexImage2D( base_type::glTarget,
                                 0,
                                 glFormat,
                                 width,
@@ -42,7 +42,7 @@ GLTexture2D<DeviceVersion>::GLTexture2D(GLDevice<DeviceVersion>* device, const T
     }
     else
     {
-        glTexImage2D( glTarget,
+        glTexImage2D( base_type::glTarget,
                       0,
                       glFormat,
                       width,
@@ -75,7 +75,7 @@ GLTexture2D<DeviceVersion>::GLTexture2D(GLDevice<DeviceVersion>* device, const T
     GLenum glFormat = BIND_GL_FORMAT[format];
 
     // save previous state & bind texture
-    guarded_binding_ptr guardedTexture( new guarded_binding(device, this, 0) );
+    guarded_binding_ptr guardedTexture( new guarded_binding(base_type::device, this, 0) );
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
@@ -84,7 +84,7 @@ GLTexture2D<DeviceVersion>::GLTexture2D(GLDevice<DeviceVersion>* device, const T
 #endif // SGL_NO_STATUS_CHECK
 
     // create image
-    glTexImage2DMultisample( glTarget,
+    glTexImage2DMultisample( base_type::glTarget,
                              numSamples,
                              glFormat,
                              width,
@@ -114,7 +114,7 @@ SGL_HRESULT GLTexture2D<DeviceVersion>::SetSubImage( unsigned int  mipmap,
     bool   compressed  = Texture::FORMAT_TRAITS[format].compressed;
 
     // save previous state & bind texture
-    guarded_binding_ptr guardedTexture( new guarded_binding(device, this, 0) );
+    guarded_binding_ptr guardedTexture( new guarded_binding(base_type::device, this, 0) );
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
@@ -125,7 +125,7 @@ SGL_HRESULT GLTexture2D<DeviceVersion>::SetSubImage( unsigned int  mipmap,
     // copy image
     if (compressed)
     {
-        glCompressedTexSubImage2D( glTarget,
+        glCompressedTexSubImage2D( base_type::glTarget,
                                    mipmap,
                                    offsetx,
                                    offsety,
@@ -137,7 +137,7 @@ SGL_HRESULT GLTexture2D<DeviceVersion>::SetSubImage( unsigned int  mipmap,
     }
     else
     {
-        glTexSubImage2D( glTarget,
+        glTexSubImage2D( base_type::glTarget,
                          mipmap,
                          offsetx,
                          offsety,
@@ -172,7 +172,7 @@ SGL_HRESULT GLTexture2D<DeviceVersion>::GetImage( unsigned int  mipmap,
     bool   compressed  = Texture::FORMAT_TRAITS[format].compressed;
 
     // save previous state & bind texture
-    guarded_binding_ptr guardedTexture( new guarded_binding(device, this, 0) );
+    guarded_binding_ptr guardedTexture( new guarded_binding(base_type::device, this, 0) );
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
@@ -183,13 +183,13 @@ SGL_HRESULT GLTexture2D<DeviceVersion>::GetImage( unsigned int  mipmap,
     // copy image
     if (compressed)
     {
-        glGetCompressedTexImage(glTarget,
+        glGetCompressedTexImage(base_type::glTarget,
                                 mipmap,
                                 data);
     }
     else
     {
-        glGetTexImage(glTarget,
+        glGetTexImage(base_type::glTarget,
                       mipmap,
                       glUsage,
                       glPixelType,
@@ -209,7 +209,7 @@ SGL_HRESULT GLTexture2D<DeviceVersion>::GetImage( unsigned int  mipmap,
 template<DEVICE_VERSION DeviceVersion>
 SGL_HRESULT GLTexture2D<DeviceVersion>::GenerateMipmap()
 {
-    guarded_binding_ptr guardedTexture( new guarded_binding(device, this, 0) );
+    guarded_binding_ptr guardedTexture( new guarded_binding(base_type::device, this, 0) );
 
 #ifndef SGL_NO_STATUS_CHECK
     GLenum glError = glGetError();
@@ -218,7 +218,7 @@ SGL_HRESULT GLTexture2D<DeviceVersion>::GenerateMipmap()
     }
 #endif // SGL_NO_STATUS_CHECK
 
-    glGenerateMipmapEXT(glTarget);
+    glGenerateMipmapEXT(base_type::glTarget);
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
@@ -232,23 +232,23 @@ SGL_HRESULT GLTexture2D<DeviceVersion>::GenerateMipmap()
 template<DEVICE_VERSION DeviceVersion>
 SGL_HRESULT GLTexture2D<DeviceVersion>::BindSamplerState(sgl::SamplerState* _samplerState)
 {
-    samplerState.reset( static_cast<GLSamplerState<DeviceVersion>*>(_samplerState) );
+    base_type::samplerState.reset( static_cast<GLSamplerState<DeviceVersion>*>(_samplerState) );
 
-    if (samplerState)
+    if (base_type::samplerState)
     {
-        guarded_binding_ptr guardedTexture( new guarded_binding(device, this, 0) );
-        const SamplerState::DESC& desc = samplerState->Desc();
+        guarded_binding_ptr guardedTexture( new guarded_binding(base_type::device, this, 0) );
+        const SamplerState::DESC& desc = base_type::samplerState->Desc();
         if (numSamples == 0)
         {
-            glTexParameteri( glTarget, GL_TEXTURE_MIN_FILTER,       BIND_TEXTURE_MIN_FILTER[ desc.filter[2] * 3 + desc.filter[0] ] );
-            glTexParameteri( glTarget, GL_TEXTURE_MAG_FILTER,       BIND_TEXTURE_FILTER[ desc.filter[1] ] );
+            glTexParameteri( base_type::glTarget, GL_TEXTURE_MIN_FILTER,       BIND_TEXTURE_MIN_FILTER[ desc.filter[2] * 3 + desc.filter[0] ] );
+            glTexParameteri( base_type::glTarget, GL_TEXTURE_MAG_FILTER,       BIND_TEXTURE_FILTER[ desc.filter[1] ] );
             //glTexParameterf( glTarget, GL_TEXTURE_MIN_LOD,          desc.minLod );
             //glTexParameterf( glTarget, GL_TEXTURE_MAX_LOD,          desc.maxLod );
             //glTexParameterf( glTarget, GL_TEXTURE_LOD_BIAS,         desc.lodBias );
         }
 
-        glTexParameteri( glTarget, GL_TEXTURE_WRAP_S,               BIND_TEXTURE_CLAMP[ desc.wrapping[0] ] );
-        glTexParameteri( glTarget, GL_TEXTURE_WRAP_T,               BIND_TEXTURE_CLAMP[ desc.wrapping[1] ] );
+        glTexParameteri( base_type::glTarget, GL_TEXTURE_WRAP_S,               BIND_TEXTURE_CLAMP[ desc.wrapping[0] ] );
+        glTexParameteri( base_type::glTarget, GL_TEXTURE_WRAP_T,               BIND_TEXTURE_CLAMP[ desc.wrapping[1] ] );
         //glTexParameteri( glTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT,   desc.maxAnisotropy);
     }
 
@@ -256,33 +256,33 @@ SGL_HRESULT GLTexture2D<DeviceVersion>::BindSamplerState(sgl::SamplerState* _sam
 }
 
 template<DEVICE_VERSION DeviceVersion>
-SGL_HRESULT GLTexture2D<DeviceVersion>::Bind(unsigned int _stage) const
+SGL_HRESULT GLTexture2D<DeviceVersion>::Bind(unsigned int stage_) const
 {
 #ifndef SGL_NO_STATUS_CHECK
-    if ( stage >= Device::NUM_TEXTURE_STAGES ) {
+    if ( base_type::stage >= Device::NUM_TEXTURE_STAGES ) {
         return EInvalidCall("GLTexture2D<DeviceVersion>::Bind failed. Stage is too large.");
     }
 #endif
 
-    stage = _stage;
-    glActiveTexture(GL_TEXTURE0 + stage);
-    glEnable(glTarget);
-    glBindTexture(glTarget, glTexture);
+    base_type::stage = stage_;
+    glActiveTexture(GL_TEXTURE0 + base_type::stage);
+    glEnable(base_type::glTarget);
+    glBindTexture(base_type::glTarget, base_type::glTexture);
 
-    device->SetTexture(stage, this);
+    base_type::device->SetTexture(base_type::stage, this);
     return SGL_OK;
 }
 
 template<DEVICE_VERSION DeviceVersion>
 void GLTexture2D<DeviceVersion>::Unbind() const
 {
-    if ( stage >= 0 && device->CurrentTexture(stage) == this )
+    if ( base_type::stage >= 0 && base_type::device->CurrentTexture(base_type::stage) == this )
     {
-        glActiveTexture(GL_TEXTURE0 + stage);
-        glBindTexture(glTarget, 0);
-        glDisable(glTarget);
-        device->SetTexture(stage, 0);
-        stage = -1;
+        glActiveTexture(GL_TEXTURE0 + base_type::stage);
+        glBindTexture(base_type::glTarget, 0);
+        glDisable(base_type::glTarget);
+        base_type::device->SetTexture(base_type::stage, 0);
+        base_type::stage = -1;
     }
 }
 

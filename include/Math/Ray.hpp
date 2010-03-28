@@ -4,11 +4,7 @@
 #include "../Utility/Meta.h"
 #include "Matrix.hpp"
 
-#ifdef SIMPLEGL_MATH_IN_SGL_NAMESPACE
-namespace sgl {
-#endif
-
-namespace math {
+SGL_BEGIN_MATH_NAMESPACE
 
 /** Ray in the space */
 template<typename  ValueType,
@@ -103,9 +99,6 @@ Ray<T, n> normalize(const Ray<T, n>& ray)
     return Ray<T, n>( ray.origin, ray.direction / length(ray.direction) );
 }
 
-} // namespace math
-#ifdef SIMPLEGL_MATH_IN_SGL_NAMESPACE
-} // namespace sgl
-#endif
+SGL_END_MATH_NAMESPACE
 
 #endif // SIMPLE_GL_MATH_RAY_H

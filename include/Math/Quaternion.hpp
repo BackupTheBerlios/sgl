@@ -3,10 +3,7 @@
 
 #include "Matrix.hpp"
 
-#ifdef SGL_MATH_IN_SGL_NAMESPACE
-namespace sgl {
-#endif
-namespace math {
+SGL_BEGIN_MATH_NAMESPACE
 
 template<typename T>
 class Quaternion
@@ -530,9 +527,6 @@ inline std::istream& operator >> (std::istream& is, math::Quaternion<T>& quat)
     return is;
 }
 
-} // namespace math
-#ifdef SGL_MATH_IN_SGL_NAMESPACE
-} // namespace sgl
-#endif
+SGL_END_MATH_NAMESPACE
 
 #endif // GRAPHICS_MATH_QUATERNION_HPP

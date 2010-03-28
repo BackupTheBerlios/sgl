@@ -1,10 +1,7 @@
 #ifndef GRAPHICS_MATH_UTILITY_HPP
 #define GRAPHICS_MATH_UTILITY_HPP
 
-#ifdef SIMPLEGL_MATH_IN_SGL_NAMESPACE
-namespace sgl {
-#endif
-namespace math {
+SGL_BEGIN_MATH_NAMESPACE
 
 const float PI      = 3.1415926535897932384626433832795f;
 const float PI2     = 2.0f * PI;
@@ -23,9 +20,6 @@ const float RAD_TO_DEG = 180.0f / PI;
 inline float deg_to_rad(float angle) { return DEG_TO_RAD * angle; }
 inline float rad_to_deg(float angle) { return RAD_TO_DEG * angle; }
 
-} // namesapce math
-#ifdef SIMPLEGL_MATH_IN_SGL_NAMESPACE
-} // namespace sgl
-#endif
+SGL_END_MATH_NAMESPACE
 
 #endif // GRAPHICS_MATH_UTILITY_HPP

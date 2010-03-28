@@ -8,10 +8,7 @@
 #pragma warning( disable : 4201 )
 #endif
 
-#ifdef SIMPLEGL_MATH_IN_SGL_NAMESPACE
-namespace sgl {
-#endif
-namespace math {
+SGL_BEGIN_MATH_NAMESPACE
 
 /** transpose matrix */
 template<typename T, int n, int m>
@@ -396,11 +393,7 @@ inline Matrix<float, 4, 4> invert(const Matrix<float, 4, 4>& mat)
 
 #endif
 
-
-} // namespace math
-#ifdef SIMPLEGL_MATH_IN_SGL_NAMESPACE
-} // namespace sgl
-#endif
+SGL_END_MATH_NAMESPACE
 
 #ifdef MSVC
 #pragma warning( pop )

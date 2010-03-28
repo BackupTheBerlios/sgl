@@ -11,11 +11,16 @@ class GLTexture2D :
     public GLTexture<DeviceVersion, Texture2D>
 {
 public:
+    typedef GLTexture<DeviceVersion, Texture2D>     base_type;
+    typedef typename base_type::guarded_binding     guarded_binding;
+    typedef typename base_type::guarded_binding_ptr guarded_binding_ptr;
+
+public:
     GLTexture2D(GLDevice<DeviceVersion>* device, const Texture2D::DESC& desc);
     GLTexture2D(GLDevice<DeviceVersion>* device, const Texture2D::DESC_MS& desc);
 
     // Override Texture2
-    Texture::TYPE   SGL_DLLCALL Type() const        { return TEXTURE_2D; }
+    Texture::TYPE   SGL_DLLCALL Type() const        { return Texture::TEXTURE_2D; }
     Texture::FORMAT SGL_DLLCALL Format() const      { return format; }
     unsigned int    SGL_DLLCALL Samples() const     { return numSamples; }
     unsigned int    SGL_DLLCALL Width() const       { return width; }

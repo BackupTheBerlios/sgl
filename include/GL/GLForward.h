@@ -1,10 +1,9 @@
 #ifndef SIMPLE_GL_GL_FORWARD_H_
 #define SIMPLE_GL_GL_FORWARD_H_
 
-namespace sgl {
+#include "../Types.h"
 
-// Forward common types
-enum DEVICE_VERSION;
+namespace sgl {
 
 template<DEVICE_VERSION deviceVersion>
 class GLDevice;

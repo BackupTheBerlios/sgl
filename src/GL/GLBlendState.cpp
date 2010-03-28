@@ -82,11 +82,8 @@ namespace {
 
         void SGL_DLLCALL Bind() const
         {
-            if (device->CurrentBlendState() != this) 
-            {
-                glCallList(bindDisplayList);
-                device->SetBlendState(this);
-            }
+            glCallList(bindDisplayList);
+            device->SetBlendState(this);
         }
         
         const BlendState::DESC& SGL_DLLCALL Desc() const { return desc; }
@@ -111,24 +108,21 @@ namespace {
 
         void SGL_DLLCALL Bind() const
         {
-            if (device->CurrentBlendState() != this) 
+            if (desc.blendEnable)
             {
-                if (desc.blendEnable)
-                {
-                    glEnable(GL_BLEND);
-                    glBlendFuncSeparate( BIND_BLEND_FUNCTION[desc.srcBlend], 
-                                         BIND_BLEND_FUNCTION[desc.destBlend],
-                                         BIND_BLEND_FUNCTION[desc.srcBlendAlpha],
-                                         BIND_BLEND_FUNCTION[desc.destBlendAlpha] );
-                    glBlendEquationSeparate( BIND_BLEND_OPERATION[desc.blendOp], 
-                                             BIND_BLEND_OPERATION[desc.blendOpAlpha] );
-                }
-                else {
-                    glDisable(GL_BLEND);
-                }
-
-                device->SetBlendState(this);
+                glEnable(GL_BLEND);
+                glBlendFuncSeparate( BIND_BLEND_FUNCTION[desc.srcBlend],
+                                     BIND_BLEND_FUNCTION[desc.destBlend],
+                                     BIND_BLEND_FUNCTION[desc.srcBlendAlpha],
+                                     BIND_BLEND_FUNCTION[desc.destBlendAlpha] );
+                glBlendEquationSeparate( BIND_BLEND_OPERATION[desc.blendOp],
+                                         BIND_BLEND_OPERATION[desc.blendOpAlpha] );
             }
+            else {
+                glDisable(GL_BLEND);
+            }
+
+            device->SetBlendState(this);
         }
         
         const BlendState::DESC& SGL_DLLCALL Desc() const { return desc; }
@@ -155,20 +149,17 @@ namespace {
 
         void SGL_DLLCALL Bind() const
         {
-            if (device->CurrentBlendState() != this) 
+            if (desc.blendEnable)
             {
-                if (desc.blendEnable)
-                {
-                    glEnable(GL_BLEND);
-                    glBlendFunc(glSrcBlend, glDestBlend);
-                    glBlendEquation(glBlendOp);
-                }
-                else {
-                    glDisable(GL_BLEND);
-                }
-
-                device->SetBlendState(this);
+                glEnable(GL_BLEND);
+                glBlendFunc(glSrcBlend, glDestBlend);
+                glBlendEquation(glBlendOp);
             }
+            else {
+                glDisable(GL_BLEND);
+            }
+
+            device->SetBlendState(this);
         }
         
         const BlendState::DESC& SGL_DLLCALL Desc() const { return desc; }

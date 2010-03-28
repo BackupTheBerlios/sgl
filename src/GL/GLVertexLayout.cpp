@@ -6,7 +6,7 @@
 
 namespace sgl {
     
-    const unsigned sgl::BIND_SCALAR_TYPE[__NUMBER_OF_SCALAR_TYPES__] =
+    const unsigned BIND_SCALAR_TYPE[__NUMBER_OF_SCALAR_TYPES__] =
     {
         0,
         GL_BITMAP,

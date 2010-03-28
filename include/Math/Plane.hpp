@@ -3,10 +3,7 @@
 
 #include "Matrix.hpp"
 
-#ifdef SIMPLEGL_MATH_IN_SGL_NAMESPACE
-namespace sgl {
-#endif
-namespace math {
+SGL_BEGIN_MATH_NAMESPACE
 
 template<typename  ValueType,
          int       Dimension>
@@ -124,9 +121,6 @@ Plane<T, n> normalize(const Plane<T, n>& plane)
     return Plane<T, n>(plane.normal / l, plane.distance / l);
 }
 
-} // namespace math
-#ifdef SIMPLEGL_MATH_IN_SGL_NAMESPACE
-} // namespace sgl
-#endif
+SGL_END_MATH_NAMESPACE
 
 #endif // SIMPLE_GL_MATH_PLANE_H

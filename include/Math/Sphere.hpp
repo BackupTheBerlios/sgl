@@ -3,10 +3,7 @@
 
 #include "Vector.hpp"
 
-#ifdef SIMPLEGL_MATH_IN_SGL_NAMESPACE
-namespace sgl {
-#endif
-namespace math {
+SGL_BEGIN_MATH_NAMESPACE
 
 /** Axis aligned bounding box. */
 template<typename ValueType, 
@@ -52,9 +49,6 @@ inline bool operator != (const Sphere<T, n>& lhs, const Sphere<T, n>& rhs)
     return lhs.center != rhs.center || lhs.radius != rhs.radius; 
 }
 
-} // namespace math
-#ifdef SIMPLEGL_MATH_IN_SGL_NAMESPACE
-} // namespace sgl
-#endif
+SGL_END_MATH_NAMESPACE
 
 #endif // SIMPLE_GL_MATH_SPHERE_H

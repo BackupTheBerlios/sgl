@@ -66,7 +66,7 @@ SGL_HRESULT GLProgram<DeviceVersion>::AddShader(Shader* shader)
 template<DEVICE_VERSION DeviceVersion> 
 bool GLProgram<DeviceVersion>::RemoveShader(Shader* shader)
 {
-    shader_vector::iterator iter = std::find( shaders.begin(), shaders.end(), ref_ptr<Shader>(shader) );
+    typename shader_vector::iterator iter = std::find( shaders.begin(), shaders.end(), ref_ptr<Shader>(shader) );
     if ( iter != shaders.end() ) 
     {
         std::swap(*iter, shaders.back() );
@@ -367,7 +367,6 @@ SGL_HRESULT GLProgram<DeviceVersion>::Dirty(bool force)
     uniformName.resize(uniformMaxNameLength + 1);
 
     // get active uniforms
-    size_t                    dataSize = 0;
     std::vector<uniform_desc> uniformDescriptions;
     {
         glGetProgramiv(glProgram, GL_ACTIVE_UNIFORMS, (GLint*)&numActiveUniforms);

@@ -20,9 +20,14 @@
 #endif // SIMPLE_GL_USE_SSE
 
 #ifdef SIMPLEGL_MATH_IN_SGL_NAMESPACE
-namespace sgl {
+#   define SGL_BEGIN_MATH_NAMESPACE namespace sgl { namespace math {
+#   define SGL_END_MATH_NAMESPACE   } }
+#else
+#   define SGL_BEGIN_MATH_NAMESPACE namespace math {
+#   define SGL_END_MATH_NAMESPACE   }
 #endif
-namespace math {
+
+SGL_BEGIN_MATH_NAMESPACE
 
 template<typename ValueType, 
          int n, 
@@ -45,9 +50,6 @@ protected:
 template<typename T>
 class MatrixBase<T, 1, 1> {};
 
-} // namespace math
-#ifdef SIMPLEGL_MATH_IN_SGL_NAMESPACE
-} // namespace sgl
-#endif
+SGL_END_MATH_NAMESPACE
 
 #endif // SIMPLE_GL_MATH_BASE_HPP

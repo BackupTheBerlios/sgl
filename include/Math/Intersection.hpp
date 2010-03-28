@@ -3,10 +3,7 @@
 
 #include <limits>
 
-#ifdef SIMPLEGL_MATH_IN_SGL_NAMESPACE
-namespace sgl {
-#endif
-namespace math {
+SGL_BEGIN_MATH_NAMESPACE
 
 // forward types
 template<typename ValueType, int n>
@@ -236,9 +233,6 @@ bool test_intersection(const KDop<T, 3, m>& kdop, const AABB<T, 3>& aabb)
     return true;
 }
 
-} // namesapce math
-#ifdef SIMPLEGL_MATH_IN_SGL_NAMESPACE
-} // namespace sgl
-#endif
+SGL_END_MATH_NAMESPACE
 
 #endif // SIMPLE_GL_MATH_INTERSECTION_HPP

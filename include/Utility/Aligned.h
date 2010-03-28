@@ -4,7 +4,11 @@
 #include <cassert>
 #include <limits>
 #include <malloc.h>
+#ifdef __GNUC__
+#include <mm_malloc.h>
+#endif
 #include <stdexcept>
+#include "Utility/Meta.h"
 
 namespace sgl {
 
@@ -15,7 +19,7 @@ namespace sgl {
 inline void* align_alloc(size_t size, size_t alignment = 0x10)
 {
 #ifdef __GNUC__
-    return memalign(alignment, size);
+    return _mm_malloc(size, alignment);
 #else // MSVS
     return _aligned_malloc(size, alignment);
 #endif
@@ -25,7 +29,7 @@ inline void* align_alloc(size_t size, size_t alignment = 0x10)
 inline void align_free(void* data)
 {
 #ifdef __GNUC__
-    free(data);
+    _mm_free(data);
 #else // MSVS
     _aligned_free(data);
 #endif
@@ -132,6 +136,8 @@ public:
 
     pointer allocate( size_type sz, const void* hint = NULL)
     {
+        do_nothing(hint);
+
         size_type to_alloc  = sz * sizeof(value_type);
         unsigned char *p    = new unsigned char[to_alloc + packing];
         ptr_uint_type u     = reinterpret_cast<ptr_uint_type> (p);

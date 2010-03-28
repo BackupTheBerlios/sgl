@@ -2,11 +2,13 @@
 #define SIMPLE_GL_GL_DEVICE_H
 
 #ifdef WIN32
+#   ifndef NOMINMAX
 #   define NOMINMAX
+#   endif // disable mingw warning
 #   define WIN32_LEAN_AND_MEAN
 #   include <windows.h>
 #   include <GL/glew.h>
-#elif __linux__
+#elif defined(__linux__)
 #   include <GL/glew.h>
 #   include <GL/glx.h>
 #endif
@@ -174,11 +176,11 @@ protected:
     ref_ptr<FFPProgram>     ffpProgram;
     ref_ptr<DeviceTraits>   deviceTraits;
 
-    #ifdef _WIN32
+    #ifdef WIN32
     HDC			hDC;
     HGLRC		hGLRC;
     HWND		hWnd;
-    #elif __linux__
+    #elif defined(__linux__)
     Display*    display;
     Window      window;
     GLXDrawable glxDrawable;

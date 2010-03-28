@@ -17,10 +17,7 @@
 #pragma warning( disable : 4201 )
 #endif
 
-#ifdef SIMPLEGL_MATH_IN_SGL_NAMESPACE
-namespace sgl {
-#endif
-namespace math {
+SGL_BEGIN_MATH_NAMESPACE
 
 template<typename T>
 class Matrix<T, 1, 1> {};
@@ -667,10 +664,7 @@ inline Matrix<T, n, m> clamp(const Matrix<T, n, m>& mat, T minVal, T maxVal)
     return result;
 }
 
-} // namespace math
-#ifdef SIMPLEGL_MATH_IN_SGL_NAMESPACE
-} // namespace sgl
-#endif
+SGL_END_MATH_NAMESPACE
 
 #ifdef MSVC
 #pragma warning( pop )

@@ -1,9 +1,81 @@
 #include "GL/GLTexture.h"
 
-using namespace sgl;
+namespace sgl {
+
+// Define texture formats
+const Texture::format_desc Texture::FORMAT_TRAITS[] =
+{
+    {0,      0,  false, false},
+
+    {64,     4,  false, false},
+    {48,     3,  false, false},
+    {16,     1,  false, false},
+
+    {32,     4,  false, false},
+    {24,     3,  false, false},
+    {8,      1,  false, false},
+/*
+    {16,     4,  false,  false, true,  false, false},
+    {12,     3,  false,  false, true,  false, false},
+    {4,      1,  false,  false, true,  false, false},
+*/
+    {32,     1,  true,  false},
+    {24,     1,  true,  false},
+    {16,     1,  true,  false},
+
+    {32,     2,  true,  false},
+    {32,     2,  true,  false},
+    {40,     2,  true,  false},
+
+    {128,    4,  false, false},
+    {96,     3,  false, false},
+    {64,     2,  false, false},
+    {32,     1,  false, false},
+    {32,     1,  false, false},
+
+    {64,     4,  false, false},
+    {48,     3,  false, false},
+    {32,     2,  false, false},
+    {16,     1,  false, false},
+    {16,     1,  false, false},
+
+    {128,    4,  false, false},
+    {96,     3,  false, false},
+    {32,     1,  false, false},
+
+    {64,     4,  false, false},
+    {48,     3,  false, false},
+    {16,     1,  false, false},
+
+    {32,     4,  false, false},
+    {24,     3,  false, false},
+    {8,      1,  false, false},
+
+    {128,    4,  false, false},
+    {96,     3,  false, false},
+    {32,     1,  false, false},
+
+    {64,     4,  false, false},
+    {48,     3,  false, false},
+    {16,     1,  false, false},
+
+    {32,     4,  false, false},
+    {24,     3,  false, false},
+    {8,      1,  false, false},
+
+    {96,     3,  false, true},
+    {32,     4,  false, true},
+    {64,     4,  false, true},
+    {48,     4,  false, true},
+
+    {16,     1,  false, true},
+    {32,     1,  false, true},
+    {24,     2,  false, true},
+    {8,      2,  false, true}
+};
 
 /* bind glTexture format to gl one */
-const GLenum sgl::BIND_GL_FORMAT[] =
+const GLenum BIND_GL_FORMAT[] =
 {
     0,
     GL_RGBA16,
@@ -67,7 +139,7 @@ const GLenum sgl::BIND_GL_FORMAT[] =
 };
 
 /* Bind sgl format usage gl one */
-const GLenum sgl::BIND_GL_FORMAT_USAGE[] =
+const GLenum BIND_GL_FORMAT_USAGE[] =
 {
     0,
     GL_RGBA,
@@ -132,7 +204,7 @@ const GLenum sgl::BIND_GL_FORMAT_USAGE[] =
 };
 
 /* bind glTexture format to gl one */
-const GLenum sgl::BIND_GL_FORMAT_PIXEL_TYPE[] =
+const GLenum BIND_GL_FORMAT_PIXEL_TYPE[] =
 {
     0,
     GL_UNSIGNED_SHORT,
@@ -186,14 +258,14 @@ const GLenum sgl::BIND_GL_FORMAT_PIXEL_TYPE[] =
     0
 };
 
-const GLenum sgl::BIND_TEXTURE_FILTER[] =
+const GLenum BIND_TEXTURE_FILTER[] =
 {
     GL_NEAREST,
     GL_NEAREST,
     GL_LINEAR
 };
 
-const GLenum sgl::BIND_TEXTURE_MIN_FILTER[] =
+const GLenum BIND_TEXTURE_MIN_FILTER[] =
 {
     GL_NEAREST,
     GL_NEAREST,
@@ -206,7 +278,7 @@ const GLenum sgl::BIND_TEXTURE_MIN_FILTER[] =
     GL_LINEAR_MIPMAP_LINEAR
 };
 
-const GLenum sgl::BIND_TEXTURE_CLAMP[] =
+const GLenum BIND_TEXTURE_CLAMP[] =
 {
     GL_REPEAT,
     GL_CLAMP,
@@ -214,7 +286,7 @@ const GLenum sgl::BIND_TEXTURE_CLAMP[] =
 };
 
 /* bind glTexture environment mode to gl one */
-const GLenum sgl::BIND_GL_TEXTURE_ENV_MODE[] =
+const GLenum BIND_GL_TEXTURE_ENV_MODE[] =
 {
     GL_DECAL,
     GL_REPLACE,
@@ -245,3 +317,5 @@ Texture::FORMAT sgl::FindTextureFormat(const SDL_PixelFormat& format)
 }
 
 #endif // SIMPLE_GL_USE_SDL_IMAGE
+
+} // namespace sgl
