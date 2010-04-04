@@ -63,18 +63,6 @@ public:
     virtual SGL_DLLCALL ~ResourceImpl() {}
 };
 
-#define SGL_DEFINE_TRAITS(type, size) \
-    template<> inline size_t ScalarTypetTraits<type>::SizeInBits() { return size; } \
-
-SGL_DEFINE_TRAITS(BIT,    1)
-SGL_DEFINE_TRAITS(BYTE,   8)
-SGL_DEFINE_TRAITS(UBYTE,  8)
-SGL_DEFINE_TRAITS(SHORT,  16)
-SGL_DEFINE_TRAITS(USHORT, 16)
-SGL_DEFINE_TRAITS(INT,    32)
-SGL_DEFINE_TRAITS(UINT,   32)
-SGL_DEFINE_TRAITS(FLOAT,  32)
-
 #undef SGL_DEFINE_TRAITS
 
 }

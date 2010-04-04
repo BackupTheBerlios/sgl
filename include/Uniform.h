@@ -17,10 +17,39 @@ class AbstractUniform :
     public WeakReferenced
 {
 public:
-    /** Get name of the uniform */
+    enum TYPE
+    {
+        INT,
+        VEC2I,
+        VEC3I,
+        VEC4I,
+        FLOAT,
+        VEC2F,
+        VEC3F,
+        VEC4F,
+        MAT2x2F,
+        MAT2x3F,
+        MAT2x4F,
+        MAT3x2F,
+        MAT3x3F,
+        MAT3x4F,
+        MAT4x2F,
+        MAT4x3F,
+        MAT4x4F,
+        SAMPLER_1D,
+        SAMPLER_2D,
+        SAMPLER_3D,
+        SAMPLER_CUBE
+    };
+
+public:
+    /** Get type of the uniform. */
+    virtual TYPE SGL_DLLCALL Type() const = 0;
+
+    /** Get name of the uniform. */
     virtual const char* SGL_DLLCALL Name() const = 0;
 
-    /** Get program of the uniform */
+    /** Get program of the uniform. */
     virtual Program* SGL_DLLCALL MasterProgram() const = 0;
 
     virtual ~AbstractUniform() {}
@@ -61,27 +90,25 @@ public:
 };
 
 // typedefs
+typedef Uniform<int>              UniformI;
+typedef Uniform<math::Vector2i>   Uniform2I;
+typedef Uniform<math::Vector3i>   Uniform3I;
+typedef Uniform<math::Vector4i>   Uniform4I;
+
 typedef Uniform<float>            UniformF;
 typedef Uniform<math::Vector2f>   Uniform2F;
 typedef Uniform<math::Vector3f>   Uniform3F;
 typedef Uniform<math::Vector4f>   Uniform4F;
 
-typedef Uniform<int>              UniformI;
-typedef Uniform<math::Vector2i>   Uniform2I;
-typedef Uniform<math::Vector3i>   Uniform3I;
-typedef Uniform<math::Vector4i>   Uniform4I;
-/*
 typedef Uniform<math::Matrix2x2f> Uniform2x2F;
 typedef Uniform<math::Matrix2x3f> Uniform2x3F;
+typedef Uniform<math::Matrix2x4f> Uniform2x4F;
 typedef Uniform<math::Matrix3x2f> Uniform3x2F;
 typedef Uniform<math::Matrix3x3f> Uniform3x3F;
 typedef Uniform<math::Matrix3x4f> Uniform3x4F;
+typedef Uniform<math::Matrix4x2f> Uniform4x2F;
 typedef Uniform<math::Matrix4x3f> Uniform4x3F;
 typedef Uniform<math::Matrix4x4f> Uniform4x4F;
-*/
-typedef Uniform<math::Matrix2f> Uniform2x2F;
-typedef Uniform<math::Matrix3f> Uniform3x3F;
-typedef Uniform<math::Matrix4f> Uniform4x4F;
 
 /** Sampler shader uniform used to setup texture samplers to the shader.
  * It setups texture to the specified stage and passes stage to the corresponding uniform.

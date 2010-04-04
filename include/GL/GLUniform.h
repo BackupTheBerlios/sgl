@@ -63,9 +63,10 @@ public:
     {}
 
     // Override Uniform
-    void            SGL_DLLCALL Set(const T& value);
-    void            SGL_DLLCALL Set(const T*       values,
-                                    unsigned int   count);
+    AbstractUniform::TYPE   SGL_DLLCALL Type() const;
+    void                    SGL_DLLCALL Set(const T& value);
+    void                    SGL_DLLCALL Set(const T*       values,
+                                            unsigned int   count);
     T               SGL_DLLCALL Value() const;
     unsigned int    SGL_DLLCALL Size() const { return numValues; }
     void            SGL_DLLCALL QueryValues(T* values) const;
@@ -90,6 +91,8 @@ public:
                       GLuint                glLocation ) :
         base_type(program, name, glProgram, glStage, glLocation)
     {}
+
+    AbstractUniform::TYPE SGL_DLLCALL Type() const;
 
     void SGL_DLLCALL Set(unsigned int stage, const T* texture)
     {

@@ -562,6 +562,103 @@ Program::ATTRIBUTE GLProgram<DeviceVersion>::Attribute(unsigned index) const
 }
 
 // Uniforms
+template<DEVICE_VERSION DeviceVersion>
+AbstractUniform* GLProgram<DeviceVersion>::GetUniform(const char* name)
+{
+    if (dirty)
+    {
+        sglSetError(SGLERR_INVALID_CALL, "GLProgram::GetUniform failed. Program is Dirty.");
+        return 0;
+    }
+
+    GLint uniform = glGetUniformLocation(glProgram, name);
+    if (uniform == -1) {
+        return 0;
+    }
+
+    // search for uniform in the uniform array
+    for(size_t i = 0; i<numActiveUniforms; ++i)
+    {
+        // hack
+        GLint location = -1;
+        switch ( uniforms[i]->Type() )
+        {
+        case AbstractUniform::INT:
+            location = static_cast< GLUniform<int>& >(*uniforms[i]).Location();
+            break;
+        case AbstractUniform::VEC2I:
+            location = static_cast< GLUniform<math::Vector2i>& >(*uniforms[i]).Location();
+            break;
+        case AbstractUniform::VEC3I:
+            location = static_cast< GLUniform<math::Vector3i>& >(*uniforms[i]).Location();
+            break;
+        case AbstractUniform::VEC4I:
+            location = static_cast< GLUniform<math::Vector4i>& >(*uniforms[i]).Location();
+            break;
+        case AbstractUniform::FLOAT:
+            location = static_cast< GLUniform<float>& >(*uniforms[i]).Location();
+            break;
+        case AbstractUniform::VEC2F:
+            location = static_cast< GLUniform<math::Vector2f>& >(*uniforms[i]).Location();
+            break;
+        case AbstractUniform::VEC3F:
+            location = static_cast< GLUniform<math::Vector3f>& >(*uniforms[i]).Location();
+            break;
+        case AbstractUniform::VEC4F:
+            location = static_cast< GLUniform<math::Vector4f>& >(*uniforms[i]).Location();
+            break;
+        case AbstractUniform::MAT2x2F:
+            location = static_cast< GLUniform<math::Matrix2x2f>& >(*uniforms[i]).Location();
+            break;
+        case AbstractUniform::MAT2x3F:
+            location = static_cast< GLUniform<math::Matrix2x3f>& >(*uniforms[i]).Location();
+            break;
+        case AbstractUniform::MAT2x4F:
+            location = static_cast< GLUniform<math::Matrix2x4f>& >(*uniforms[i]).Location();
+            break;
+        case AbstractUniform::MAT3x2F:
+            location = static_cast< GLUniform<math::Matrix3x2f>& >(*uniforms[i]).Location();
+            break;
+        case AbstractUniform::MAT3x3F:
+            location = static_cast< GLUniform<math::Matrix3x3f>& >(*uniforms[i]).Location();
+            break;
+        case AbstractUniform::MAT3x4F:
+            location = static_cast< GLUniform<math::Matrix3x4f>& >(*uniforms[i]).Location();
+            break;
+        case AbstractUniform::MAT4x2F:
+            location = static_cast< GLUniform<math::Matrix4x2f>& >(*uniforms[i]).Location();
+            break;
+        case AbstractUniform::MAT4x3F:
+            location = static_cast< GLUniform<math::Matrix4x3f>& >(*uniforms[i]).Location();
+            break;
+        case AbstractUniform::MAT4x4F:
+            location = static_cast< GLUniform<math::Matrix4x4f>& >(*uniforms[i]).Location();
+            break;
+        case AbstractUniform::SAMPLER_1D:
+            location = static_cast< GLSamplerUniform<Texture1D>& >(*uniforms[i]).Location();
+            break;
+        case AbstractUniform::SAMPLER_2D:
+            location = static_cast< GLSamplerUniform<Texture2D>& >(*uniforms[i]).Location();
+            break;
+        case AbstractUniform::SAMPLER_3D:
+            location = static_cast< GLSamplerUniform<Texture3D>& >(*uniforms[i]).Location();
+            break;
+        case AbstractUniform::SAMPLER_CUBE:
+            location = static_cast< GLSamplerUniform<TextureCube>& >(*uniforms[i]).Location();
+            break;
+        default:
+            assert(!"Can't get here");
+            break;
+        }
+
+        if (uniform == location) {
+            return uniforms[i].get();
+        }
+    }
+
+    return 0;
+}
+
 template<DEVICE_VERSION DeviceVersion> 
 UniformI* GLProgram<DeviceVersion>::GetUniformI(const char* name)
 {

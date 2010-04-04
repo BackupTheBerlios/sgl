@@ -1,6 +1,7 @@
 #include "GL/GLCommon.h"
 #include "GL/GLDevice.h"
 #include "GL/GLShader.h"
+#include <cstring>
 
 namespace {
 

@@ -28,9 +28,10 @@ public:
     {}
 
     // Override abstract uniform
-    Program*        SGL_DLLCALL MasterProgram() const   { return program; }
-    const char*     SGL_DLLCALL Name() const            { return name.c_str(); }
-    unsigned int    SGL_DLLCALL Size() const            { return numValues; }
+    AbstractUniform::TYPE   SGL_DLLCALL Type() const;
+    Program*                SGL_DLLCALL MasterProgram() const   { return program; }
+    const char*             SGL_DLLCALL Name() const            { return name.c_str(); }
+    unsigned int            SGL_DLLCALL Size() const            { return numValues; }
 
     /* Bind uniform to the fixed pipeline */
     void SGL_DLLCALL Set(const T& value)

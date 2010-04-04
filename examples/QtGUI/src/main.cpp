@@ -6,18 +6,6 @@
 
 int main(int argc, char **argv)
 {
-    std::vector<int> ints;
-    ints.push_back(3);
-    ints.push_back(5);
-
-    std::string value = "asdasdas";
-
-    std::vector<std::string> strs;
-    strs.push_back("abv");
-    strs.push_back("abc");
-
-    math::Vector4f vec(0.4f, 0.3f, 1.0f, 1.0f);
-
     QApplication app(argc, argv);
 
     try

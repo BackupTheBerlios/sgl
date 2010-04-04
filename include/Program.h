@@ -119,6 +119,9 @@ public:
     /** Get definition of the i'th program attribute. */
     virtual ATTRIBUTE   SGL_DLLCALL Attribute(unsigned index) const = 0;
 
+    /** Get abstract uniform */
+    virtual AbstractUniform*        SGL_DLLCALL GetUniform(const char* name) = 0;
+
     /** Create int uniform */
     virtual UniformI*               SGL_DLLCALL GetUniformI(const char* name) = 0;
 

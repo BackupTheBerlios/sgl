@@ -86,11 +86,19 @@ public:
     PRIMITIVE_TYPE  SGL_DLLCALL GeometryOutputType() const { return outputType; }
 
     // Uniforms
+    AbstractUniform* SGL_DLLCALL GetUniform(const char* name);
+    
     template<typename T>
-    GLUniform<T>* GetUniform(const char* name);
+    GLUniform<T>* GetUniform(const char* name)
+    {
+        return dynamic_cast< GLUniform<T>* >( GetUniform(name) );
+    }
 
     template<typename T>
-    GLSamplerUniform<T>* GetSamplerUniform(const char* name);
+    GLSamplerUniform<T>* GetSamplerUniform(const char* name)
+    {
+        return dynamic_cast< GLSamplerUniform<T>* >( GetUniform(name) );
+    }
 
     /* Create int uniform */
     UniformI*  SGL_DLLCALL GetUniformI(const char* name);
@@ -137,60 +145,6 @@ private:
     // log
     std::string         compilationLog;
 };
-
-template<DEVICE_VERSION DeviceVersion>
-template<typename T>
-inline GLUniform<T>* GLProgram<DeviceVersion>::GetUniform(const char* name)
-{
-    if (dirty) 
-    {
-        sglSetError(SGLERR_INVALID_CALL, "GLProgram::GetUniform failed. Program is Dirty.");
-        return 0;
-    }
-
-    GLint uniform = glGetUniformLocation(glProgram, name);
-    if (uniform == -1) {
-        return 0;
-    }
-
-    // search for uniform in the uniform array
-    for(size_t i = 0; i<numActiveUniforms; ++i)
-    {
-        GLUniform<T>* pUniform = dynamic_cast< GLUniform<T>* >( uniforms[i].get() );
-        if ( pUniform && GLuint(uniform) == pUniform->Location() ) {
-            return pUniform;
-        }
-    }
-
-    return 0;
-}
-
-template<DEVICE_VERSION DeviceVersion>
-template<typename T>
-inline GLSamplerUniform<T>* GLProgram<DeviceVersion>::GetSamplerUniform(const char* name)
-{
-    if (dirty) 
-    {
-        sglSetError(SGLERR_INVALID_CALL, "GLProgram::GetSamplerUniform failed. Program is Dirty.");
-        return 0;
-    }
-
-    GLint uniform = glGetUniformLocation(glProgram, name);
-    if (uniform == -1) {
-        return 0;
-    }
-
-    // search for uniform in the uniform array
-    for(size_t i = 0; i<numActiveUniforms; ++i)
-    {
-        GLSamplerUniform<T>* pUniform = dynamic_cast< GLSamplerUniform<T>* >( uniforms[i].get() );
-        if ( pUniform && GLuint(uniform) == pUniform->Location() ) {
-            return pUniform;
-        }
-    }
-
-    return 0;
-}
 
 /** Try to make shader program */
 template<DEVICE_VERSION DeviceVersion>

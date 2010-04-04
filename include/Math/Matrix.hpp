@@ -169,9 +169,11 @@ private:
 // default matrices
 typedef Matrix<double, 4, 4>           Matrix4x4d; 
 typedef Matrix<double, 4, 3>           Matrix4x3d;
+typedef Matrix<double, 4, 2>           Matrix4x2d;
 typedef Matrix<double, 3, 4>           Matrix3x4d;
 typedef Matrix<double, 3, 3>           Matrix3x3d;
 typedef Matrix<double, 3, 2>           Matrix3x2d;
+typedef Matrix<double, 2, 4>           Matrix2x4d;
 typedef Matrix<double, 2, 3>           Matrix2x3d;
 typedef Matrix<double, 2, 2>           Matrix2x2d;
 typedef Matrix<double, 4, 4>           Matrix4d;   
@@ -187,9 +189,11 @@ typedef Matrix<float, 4, 4>            Matrix4f;    /// Matrix4f without SSE
 #endif
 
 typedef Matrix<float, 4, 3>            Matrix4x3f;
+typedef Matrix<float, 4, 2>            Matrix4x2f;
 typedef Matrix<float, 3, 4>            Matrix3x4f;
 typedef Matrix<float, 3, 3>            Matrix3x3f;
 typedef Matrix<float, 3, 2>            Matrix3x2f;
+typedef Matrix<float, 2, 4>            Matrix2x4f;
 typedef Matrix<float, 2, 3>            Matrix2x3f;
 typedef Matrix<float, 2, 2>            Matrix2x2f;
 typedef Matrix<float, 3, 3>            Matrix3f;
@@ -197,9 +201,11 @@ typedef Matrix<float, 2, 2>            Matrix2f;
 
 typedef Matrix<int, 4, 4>              Matrix4x4i; 
 typedef Matrix<int, 4, 3>              Matrix4x3i;
+typedef Matrix<int, 4, 2>              Matrix4x2i;
 typedef Matrix<int, 3, 4>              Matrix3x4i;
 typedef Matrix<int, 3, 3>              Matrix3x3i;
 typedef Matrix<int, 3, 2>              Matrix3x2i;
+typedef Matrix<int, 2, 4>              Matrix2x4i;
 typedef Matrix<int, 2, 3>              Matrix2x3i;
 typedef Matrix<int, 2, 2>              Matrix2x2i;
 typedef Matrix<int, 4, 4>              Matrix4i;   
@@ -208,9 +214,11 @@ typedef Matrix<int, 2, 2>              Matrix2i;
 
 typedef Matrix<unsigned, 4, 4>         Matrix4x4ui; 
 typedef Matrix<unsigned, 4, 3>         Matrix4x3ui;
+typedef Matrix<unsigned, 4, 2>         Matrix4x2ui;
 typedef Matrix<unsigned, 3, 4>         Matrix3x4ui;
 typedef Matrix<unsigned, 3, 3>         Matrix3x3ui;
 typedef Matrix<unsigned, 3, 2>         Matrix3x2ui;
+typedef Matrix<unsigned, 2, 4>         Matrix2x4ui;
 typedef Matrix<unsigned, 2, 3>         Matrix2x3ui;
 typedef Matrix<unsigned, 2, 2>         Matrix2x2ui;
 typedef Matrix<unsigned, 4, 4>         Matrix4ui;   
@@ -219,9 +227,11 @@ typedef Matrix<unsigned, 2, 2>         Matrix2ui;
 
 typedef Matrix<bool, 4, 4>             Matrix4x4b; 
 typedef Matrix<bool, 4, 3>             Matrix4x3b;
+typedef Matrix<bool, 4, 2>             Matrix4x2b;
 typedef Matrix<bool, 3, 4>             Matrix3x4b;
 typedef Matrix<bool, 3, 3>             Matrix3x3b;
 typedef Matrix<bool, 3, 2>             Matrix3x2b;
+typedef Matrix<bool, 2, 4>             Matrix2x4b;
 typedef Matrix<bool, 2, 3>             Matrix2x3b;
 typedef Matrix<bool, 2, 2>             Matrix2x2b;
 typedef Matrix<bool, 4, 4>             Matrix4b;   
