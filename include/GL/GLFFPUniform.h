@@ -15,7 +15,7 @@ public:
     typedef void (*get_function)(T*, unsigned int);
 
 public:
-    GLFFPUniform( Program*              _program,
+    GLFFPUniform( const Program*        _program,
                   const std::string&    _name,
                   set_function          _setFunction,
                   get_function          _getFunction,
@@ -29,7 +29,7 @@ public:
 
     // Override abstract uniform
     AbstractUniform::TYPE   SGL_DLLCALL Type() const;
-    Program*                SGL_DLLCALL MasterProgram() const   { return program; }
+    const Program*          SGL_DLLCALL MasterProgram() const   { return program; }
     const char*             SGL_DLLCALL Name() const            { return name.c_str(); }
     unsigned int            SGL_DLLCALL Size() const            { return numValues; }
 
@@ -59,7 +59,7 @@ public:
 
 private:
     // program
-    Program*        program;
+    const Program*  program;
     std::string     name;
     size_t          numValues;
 

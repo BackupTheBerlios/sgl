@@ -10,7 +10,7 @@ class GLUniformBase :
     public ReferencedImpl<Interface>
 {
 public:
-    GLUniformBase( Program*             _program,
+    GLUniformBase( const Program*       _program,
                    const std::string&   _name,
                    GLuint               _glProgram,
                    GLuint               _glIndex,
@@ -23,8 +23,8 @@ public:
     {}
 
     // Override abstract uniform
-    Program*    SGL_DLLCALL MasterProgram() const { return program; }
-    const char* SGL_DLLCALL Name() const          { return name.c_str(); }
+    const Program*  SGL_DLLCALL MasterProgram() const { return program; }
+    const char*     SGL_DLLCALL Name() const          { return name.c_str(); }
 
     /** Get OpenGL uniform index */
     GLuint SGL_DLLCALL Index() const { return glIndex; }
@@ -34,8 +34,8 @@ public:
 
 protected:
     // master
-    Program*    program;
-    std::string name;
+    const Program*  program;
+    std::string     name;
 
     // gl
     GLuint      glProgram;
@@ -52,7 +52,7 @@ public:
     typedef GLUniformBase< Uniform<T> >  base_type;
 
 public:
-    GLUniform( Program*             program,
+    GLUniform( const Program*       program,
                const std::string&   name,
                GLuint               glProgram,
                GLuint               glIndex,
@@ -84,7 +84,7 @@ public:
     typedef GLUniformBase< SamplerUniform<T> >   base_type;
 
 public:
-    GLSamplerUniform( Program*              program,
+    GLSamplerUniform( const Program*        program,
                       const std::string&    name,
                       GLuint                glProgram,
                       GLuint                glStage,

@@ -50,7 +50,7 @@ public:
     virtual const char* SGL_DLLCALL Name() const = 0;
 
     /** Get program of the uniform. */
-    virtual Program* SGL_DLLCALL MasterProgram() const = 0;
+    virtual const Program* SGL_DLLCALL MasterProgram() const = 0;
 
     virtual ~AbstractUniform() {}
 };

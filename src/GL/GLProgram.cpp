@@ -563,7 +563,7 @@ Program::ATTRIBUTE GLProgram<DeviceVersion>::Attribute(unsigned index) const
 
 // Uniforms
 template<DEVICE_VERSION DeviceVersion>
-AbstractUniform* GLProgram<DeviceVersion>::GetUniform(const char* name)
+AbstractUniform* GLProgram<DeviceVersion>::GetUniform(const char* name) const
 {
     if (dirty)
     {
@@ -660,91 +660,91 @@ AbstractUniform* GLProgram<DeviceVersion>::GetUniform(const char* name)
 }
 
 template<DEVICE_VERSION DeviceVersion> 
-UniformI* GLProgram<DeviceVersion>::GetUniformI(const char* name)
+UniformI* GLProgram<DeviceVersion>::GetUniformI(const char* name) const
 {
     return GetUniform<int>(name);
 }
 
 template<DEVICE_VERSION DeviceVersion> 
-Uniform2I* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform2I(const char* name)
+Uniform2I* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform2I(const char* name) const
 {
     return GetUniform<Vector2i>(name);
 }
 
 template<DEVICE_VERSION DeviceVersion> 
-Uniform3I* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform3I(const char* name)
+Uniform3I* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform3I(const char* name) const
 {
     return GetUniform<Vector3i>(name);
 }
 
 template<DEVICE_VERSION DeviceVersion> 
-Uniform4I* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform4I(const char* name)
+Uniform4I* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform4I(const char* name) const
 {
     return GetUniform<Vector4i>(name);
 }
 
 template<DEVICE_VERSION DeviceVersion> 
-UniformF* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniformF(const char* name)
+UniformF* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniformF(const char* name) const
 {
     return GetUniform<float>(name);
 }
 
 template<DEVICE_VERSION DeviceVersion> 
-Uniform2F* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform2F(const char* name)
+Uniform2F* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform2F(const char* name) const
 {
     return GetUniform<Vector2f>(name);
 }
 
 template<DEVICE_VERSION DeviceVersion> 
-Uniform3F* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform3F(const char* name)
+Uniform3F* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform3F(const char* name) const
 {
     return GetUniform<Vector3f>(name);
 }
 
 template<DEVICE_VERSION DeviceVersion> 
-Uniform4F* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform4F(const char* name)
+Uniform4F* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform4F(const char* name) const
 {
     return GetUniform<Vector4f>(name);
 }
 
 template<DEVICE_VERSION DeviceVersion> 
-Uniform2x2F* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform2x2F(const char* name)
+Uniform2x2F* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform2x2F(const char* name) const
 {
     return GetUniform<Matrix2f>(name);
 }
 
 template<DEVICE_VERSION DeviceVersion> 
-Uniform3x3F* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform3x3F(const char* name)
+Uniform3x3F* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform3x3F(const char* name) const
 {
     return GetUniform<Matrix3f>(name);
 }
 
 template<DEVICE_VERSION DeviceVersion> 
-Uniform4x4F* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform4x4F(const char* name)
+Uniform4x4F* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform4x4F(const char* name) const
 {
     return GetUniform<Matrix4f>(name);
 }
 
 template<DEVICE_VERSION DeviceVersion> 
-SamplerUniform1D* SGL_DLLCALL GLProgram<DeviceVersion>::GetSamplerUniform1D(const char* name)
+SamplerUniform1D* SGL_DLLCALL GLProgram<DeviceVersion>::GetSamplerUniform1D(const char* name) const
 {
     return GetSamplerUniform<Texture1D>(name);
 }
 
 template<DEVICE_VERSION DeviceVersion> 
-SamplerUniform2D* SGL_DLLCALL GLProgram<DeviceVersion>::GetSamplerUniform2D(const char* name)
+SamplerUniform2D* SGL_DLLCALL GLProgram<DeviceVersion>::GetSamplerUniform2D(const char* name) const
 {
     return GetSamplerUniform<Texture2D>(name);
 }
 
 template<DEVICE_VERSION DeviceVersion> 
-SamplerUniform3D* SGL_DLLCALL GLProgram<DeviceVersion>::GetSamplerUniform3D(const char* name)
+SamplerUniform3D* SGL_DLLCALL GLProgram<DeviceVersion>::GetSamplerUniform3D(const char* name) const
 {
     return GetSamplerUniform<Texture3D>(name);
 }
 
 template<DEVICE_VERSION DeviceVersion> 
-SamplerUniformCube* SGL_DLLCALL GLProgram<DeviceVersion>::GetSamplerUniformCube(const char* name)
+SamplerUniformCube* SGL_DLLCALL GLProgram<DeviceVersion>::GetSamplerUniformCube(const char* name) const
 {
     return GetSamplerUniform<TextureCube>(name);
 }

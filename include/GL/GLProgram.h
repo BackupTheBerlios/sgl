@@ -86,42 +86,42 @@ public:
     PRIMITIVE_TYPE  SGL_DLLCALL GeometryOutputType() const { return outputType; }
 
     // Uniforms
-    AbstractUniform* SGL_DLLCALL GetUniform(const char* name);
+    AbstractUniform* SGL_DLLCALL GetUniform(const char* name) const;
     
     template<typename T>
-    GLUniform<T>* GetUniform(const char* name)
+    GLUniform<T>* GetUniform(const char* name) const
     {
         return dynamic_cast< GLUniform<T>* >( GetUniform(name) );
     }
 
     template<typename T>
-    GLSamplerUniform<T>* GetSamplerUniform(const char* name)
+    GLSamplerUniform<T>* GetSamplerUniform(const char* name) const
     {
         return dynamic_cast< GLSamplerUniform<T>* >( GetUniform(name) );
     }
 
     /* Create int uniform */
-    UniformI*  SGL_DLLCALL GetUniformI(const char* name);
-    Uniform2I* SGL_DLLCALL GetUniform2I(const char* name);
-    Uniform3I* SGL_DLLCALL GetUniform3I(const char* name);
-    Uniform4I* SGL_DLLCALL GetUniform4I(const char* name);
+    UniformI*  SGL_DLLCALL GetUniformI(const char* name) const;
+    Uniform2I* SGL_DLLCALL GetUniform2I(const char* name) const;
+    Uniform3I* SGL_DLLCALL GetUniform3I(const char* name) const;
+    Uniform4I* SGL_DLLCALL GetUniform4I(const char* name) const;
 
     /* Create float uniform */
-    UniformF*  SGL_DLLCALL GetUniformF(const char* name);
-    Uniform2F* SGL_DLLCALL GetUniform2F(const char* name);
-    Uniform3F* SGL_DLLCALL GetUniform3F(const char* name);
-    Uniform4F* SGL_DLLCALL GetUniform4F(const char* name);
+    UniformF*  SGL_DLLCALL GetUniformF(const char* name) const;
+    Uniform2F* SGL_DLLCALL GetUniform2F(const char* name) const;
+    Uniform3F* SGL_DLLCALL GetUniform3F(const char* name) const;
+    Uniform4F* SGL_DLLCALL GetUniform4F(const char* name) const;
 
     /* Create matrix uniform */
-    Uniform2x2F* SGL_DLLCALL GetUniform2x2F(const char* name);
-    Uniform3x3F* SGL_DLLCALL GetUniform3x3F(const char* name);
-    Uniform4x4F* SGL_DLLCALL GetUniform4x4F(const char* name);
+    Uniform2x2F* SGL_DLLCALL GetUniform2x2F(const char* name) const;
+    Uniform3x3F* SGL_DLLCALL GetUniform3x3F(const char* name) const;
+    Uniform4x4F* SGL_DLLCALL GetUniform4x4F(const char* name) const;
 
     /* Create texture uniforms */
-    SamplerUniform1D*   SGL_DLLCALL GetSamplerUniform1D(const char* name);
-    SamplerUniform2D*   SGL_DLLCALL GetSamplerUniform2D(const char* name);
-    SamplerUniform3D*   SGL_DLLCALL GetSamplerUniform3D(const char* name);
-    SamplerUniformCube* SGL_DLLCALL GetSamplerUniformCube(const char* name);
+    SamplerUniform1D*   SGL_DLLCALL GetSamplerUniform1D(const char* name) const;
+    SamplerUniform2D*   SGL_DLLCALL GetSamplerUniform2D(const char* name) const;
+    SamplerUniform3D*   SGL_DLLCALL GetSamplerUniform3D(const char* name) const;
+    SamplerUniformCube* SGL_DLLCALL GetSamplerUniformCube(const char* name) const;
 
     /** Get OpenGL program handle */
     GLuint SGL_DLLCALL Handle() const { return glProgram; }

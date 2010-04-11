@@ -120,34 +120,34 @@ public:
     virtual ATTRIBUTE   SGL_DLLCALL Attribute(unsigned index) const = 0;
 
     /** Get abstract uniform */
-    virtual AbstractUniform*        SGL_DLLCALL GetUniform(const char* name) = 0;
+    virtual AbstractUniform*        SGL_DLLCALL GetUniform(const char* name) const = 0;
 
     /** Create int uniform */
-    virtual UniformI*               SGL_DLLCALL GetUniformI(const char* name) = 0;
+    virtual UniformI*               SGL_DLLCALL GetUniformI(const char* name) const = 0;
 
     /** Create Vector2i uniform */
-    virtual Uniform2I*              SGL_DLLCALL GetUniform2I(const char* name) = 0;
+    virtual Uniform2I*              SGL_DLLCALL GetUniform2I(const char* name) const = 0;
 
     /** Create Vector3i uniform */
-    virtual Uniform3I*              SGL_DLLCALL GetUniform3I(const char* name) = 0;
+    virtual Uniform3I*              SGL_DLLCALL GetUniform3I(const char* name) const = 0;
 
     /** Create Vector4i uniform */
-    virtual Uniform4I*              SGL_DLLCALL GetUniform4I(const char* name) = 0;
+    virtual Uniform4I*              SGL_DLLCALL GetUniform4I(const char* name) const = 0;
 
     /** Create float uniform */
-    virtual UniformF*               SGL_DLLCALL GetUniformF(const char* name) = 0;
+    virtual UniformF*               SGL_DLLCALL GetUniformF(const char* name) const = 0;
 
     /** Create Vector2f uniform */
-    virtual Uniform2F*              SGL_DLLCALL GetUniform2F(const char* name) = 0;
+    virtual Uniform2F*              SGL_DLLCALL GetUniform2F(const char* name) const = 0;
 
     /** Create Vector3f uniform */
-    virtual Uniform3F*              SGL_DLLCALL GetUniform3F(const char* name) = 0;
+    virtual Uniform3F*              SGL_DLLCALL GetUniform3F(const char* name) const = 0;
 
     /** Create Vector4f uniform */
-    virtual Uniform4F*              SGL_DLLCALL GetUniform4F(const char* name) = 0;
+    virtual Uniform4F*              SGL_DLLCALL GetUniform4F(const char* name) const = 0;
 
     /** Create Matrix2f uniform */
-    virtual Uniform2x2F*            SGL_DLLCALL GetUniform2x2F(const char* name) = 0;
+    virtual Uniform2x2F*            SGL_DLLCALL GetUniform2x2F(const char* name) const = 0;
 
     /** Create Matrix2x3f uniform */
     //virtual Uniform2x3F*            SGL_DLLCALL GetUniform3x3F(const char* name) = 0;
@@ -159,7 +159,7 @@ public:
     //virtual Uniform3x2F*            SGL_DLLCALL GetUniform3x3F(const char* name) = 0;
 
     /** Create Matrix3f uniform */
-    virtual Uniform3x3F*            SGL_DLLCALL GetUniform3x3F(const char* name) = 0;
+    virtual Uniform3x3F*            SGL_DLLCALL GetUniform3x3F(const char* name) const = 0;
 
     /** Create Matrix3f uniform */
     //virtual Uniform3x4F*            SGL_DLLCALL GetUniform3x3F(const char* name) = 0;
@@ -168,19 +168,19 @@ public:
     //virtual Uniform4x3F*            SGL_DLLCALL GetUniform3x3F(const char* name) = 0;
 
     /** Create Matrix4f uniform */
-    virtual Uniform4x4F*            SGL_DLLCALL GetUniform4x4F(const char* name) = 0;
+    virtual Uniform4x4F*            SGL_DLLCALL GetUniform4x4F(const char* name) const = 0;
 
     /** Create Texture1D uniform */
-    virtual SamplerUniform1D*       SGL_DLLCALL GetSamplerUniform1D(const char* name) = 0;
+    virtual SamplerUniform1D*       SGL_DLLCALL GetSamplerUniform1D(const char* name) const = 0;
 
     /** Create Texture2D uniform */
-    virtual SamplerUniform2D*       SGL_DLLCALL GetSamplerUniform2D(const char* name) = 0;
+    virtual SamplerUniform2D*       SGL_DLLCALL GetSamplerUniform2D(const char* name) const = 0;
 
     /** Create Texture3D uniform */
-    virtual SamplerUniform3D*       SGL_DLLCALL GetSamplerUniform3D(const char* name) = 0;
+    virtual SamplerUniform3D*       SGL_DLLCALL GetSamplerUniform3D(const char* name) const = 0;
 
     /** Create TextureCube uniform */
-    virtual SamplerUniformCube*     SGL_DLLCALL GetSamplerUniformCube(const char* name) = 0;
+    virtual SamplerUniformCube*     SGL_DLLCALL GetSamplerUniformCube(const char* name) const = 0;
 
     /** Get uniform with specified value type */
     template<typename T>
@@ -223,6 +223,7 @@ inline Uniform4F* SGL_DLLCALL Program::GetUniform<math::Vector4f>( Program*     
 {
     return program->GetUniform4F(name);
 }
+
 template<>
 inline Uniform2x2F* SGL_DLLCALL Program::GetUniform<math::Matrix2f>( Program*     program,
                                                                      const char*  name )
