@@ -180,14 +180,7 @@ typedef Matrix<double, 4, 4>           Matrix4d;
 typedef Matrix<double, 3, 3>           Matrix3d;
 typedef Matrix<double, 2, 2>           Matrix2d;
 
-#ifdef SIMPLE_GL_USE_SSE
-typedef Matrix<float, 4, 4>            Matrix4x4f;  /// Matrix4f with SSE
-typedef Matrix<float, 4, 4>            Matrix4f;    /// Matrix4f with SSE
-#else
-typedef Matrix<float, 4, 4>            Matrix4x4f;  /// Matrix4f without SSE
-typedef Matrix<float, 4, 4>            Matrix4f;    /// Matrix4f without SSE
-#endif
-
+typedef Matrix<float, 4, 4>            Matrix4x4f;
 typedef Matrix<float, 4, 3>            Matrix4x3f;
 typedef Matrix<float, 4, 2>            Matrix4x2f;
 typedef Matrix<float, 3, 4>            Matrix3x4f;
@@ -196,6 +189,7 @@ typedef Matrix<float, 3, 2>            Matrix3x2f;
 typedef Matrix<float, 2, 4>            Matrix2x4f;
 typedef Matrix<float, 2, 3>            Matrix2x3f;
 typedef Matrix<float, 2, 2>            Matrix2x2f;
+typedef Matrix<float, 4, 4>            Matrix4f;
 typedef Matrix<float, 3, 3>            Matrix3f;
 typedef Matrix<float, 2, 2>            Matrix2f;
 

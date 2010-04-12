@@ -14,17 +14,20 @@ using namespace math;
     template<>\
     void GLUniform<CTYPE>::Set(const CTYPE& value)\
     {\
+        assert( device->CurrentProgram() == program );\
         setFunction(glLocation, 1, (CAST_TYPE*)&value);\
     }\
     template<>\
     void GLUniform<CTYPE>::Set(const CTYPE*   values,\
                               unsigned int  count)\
     {\
+        assert( device->CurrentProgram() == program );\
         setFunction(glLocation, count, (CAST_TYPE*)values);\
     }\
     template<>\
     CTYPE GLUniform<CTYPE>::Value() const\
     {\
+        assert( device->CurrentProgram() == program );\
         CTYPE v;\
         getFunction(glProgram, glLocation, (CAST_TYPE*)&v);\
         return v;\
@@ -32,6 +35,7 @@ using namespace math;
     template<>\
     void GLUniform<CTYPE>::QueryValues(CTYPE* values) const\
     {\
+        assert( device->CurrentProgram() == program );\
         for(size_t i = 0; i<numValues; ++i)\
             getFunction(glProgram, glLocation, (CAST_TYPE*)&values[i]);\
     }
@@ -56,17 +60,20 @@ using namespace math;
     template<>\
     void GLUniform<CTYPE>::Set(const CTYPE& value)\
     {\
+        assert( device->CurrentProgram() == program );\
         setFunction(glLocation, 1, GL_TRUE, (CAST_TYPE*)&value);\
     }\
     template<>\
     void GLUniform<CTYPE>::Set(const CTYPE* values,\
                                unsigned int count)\
     {\
+        assert( device->CurrentProgram() == program );\
         setFunction(glLocation, count, GL_TRUE, (CAST_TYPE*)values);\
     }\
     template<>\
     CTYPE GLUniform<CTYPE>::Value() const\
     {\
+        assert( device->CurrentProgram() == program );\
         CTYPE v;\
         getFunction(glProgram, glLocation, (CAST_TYPE*)&v);\
         return v;\

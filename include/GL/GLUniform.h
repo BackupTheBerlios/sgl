@@ -10,11 +10,13 @@ class GLUniformBase :
     public ReferencedImpl<Interface>
 {
 public:
-    GLUniformBase( const Program*       _program,
+    GLUniformBase( Device*              _device,
+                   const Program*       _program,
                    const std::string&   _name,
                    GLuint               _glProgram,
                    GLuint               _glIndex,
                    GLuint               _glLocation ) :
+       device(_device),
        program(_program),
        name(_name),
        glProgram(_glProgram),
@@ -34,13 +36,14 @@ public:
 
 protected:
     // master
+    Device*         device;
     const Program*  program;
     std::string     name;
 
     // gl
-    GLuint      glProgram;
-    GLuint      glIndex;
-    GLuint      glLocation;
+    GLuint          glProgram;
+    GLuint          glIndex;
+    GLuint          glLocation;
 };
 
 /* GL typed uniform */
@@ -52,13 +55,14 @@ public:
     typedef GLUniformBase< Uniform<T> >  base_type;
 
 public:
-    GLUniform( const Program*       program,
+    GLUniform( Device*              device,
+               const Program*       program,
                const std::string&   name,
                GLuint               glProgram,
                GLuint               glIndex,
                GLuint               glLocation,
                size_t               _numValues ) :
-        base_type(program, name, glProgram, glIndex, glLocation),
+        base_type(device, program, name, glProgram, glIndex, glLocation),
         numValues(_numValues)
     {}
 
@@ -84,18 +88,20 @@ public:
     typedef GLUniformBase< SamplerUniform<T> >   base_type;
 
 public:
-    GLSamplerUniform( const Program*        program,
+    GLSamplerUniform( Device*               device,
+                      const Program*        program,
                       const std::string&    name,
                       GLuint                glProgram,
                       GLuint                glStage,
                       GLuint                glLocation ) :
-        base_type(program, name, glProgram, glStage, glLocation)
+        base_type(device, program, name, glProgram, glStage, glLocation)
     {}
 
     AbstractUniform::TYPE SGL_DLLCALL Type() const;
 
     void SGL_DLLCALL Set(unsigned int stage, const T* texture)
     {
+        assert( device->CurrentProgram() == program );
         if (texture) {
             texture->Bind(stage);
         }
@@ -104,6 +110,7 @@ public:
 
     unsigned int SGL_DLLCALL Value() const
     {
+        assert( device->CurrentProgram() == program );
         int value;
         glGetUniformiv(base_type::glProgram, base_type::glLocation, &value);
         return value;

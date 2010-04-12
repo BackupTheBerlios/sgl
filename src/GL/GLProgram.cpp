@@ -108,7 +108,8 @@ AbstractUniform* GLProgram<DeviceVersion>::CreateUniform( GLProgram*   program,
     switch(glUniformType)
     {
     case GL_FLOAT:
-        return new uniform1f( program,
+        return new uniform1f( device,
+                              program,
                               name,
                               glProgram,
                               glIndex,
@@ -116,7 +117,8 @@ AbstractUniform* GLProgram<DeviceVersion>::CreateUniform( GLProgram*   program,
                               size );
 
     case GL_FLOAT_VEC2:
-        return new uniform2f( program,
+        return new uniform2f( device,
+                              program,
                               name,
                               glProgram,
                               glIndex,
@@ -124,7 +126,8 @@ AbstractUniform* GLProgram<DeviceVersion>::CreateUniform( GLProgram*   program,
                               size );
 
     case GL_FLOAT_VEC3:
-        return new uniform3f( program,
+        return new uniform3f( device,
+                              program,
                               name,
                               glProgram,
                               glIndex,
@@ -132,7 +135,8 @@ AbstractUniform* GLProgram<DeviceVersion>::CreateUniform( GLProgram*   program,
                               size );
 
     case GL_FLOAT_VEC4:
-        return new uniform4f( program,
+        return new uniform4f( device,
+                              program,
                               name,
                               glProgram,
                               glIndex,
@@ -140,7 +144,8 @@ AbstractUniform* GLProgram<DeviceVersion>::CreateUniform( GLProgram*   program,
                               size );
 
     case GL_INT:
-        return new uniform1i( program,
+        return new uniform1i( device,
+                              program,
                               name,
                               glProgram,
                               glIndex,
@@ -148,7 +153,8 @@ AbstractUniform* GLProgram<DeviceVersion>::CreateUniform( GLProgram*   program,
                               size );
 
     case GL_INT_VEC2:
-        return new uniform2i( program,
+        return new uniform2i( device,
+                              program,
                               name,
                               glProgram,
                               glIndex,
@@ -156,7 +162,8 @@ AbstractUniform* GLProgram<DeviceVersion>::CreateUniform( GLProgram*   program,
                               size );
 
     case GL_INT_VEC3:
-        return new uniform3i( program,
+        return new uniform3i( device,
+                              program,
                               name,
                               glProgram,
                               glIndex,
@@ -164,7 +171,8 @@ AbstractUniform* GLProgram<DeviceVersion>::CreateUniform( GLProgram*   program,
                               size );
 
     case GL_INT_VEC4:
-        return new uniform4i( program,
+        return new uniform4i( device,
+                              program,
                               name,
                               glProgram,
                               glIndex,
@@ -172,7 +180,8 @@ AbstractUniform* GLProgram<DeviceVersion>::CreateUniform( GLProgram*   program,
                               size );
 
     case GL_BOOL:
-        return new uniform1i( program,
+        return new uniform1i( device,
+                              program,
                               name,
                               glProgram,
                               glIndex,
@@ -180,7 +189,8 @@ AbstractUniform* GLProgram<DeviceVersion>::CreateUniform( GLProgram*   program,
                               size );
 
     case GL_BOOL_VEC2:
-        return new uniform2i( program,
+        return new uniform2i( device,
+                              program,
                               name,
                               glProgram,
                               glIndex,
@@ -188,7 +198,8 @@ AbstractUniform* GLProgram<DeviceVersion>::CreateUniform( GLProgram*   program,
                               size );
 
     case GL_BOOL_VEC3:
-        return new uniform3i( program,
+        return new uniform3i( device,
+                              program,
                               name,
                               glProgram,
                               glIndex,
@@ -196,7 +207,8 @@ AbstractUniform* GLProgram<DeviceVersion>::CreateUniform( GLProgram*   program,
                               size );
 
     case GL_BOOL_VEC4:
-        return new uniform4i( program,
+        return new uniform4i( device,
+                              program,
                               name,
                               glProgram,
                               glIndex,
@@ -204,7 +216,8 @@ AbstractUniform* GLProgram<DeviceVersion>::CreateUniform( GLProgram*   program,
                               size );
 
     case GL_FLOAT_MAT2:
-        return new uniform2x2f( program,
+        return new uniform2x2f( device,
+                                program,
                                 name,
                                 glProgram,
                                 glIndex,
@@ -212,7 +225,8 @@ AbstractUniform* GLProgram<DeviceVersion>::CreateUniform( GLProgram*   program,
                                 size );
 
     case GL_FLOAT_MAT3:
-        return new uniform3x3f( program,
+        return new uniform3x3f( device,
+                                program,
                                 name,
                                 glProgram,
                                 glIndex,
@@ -220,7 +234,8 @@ AbstractUniform* GLProgram<DeviceVersion>::CreateUniform( GLProgram*   program,
                                 size );
 
     case GL_FLOAT_MAT4:
-        return new uniform4x4f( program,
+        return new uniform4x4f( device,
+                                program,
                                 name,
                                 glProgram,
                                 glIndex,
@@ -231,7 +246,8 @@ AbstractUniform* GLProgram<DeviceVersion>::CreateUniform( GLProgram*   program,
     case GL_INT_SAMPLER_1D_EXT:
     case GL_SAMPLER_1D:
     {
-        return new sampler_uniform_1d( program,
+        return new sampler_uniform_1d( device,
+                                       program,
                                        name,
                                        glProgram,
                                        glIndex,
@@ -242,7 +258,8 @@ AbstractUniform* GLProgram<DeviceVersion>::CreateUniform( GLProgram*   program,
     case GL_INT_SAMPLER_2D_EXT:
     case GL_SAMPLER_2D:
     {
-        return new sampler_uniform_2d( program,
+        return new sampler_uniform_2d( device,
+                                       program,
                                        name,
                                        glProgram,
                                        glIndex,
@@ -252,7 +269,8 @@ AbstractUniform* GLProgram<DeviceVersion>::CreateUniform( GLProgram*   program,
     case GL_INT_SAMPLER_3D_EXT:
     case GL_SAMPLER_3D:
     {
-        return new sampler_uniform_3d( program,
+        return new sampler_uniform_3d( device,
+                                       program,
                                        name,
                                        glProgram,
                                        glIndex,
@@ -261,7 +279,8 @@ AbstractUniform* GLProgram<DeviceVersion>::CreateUniform( GLProgram*   program,
 
     case GL_SAMPLER_CUBE:
     {
-        return new sampler_uniform_cube( program,
+        return new sampler_uniform_cube( device,
+                                         program,
                                          name,
                                          glProgram,
                                          glIndex,

@@ -606,14 +606,7 @@ typedef Matrix<double, 4, 1>           Vector4d;
 typedef Matrix<double, 3, 1>           Vector3d;
 typedef Matrix<double, 2, 1>           Vector2d;
 
-typedef Matrix<float, 4, 1>            FPUVector4f;    /// Vector4f without SSE
-typedef Matrix<float, 4, 1>            SSEVector4f;    /// Vector4f with SSE
-#ifdef SIMPLE_GL_USE_SSE
 typedef Matrix<float, 4, 1>            Vector4f;
-#else
-typedef Matrix<float, 4, 1>            Vector4f;
-#endif
-
 typedef Matrix<float, 3, 1>            Vector3f;
 typedef Matrix<float, 2, 1>            Vector2f;
 

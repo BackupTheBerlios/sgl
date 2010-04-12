@@ -7,10 +7,10 @@ SET ( EXAMPLE_DIR               ${PROJECT_SOURCE_DIR}/examples )
 
 # list here all example dirs
 IF (BUILD_EXAMPLES)
-	ADD_SUBDIRECTORY( Fractal )
+	ADD_SUBDIRECTORY(Fractal)
 	#ADD_SUBDIRECTORY( MarchingCubes )
 	#ADD_SUBDIRECTORY( RenderToVBO )
-	#ADD_SUBDIRECTORY( SkeletalAnimation)
+	ADD_SUBDIRECTORY(SkeletalAnimation)
 ENDIF (BUILD_EXAMPLES)
 
 IF (BUILD_QT_EXAMPLES)

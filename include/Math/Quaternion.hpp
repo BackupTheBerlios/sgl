@@ -454,13 +454,8 @@ void to_axis_angle(const Quaternion<float>& quat, Matrix<float, 3, 1>& axis, flo
 #endif // SIMPLE_GL_USE_SSE
 
 // standart quaternions
-
-#ifdef SIMPLE_GL_USE_SSE
-typedef Quaternion<float>      Quaternionf;    /// Quaternion with SSE
-#else
-typedef Quaternion<float>      Quaternionf;    /// Quaternion with default instruction set
-#endif
-typedef Quaternion<double>          Quaterniond;
+typedef Quaternion<float>      Quaternionf;
+typedef Quaternion<double>     Quaterniond;
 
 template<typename T>
 inline math::Quaternion<T> operator + (const math::Quaternion<T>& lhs, const math::Quaternion<T>& rhs)

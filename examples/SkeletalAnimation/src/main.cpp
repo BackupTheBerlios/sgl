@@ -1,5 +1,7 @@
 #include "Device.h"
 #include "Math/Containers.hpp"
+#include "Math/MatrixFunctions.hpp"
+#include "Utility/FX/ShaderUtility.h"
 #include "SDL.h"
 #include "SDL_main.h"
 #include <GL/glew.h>
@@ -44,8 +46,8 @@ struct Bone
 
 struct skin_vertex
 {
-    math::Vector3f      weights;
-    math::FPUVector4f   position_index[3];
+    math::Vector4f  weights;
+    math::Vector4f  position_index[3];
 };
 
 class RoboHand :
@@ -56,11 +58,12 @@ private:
                          sgl::aligned_allocator<Bone> > bone_vector;
 
 public:
-    RoboHand( float    length      = 1.0f,
-              float    width       = 0.1f,
-              unsigned numBones    = 10,
-              unsigned numVertices = 100 ) :
-        bones(numBones)
+    RoboHand( float    length       = 1.0f,
+              float    width        = 0.1f,
+              unsigned numBones     = 10,
+              unsigned numVertices_ = 100 ) :
+        bones(numBones),
+        numVertices(numVertices_)
     {
         assert( numBones >= 4 );
         assert( !(numVertices & 1) && "Number of vertices must be even" );
@@ -79,7 +82,9 @@ public:
             calculateWorldTransforms( boneOrigins.begin(), boneOrients.begin() );
 
             // create vertices
-            std::vector<skin_vertex> vertices(numVertices);
+            typedef sgl::vector< skin_vertex, sgl::aligned_allocator<skin_vertex> > skin_vertex_vector;
+            
+            skin_vertex_vector vertices(numVertices);
             origin = math::Vector3f(0.0f, 0.0f, 0.0f);
             for (size_t i = 0; i<numVertices; ++i)
             {
@@ -129,42 +134,67 @@ public:
             }
 
             // create buffer for skinned mesh
+            /*
             VertexDeclaration* vDecl = device->CreateVertexDeclaration();
             vDecl->AddVertex(3, FLOAT);
             vDecl->AddTexCoord(3, 4, FLOAT);
             vDecl->AddTexCoord(4, 4, FLOAT);
             vDecl->AddTexCoord(5, 4, FLOAT);
+            */
+            {
+                VertexLayout::ELEMENT elements[4] =
+                {
+                    {0, 4, 0,  64, FLOAT, VertexLayout::ATTRIBUTE},
+                    {1, 4, 16, 64, FLOAT, VertexLayout::ATTRIBUTE},
+                    {2, 4, 32, 64, FLOAT, VertexLayout::ATTRIBUTE},
+                    {3, 4, 48, 64, FLOAT, VertexLayout::ATTRIBUTE}
+                };
+                vertexLayout.reset( device->CreateVertexLayout(4, elements) );
+            }
 
             vertexBuffer.reset( device->CreateVertexBuffer() );
-            vertexBuffer->SetVertexDecl(vDecl);
             vertexBuffer->SetData( vertices.size() * sizeof(skin_vertex), &vertices[0] );
 
             // create buffer for ckeleton
-            vDecl = device->CreateVertexDeclaration();
-            vDecl->AddVertex(3, FLOAT);
+            //vDecl = device->CreateVertexDeclaration();
+            //vDecl->AddVertex(3, FLOAT);
+            {
+                VertexLayout::ELEMENT elements[1] =
+                {
+                    {0, 3, 0, 8, FLOAT, VertexLayout::ATTRIBUTE}
+                };
+                skeletonVertexLayout.reset( device->CreateVertexLayout(1, elements) );
+            }
 
-            skeletonBuffer.reset( device->CreateVertexBuffer() );
-            skeletonBuffer->SetVertexDecl(vDecl);
+            skeletonVertexBuffer.reset( device->CreateVertexBuffer() );
         }
 
         // create programs
         {
             // shaders
-            Shader* vertexShader   = device->CreateShader();
-            Shader* fragmentShader = device->CreateShader();
-
-            vertexShader->LoadFromFile(sgl::Shader::VERTEX, "data/Shaders/skeletal.vert");
-            fragmentShader->LoadFromFile(sgl::Shader::FRAGMENT, "data/Shaders/fill.frag");
+            Shader* vertexShader   = sgl::CreateShaderFromFile(device, Shader::VERTEX,   "data/Shaders/skeletal.vert") ;
+            Shader* fragmentShader = sgl::CreateShaderFromFile(device, Shader::FRAGMENT, "data/Shaders/fill.frag") ;
 
             skeletalProgram.reset( device->CreateProgram() );
             skeletalProgram->AddShader(vertexShader);
             skeletalProgram->AddShader(fragmentShader);
 
+            // bind attributes
+            skeletalProgram->BindAttributeLocation("weights", 0);
+            skeletalProgram->BindAttributeLocation("bone0",   1);
+            skeletalProgram->BindAttributeLocation("bone1",   2);
+            skeletalProgram->BindAttributeLocation("bone2",   3);
+
+            // link program
+            if ( sgl::SGL_OK != skeletalProgram->Dirty() ) {
+                throw std::runtime_error("Can't compile program for skeletal animation");
+            }
+
             // create uniforms
             mvpMatrixUniform = skeletalProgram->GetUniform4x4F("modelViewProjectionMatrix");
             colorUniform     = skeletalProgram->GetUniform4F("color");
-            boneQuatUniform  = skeletalProgram->GetUniform4F("boneQuat", 100);
-            bonePosUniform   = skeletalProgram->GetUniform3F("bonePos", 100);
+            boneQuatUniform  = skeletalProgram->GetUniform4F("boneQuat");
+            bonePosUniform   = skeletalProgram->GetUniform3F("bonePos");
         }
 
         // default values
@@ -192,8 +222,6 @@ public:
 
     void render(const math::Matrix4f& mvpMatrix)
     {
-        mvpMatrixUniform->Set(mvpMatrix);
-
         // calculate world transforms
         math::vector_of_quaternionf boneOrients( bones.size() );
         math::vector_of_vector4f    boneOrientVecs( bones.size() );
@@ -206,19 +234,25 @@ public:
         }
 
         // setup uniforms
+
+        skeletalProgram->Bind();
+
+        mvpMatrixUniform->Set(mvpMatrix);
         colorUniform->Set( math::Vector4f(0.0f, 1.0f, 0.0f, 1.0f) );
         boneQuatUniform->Set( &boneOrientVecs[0], boneOrientVecs.size() );
         bonePosUniform->Set( &boneOrigins[0], boneOrigins.size() ); 
+        vertexBuffer->Bind( vertexLayout.get() );
+        device->Draw( LINE_STRIP, 0, numVertices );
 
-        skeletalProgram->Bind();
-        vertexBuffer->Bind();
-        vertexBuffer->Draw(LINE_STRIP);
         skeletalProgram->Unbind();
 
         // render skeleton
-        skeletonBuffer->SetData(boneOrigins.size() * sizeof(math::Vector3f), &boneOrigins[0].x);
-        skeletonBuffer->Bind();
-        skeletonBuffer->Draw(LINE_STRIP);
+        /*
+        skeletonVertexBuffer->SetData(boneOrigins.size() * sizeof(math::Vector3f), &boneOrigins[0].x);
+        skeletonVertexBuffer->Bind( skeletonVertexLayout.get() );
+        device->Draw( LINE_STRIP, 0, boneOrigins.size() );
+        skeletonVertexBuffer->Unbind();
+        */
     }
 
 private:
@@ -240,11 +274,14 @@ private:
 
 private:
     bone_vector             bones;
+    ref_ptr<VertexLayout>   vertexLayout;
     ref_ptr<VertexBuffer>   vertexBuffer;
-    ref_ptr<VertexBuffer>   skeletonBuffer;
+    ref_ptr<VertexLayout>   skeletonVertexLayout;
+    ref_ptr<VertexBuffer>   skeletonVertexBuffer;
 
-    // animation
-    unsigned int    lastIKBone;
+    // setrtings
+    unsigned int            numVertices;
+    unsigned int            lastIKBone;
 
     // shaders
     sgl::ref_ptr<sgl::Program>  skeletalProgram;
@@ -274,7 +311,7 @@ void RenderCommon(float time)
 
 	    if ( sgl::SGL_OK == font->Bind(10, 12) )
 	    {
-		    font->Print( screenWidth / 2.0f - 40.0f, 10.0f, ss.str() );
+            font->Print( screenWidth / 2.0f - 40.0f, 10.0f, ss.str().c_str() );
 		    font->Unbind();
 	    }
     }
@@ -297,7 +334,7 @@ void RenderScene()
     }
     
     // render robo hand
-    roboHand->render( Mat4f::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f) );
+    roboHand->render( math::make_ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f) );
 }
 
 
@@ -364,8 +401,6 @@ void Run()
 
 void CreateScene()
 {
-	device.reset( sglCreateDevice(sgl::OPENGL_DEVICE) );
-
     screenWidth  = 800.0f;
     screenHeight = 600.0f;
 
@@ -388,14 +423,18 @@ void CreateScene()
     }
 
     // grab current context for rendering
-    device->GrabCurrentContext();
+    device.reset( sglCreateDeviceFromCurrent(sgl::DV_OPENGL_2_1) );
 
     // Setup error handler
 	sglSetErrorHandler( new sgl::PrintErrorHandler() );
 
     // create gui
     font.reset( device->CreateFont() );
-	font->LoadFromFile("data/Fonts/font.png");
+    {
+        sgl::Image* image = device->CreateImage();
+        image->LoadFromFile("data/Fonts/font.png");
+	    font->SetTexture( image->CreateTexture2D() );
+    }
 
     // create robo hand
     roboHand.reset( new RoboHand(0.7f) );
@@ -409,10 +448,6 @@ bool ParseCommandLine(int /*argc*/, char** /*argv*/)
 
 int main(int argc, char** argv)
 {
-    math::Matrix4f a = math::Mat4f::identity();
-    math::Matrix4f b = math::Mat4f::scale(10.0f, 4.0f, 3.0f);
-    a *= b;
-
     if ( !ParseCommandLine(argc, argv) ) {
         return 1;
     }

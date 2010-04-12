@@ -5,10 +5,18 @@
 #define N     100
 #define EPS   0.001
 
+// attributes
+attribute vec4  weights;
+attribute vec4  bone0;
+attribute vec4  bone1;
+attribute vec4  bone2;
+
+
+// uniforms
 uniform mat4 modelViewProjectionMatrix;
 
-uniform vec4 boneQuat [N];
-uniform vec3 bonePos  [N];
+uniform vec4 boneQuat[N];
+uniform vec3 bonePos[N];
 
 //
 // Quaternion multiplication
@@ -34,37 +42,35 @@ vec3 boneTransf(int index, vec3 pos)
     return bonePos[index].xyz + quatRotate(pos, boneQuat[index]).xyz;
 }
 
-void	main ()
+void main()
 {
-    vec3    weights = gl_Vertex.xyz;            // weights for 3 bones
-    vec3    pos     = vec3 ( 0.0 );
-    int     index;
+    vec3 pos = vec3(0.0);
+    int  index;
 
-    if ( weights.x > EPS )                      // process 1st bone
-    {                                           // get 1st bone index
-        index = int ( gl_MultiTexCoord3.w );
-        pos  += weights.x * boneTransf(index, gl_MultiTexCoord3.xyz);
+    if (weights.x > EPS)
+    {
+        index = int(bone0.w);
+        pos  += weights.x * boneTransf(index, bone0.xyz);
     }
 
-    if ( weights.y > EPS )                      // process 2nd bone
-    {                                           // get 2nd bone index
-        index = int ( gl_MultiTexCoord4.w );
-        pos  += weights.y * boneTransf ( index, gl_MultiTexCoord4.xyz );
+    if (weights.y > EPS)
+    {
+        index = int(bone1.w);
+        pos  += weights.y * boneTransf(index, bone1.xyz);
     }
 
-    if ( weights.z > EPS )                      // process 3rd bone
-    {                                           // get 3rd bone index
-        index = int ( gl_MultiTexCoord5.w );
-        pos  += weights.z * boneTransf ( index, gl_MultiTexCoord5.xyz );
+    if (weights.z > EPS)
+    {
+        index = int(bone2.w);
+        pos  += weights.z * boneTransf(index, bone2.xyz);
     }
 /*
-    if ( weights.w > EPS )                      // process 4th bone
-    {                                           // get 4th bone index
-        index = int ( gl_MultiTexCoord7.w );
-        pos  += weights.w * boneTransf ( index, gl_MultiTexCoord7.xyz );
+    if (weights.w > EPS)
+    {                                          
+        index = int(bone3.w);
+        pos  += weights.w * boneTransf(index, bone3.xyz);
     }
 */
 
-    gl_Position     = modelViewProjectionMatrix * vec4 ( pos, 1.0 );
-    gl_TexCoord [0] = gl_MultiTexCoord0;
+    gl_Position = modelViewProjectionMatrix * vec4(pos, 1.0);
 }
