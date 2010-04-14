@@ -2,21 +2,20 @@
 
 using namespace sgl;
 
-static ErrorHandler*	errorHandler = 0;
-static SGL_HRESULT		result = SGL_OK;
-static const char*		msg;
+static ErrorHandler*    errorHandler = 0;
+static SGL_HRESULT      result = SGL_OK;
+static std::string      msg;
 
 extern "C" SGL_DLLEXPORT SGL_HRESULT SGL_DLLCALL sglGetLastError()
 {
 	SGL_HRESULT tmp = result;
 	result = SGL_OK;
-	msg = 0;
 	return tmp;
 }
 
 extern "C" SGL_DLLEXPORT const char* SGL_DLLCALL sglGetErrorMsg()
 {
-	return msg;
+	return msg.c_str();
 }
 
 extern "C" SGL_DLLEXPORT void SGL_DLLCALL sglSetError(SGL_HRESULT _type, const char* _msg)
