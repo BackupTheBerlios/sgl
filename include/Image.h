@@ -2,6 +2,8 @@
 #define SIMPLE_GL_IMAGE_H
 
 #include "Utility/Referenced.h"
+#include "Texture3D.h"
+#include "TextureCube.h"
 
 namespace sgl {
 
@@ -18,6 +20,7 @@ public:
      */
     enum FILE_TYPE
     {
+        AUTO,   /// determine file type by the extension
      	BMP,    /// load & save
         DDS,    /// load & save
         GIF,    /// load
@@ -36,7 +39,8 @@ public:
      * @param fileName - name of the image file
 	 * @return result of the operation. Can be SGLERR_OUT_OF_MEMORY, SGLERR_INVALID_CALL.
      */
-    virtual SGL_HRESULT SGL_DLLCALL LoadFromFile(const char* fileName) = 0;
+    virtual SGL_HRESULT SGL_DLLCALL LoadFromFile(const char* fileName, 
+                                                 FILE_TYPE   type = AUTO) = 0;
 
     /** Load image from file in memory.
      * @param type - type of the image file.
@@ -52,7 +56,8 @@ public:
      * @param fileName - name of the file with texture
 	 * @return result of the operation. Can be SGLERR_OUT_OF_MEMORY, SGLERR_INVALID_CALL.
      */
-    virtual SGL_HRESULT SGL_DLLCALL SaveToFile(const char* fileName) const = 0;
+    virtual SGL_HRESULT SGL_DLLCALL SaveToFile(const char* fileName, 
+                                               FILE_TYPE   type = AUTO) const = 0;
 
     /** Save image to file in memory.
      * @param type - type of the image file to save.

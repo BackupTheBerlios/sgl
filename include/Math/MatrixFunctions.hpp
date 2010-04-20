@@ -54,9 +54,9 @@ inline Matrix<T, 3, 1> get_translation(const Matrix<T, 4, 4>& mat)
 template<typename T>
 inline Matrix<T, 3, 3> get_rotation(const Matrix<T, 4, 4>& mat)
 {
-    return make_mat( mat[0][0], mat[1][3], mat[2][3],
-                     mat[1][0], mat[1][1], mat[1][2],
-                     mat[2][0], mat[2][1], mat[2][2] );
+    return make_matrix( mat[0][0], mat[0][1], mat[0][2],
+                        mat[1][0], mat[1][1], mat[1][2],
+                        mat[2][0], mat[2][1], mat[2][2] );
 }
 
 /** Get scaling component of the matrix */
@@ -64,8 +64,8 @@ template<typename T>
 inline Matrix<T, 3, 1> get_scaling(const Matrix<T, 3, 3>& mat)
 {
     return Matrix<T, 3, 1>( sqrt(mat[0][0]*mat[0][0] + mat[1][0]*mat[1][0] + mat[2][0]*mat[2][0]),
-                                sqrt(mat[0][1]*mat[0][1] + mat[1][1]*mat[1][1] + mat[2][1]*mat[2][1]),
-                                sqrt(mat[0][2]*mat[0][2] + mat[1][2]*mat[1][2] + mat[2][2]*mat[2][2]) );
+                            sqrt(mat[0][1]*mat[0][1] + mat[1][1]*mat[1][1] + mat[2][1]*mat[2][1]),
+                            sqrt(mat[0][2]*mat[0][2] + mat[1][2]*mat[1][2] + mat[2][2]*mat[2][2]) );
 }
 
 /** Get scaling component of the matrix */
@@ -73,8 +73,8 @@ template<typename T>
 inline Matrix<T, 3, 1> get_scaling(const Matrix<T, 4, 4>& mat)
 {
     return Matrix<T, 3, 1>( sqrt(mat[0][0]*mat[0][0] + mat[1][0]*mat[1][0] + mat[2][0]*mat[2][0]),
-                                sqrt(mat[0][1]*mat[0][1] + mat[1][1]*mat[1][1] + mat[2][1]*mat[2][1]),
-                                sqrt(mat[0][2]*mat[0][2] + mat[1][2]*mat[1][2] + mat[2][2]*mat[2][2]) );
+                            sqrt(mat[0][1]*mat[0][1] + mat[1][1]*mat[1][1] + mat[2][1]*mat[2][1]),
+                            sqrt(mat[0][2]*mat[0][2] + mat[1][2]*mat[1][2] + mat[2][2]*mat[2][2]) );
 }
 
 /** Invert matrix. Code taken from Intel pdf "Streaming SIMD Extension - Inverse of 4x4 Matrix" */

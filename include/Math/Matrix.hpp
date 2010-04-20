@@ -571,7 +571,7 @@ std::istream& operator >> (std::istream& istream, Matrix<value_t, n, m>& mat)
 /** construct matrix 2x2 */
 template<typename T>
 Matrix<T, 2, 2> make_matrix( T _0, T _1,
-                                  T _2, T _3 )
+                             T _2, T _3 )
 {
     Matrix<T, 2, 2> mat;
     mat[0] = Matrix<T, 1, 2>(_0, _1);
@@ -582,8 +582,8 @@ Matrix<T, 2, 2> make_matrix( T _0, T _1,
 /** construct matrix 3x3 */
 template<typename T>
 Matrix<T, 3, 3> make_matrix( T _0, T _1, T _2,
-                                  T _3, T _4, T _5,
-                                  T _6, T _7, T _8 )
+                             T _3, T _4, T _5,
+                             T _6, T _7, T _8 )
 {
     Matrix<T, 3, 3> mat;
     mat[0] = Matrix<T, 1, 3>(_0, _1, _2);
@@ -595,9 +595,9 @@ Matrix<T, 3, 3> make_matrix( T _0, T _1, T _2,
 /** construct matrix 4x4 */
 template<typename T>
 Matrix<T, 4, 4> make_matrix( T _0,  T _1,  T _2,  T _3,
-                                  T _4,  T _5,  T _6,  T _7,
-                                  T _8,  T _9,  T _10, T _11,
-                                  T _12, T _13, T _14, T _15 )
+                             T _4,  T _5,  T _6,  T _7,
+                             T _8,  T _9,  T _10, T _11,
+                             T _12, T _13, T _14, T _15 )
 {
     Matrix<T, 4, 4> mat;
     mat[0] = Matrix<T, 1, 4>(_0,  _1,  _2,  _3);

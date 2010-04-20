@@ -88,6 +88,7 @@ namespace {
 
     ILuint BIND_IL_IMAGE_TYPE[] =
     {
+        IL_TYPE_UNKNOWN,
      	IL_BMP,
         IL_DDS,
         IL_GIF,
@@ -119,7 +120,8 @@ const char* SGL_DLLCALL IlImage::Data(unsigned int mipmap) const
     return mipmap >= mipData.size() ? 0 : mipData[mipmap];
 }
 
-SGL_HRESULT SGL_DLLCALL IlImage::LoadFromFile(const char* fileName)
+SGL_HRESULT SGL_DLLCALL IlImage::LoadFromFile(const char* fileName, 
+                                              FILE_TYPE   type)
 {
     Clear();
 
@@ -129,7 +131,14 @@ SGL_HRESULT SGL_DLLCALL IlImage::LoadFromFile(const char* fileName)
 
     // load image
     ilBindImage(image);
-    ILboolean imageLoaded = ilLoadImage(fileName);
+    ILboolean imageLoaded = false;
+    if (type == AUTO) {
+        imageLoaded = ilLoad(BIND_IL_IMAGE_TYPE[type], fileName);
+    }
+    else {
+        imageLoaded = ilLoadImage(fileName);
+    }
+
     if (!imageLoaded)
     {
         // TODO: Add error check
@@ -245,7 +254,8 @@ SGL_HRESULT SGL_DLLCALL IlImage::LoadFromFileInMemory(FILE_TYPE    type,
 	return SGL_OK;
 }
 
-SGL_HRESULT IlImage::SaveToFile(const char* fileName) const
+SGL_HRESULT IlImage::SaveToFile(const char* fileName, 
+                                FILE_TYPE   type) const
 {
 #ifndef SGL_NO_STATUS_CHECK
     if ( mipData.empty() ) {
@@ -276,7 +286,14 @@ SGL_HRESULT IlImage::SaveToFile(const char* fileName) const
 
     // save
     ilEnable(IL_FILE_OVERWRITE);
-    ILboolean imageSaved = ilSaveImage(fileName);
+    ILboolean imageSaved = false;
+    if (type == AUTO) {
+        imageSaved = ilSave(BIND_IL_IMAGE_TYPE[type], fileName);
+    }
+    else {
+        imageSaved = ilSaveImage(fileName);
+    }
+
     if (!imageSaved)
     {
         // TODO: Add error check

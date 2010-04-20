@@ -20,12 +20,16 @@ public:
     ~IlImage();
 
     // Creation
-    SGL_HRESULT SGL_DLLCALL LoadFromFile(const char* fileName);
+    SGL_HRESULT SGL_DLLCALL LoadFromFile(const char* fileName, 
+                                         FILE_TYPE   type = AUTO);
+
     SGL_HRESULT SGL_DLLCALL LoadFromFileInMemory( FILE_TYPE    type,
                                                   unsigned int dataSize,
                                                   const void*  data );
 
-    SGL_HRESULT SGL_DLLCALL SaveToFile(const char* fileName) const;
+    SGL_HRESULT SGL_DLLCALL SaveToFile(const char* fileName, 
+                                       FILE_TYPE   type = AUTO) const;
+
     SGL_HRESULT SGL_DLLCALL SaveToFileInMemory(FILE_TYPE    type,
                                                unsigned int dataSize,
                                                void*        data) const;
