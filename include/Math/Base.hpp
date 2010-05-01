@@ -1,8 +1,8 @@
 #ifndef SIMPLE_GL_MATH_BASE_HPP
 #define SIMPLE_GL_MATH_BASE_HPP
 
-#include "../Config.h"
 #include "../Utility/Aligned.h"
+#include "Utility.hpp"
 
 #ifdef SIMPLE_GL_USE_SSE
 #   ifdef _MSC_VER
@@ -18,14 +18,6 @@
 #       endif // SIMPLE_GL_USE_SSE4
 #   endif // __GNUC__
 #endif // SIMPLE_GL_USE_SSE
-
-#ifdef SIMPLEGL_MATH_IN_SGL_NAMESPACE
-#   define SGL_BEGIN_MATH_NAMESPACE namespace sgl { namespace math {
-#   define SGL_END_MATH_NAMESPACE   } }
-#else
-#   define SGL_BEGIN_MATH_NAMESPACE namespace math {
-#   define SGL_END_MATH_NAMESPACE   }
-#endif
 
 SGL_BEGIN_MATH_NAMESPACE
 

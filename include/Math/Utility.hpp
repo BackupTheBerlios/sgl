@@ -1,6 +1,16 @@
 #ifndef GRAPHICS_MATH_UTILITY_HPP
 #define GRAPHICS_MATH_UTILITY_HPP
 
+#include "../Config.h"
+
+#ifdef SIMPLEGL_MATH_IN_SGL_NAMESPACE
+#   define SGL_BEGIN_MATH_NAMESPACE namespace sgl { namespace math {
+#   define SGL_END_MATH_NAMESPACE   } }
+#else
+#   define SGL_BEGIN_MATH_NAMESPACE namespace math {
+#   define SGL_END_MATH_NAMESPACE   }
+#endif
+
 SGL_BEGIN_MATH_NAMESPACE
 
 const float PI      = 3.1415926535897932384626433832795f;
