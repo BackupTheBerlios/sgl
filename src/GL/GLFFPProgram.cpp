@@ -313,20 +313,20 @@ GLFFPProgram<DeviceVersion>::GLFFPProgram(GLDevice<DeviceVersion>* device_) :
 
     // light position
     uniformSize = sizeof(Vector4f) * Device::NUM_FFP_LIGHTS;
-    lightDirectionUniform.reset( new GLFFPUniform4F( this,
-                                                     "LightPosition",
-                                                     set_light_position,
-                                                     get_light_position,
-                                                     uniformSize ) );
+    lightPositionUniform.reset( new GLFFPUniform4F( this,
+                                                    "LightPosition",
+                                                    set_light_position,
+                                                    get_light_position,
+                                                    uniformSize ) );
     offset += uniformSize;
 
     // light direction
     uniformSize = sizeof(Vector4f) * Device::NUM_FFP_LIGHTS;
-    lightPositionUniform.reset( new GLFFPUniform4F( this,
-                                                    "LightDirection",
-                                                    set_light_direction,
-                                                    get_light_direction,
-                                                    uniformSize ) );
+    lightDirectionUniform.reset( new GLFFPUniform4F( this,
+                                                     "LightDirection",
+                                                     set_light_direction,
+                                                     get_light_direction,
+                                                     uniformSize ) );
     offset += uniformSize;
 
     // light ambient
@@ -438,7 +438,9 @@ SGL_HRESULT GLFFPProgram<DeviceVersion>::BindAttributeLocation(const char* /*nam
 template<DEVICE_VERSION DeviceVersion>
 SGL_HRESULT GLFFPProgram<DeviceVersion>::Bind() const
 {
-    glUseProgram(0);
+    if (glUseProgram) {
+        glUseProgram(0);
+    }
     device->SetProgram(this);
 
 	return SGL_OK;

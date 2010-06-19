@@ -20,7 +20,7 @@ inline GLint GuardedBind(GLuint glTarget, GLuint glBuffer)
         oldBuffer = 0; // do nothing
     }
 
-    glBindBuffer(glTarget, glBuffer);
+    glBindBufferARB(glTarget, glBuffer);
     return oldBuffer;
 }
 
@@ -36,12 +36,12 @@ protected:
         glUsage(GL_STATIC_DRAW),
 	    glBuffer(0)
     {
-        glGenBuffers(1, &glBuffer);
+        glGenBuffersARB(1, &glBuffer);
     }
 
     ~GLBuffer()
     {
-        glDeleteBuffers(1, &glBuffer);
+        glDeleteBuffersARB(1, &glBuffer);
     }
 
 public:
@@ -51,18 +51,18 @@ public:
     {
         // set buffer data
         GLuint oldBuffer = GuardedBind(glTarget, glBuffer);
-        glBufferData(glTarget, _dataSize, data, glUsage);
+        glBufferDataARB(glTarget, _dataSize, data, glUsage);
     
     #ifndef SGL_NO_STATUS_CHECK
         GLenum error = glGetError();
         if (error == GL_OUT_OF_MEMORY) 
         {
-            glBindBuffer(glTarget, oldBuffer);
+            glBindBufferARB(glTarget, oldBuffer);
             return EOutOfMemory("GLBufferView::SetData failed. Out of memory");
         }
         else if (error != GL_NO_ERROR) 
         {
-            glBindBuffer(glTarget, oldBuffer);
+            glBindBufferARB(glTarget, oldBuffer);
             return EUnknown("GLBufferView::SetData failed. OpenGL error");
         }
     #endif
@@ -78,7 +78,7 @@ public:
     {
         // set buffer data
         GLuint oldBuffer = GuardedBind(glTarget, glBuffer);
-        glBufferSubData(glTarget, offset, chunkSize, data);
+        glBufferSubDataARB(glTarget, offset, chunkSize, data);
     
     #ifndef SGL_NO_STATUS_CHECK
         GLenum error = glGetError();
@@ -124,7 +124,7 @@ public:
 
         // restore binding
         glUnmapBuffer(glTarget);
-        glBindBuffer(glTarget, oldBuffer);
+        glBindBufferARB(glTarget, oldBuffer);
         return SGL_OK;
     }
 

@@ -437,6 +437,7 @@ SGL_HRESULT GLDevice<DeviceVersion>::InitOpenGL()
         BlendState* blendState = sglCreateBlendState(this, Extend(desc));
         blendState->Bind();
     }
+    assert( GL_NO_ERROR == glGetError() );
 
     // create depth stencil state
     {
@@ -449,6 +450,7 @@ SGL_HRESULT GLDevice<DeviceVersion>::InitOpenGL()
         DepthStencilState* depthStencilState = sglCreateDepthStencilState(this, desc);
         depthStencilState->Bind();
     }
+    assert( GL_NO_ERROR == glGetError() );
 
     // create rasterizer state
     {
@@ -459,10 +461,12 @@ SGL_HRESULT GLDevice<DeviceVersion>::InitOpenGL()
         RasterizerState* rasterizerState = sglCreateRasterizerState(this, desc);
         rasterizerState->Bind();
     }
+    assert( GL_NO_ERROR == glGetError() );
 
     // create unqie objects
     deviceTraits.reset( new GLDeviceTraits(this) );
     ffpProgram.reset( sglCreateFFPProgram(this) );
+    assert( GL_NO_ERROR == glGetError() );
 
     // get viewport
     GLint vp[4];

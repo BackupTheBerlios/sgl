@@ -16,14 +16,14 @@ GLIndexBuffer<DeviceVersion>::~GLIndexBuffer()
 template<DEVICE_VERSION DeviceVersion>
 void GLIndexBuffer<DeviceVersion>::Bind(IndexBuffer::INDEX_TYPE format) const
 {   
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, base_type::glBuffer);
+    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, base_type::glBuffer);
     base_type::device->SetIndexBuffer(this, format);
 }
 
 template<DEVICE_VERSION DeviceVersion>
 void GLIndexBuffer<DeviceVersion>::Unbind() const
 {
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
     base_type::device->SetIndexBuffer(0, base_type::UINT_8);
 }
 

@@ -218,7 +218,10 @@ SGL_HRESULT GLTexture2D<DeviceVersion>::GenerateMipmap()
     }
 #endif // SGL_NO_STATUS_CHECK
 
-    glGenerateMipmapEXT(base_type::glTarget);
+    if (glGenerateMipmapEXT) {
+        glGenerateMipmapEXT(base_type::glTarget);
+    }
+
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {

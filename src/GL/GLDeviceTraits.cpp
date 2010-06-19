@@ -33,8 +33,8 @@ GLDeviceTraits::GLDeviceTraits(Device* _device) :
     }
 
 	// extenions
-    glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, (GLint*)&numVertexTIU);
-    glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, (GLint*)&numCombinedTIU);
+    //glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, (GLint*)&numVertexTIU);
+    //glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, (GLint*)&numCombinedTIU);
 
     // other extesions
     supportsSeparateStencil = ( glewIsSupported("GL_ATI_separate_stencil") != 0);
