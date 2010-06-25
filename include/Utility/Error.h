@@ -15,6 +15,7 @@ enum SGL_HRESULT
 	SGLERR_OUT_OF_MEMORY,	/// couldn't allocate memory
 	SGLERR_FILE_NOT_FOUND,	/// couldn't find specified file
 	SGLERR_UNSUPPORTED,		/// operation not supported by the hardware
+    SGLERR_UANAILABLE,      /// resource is unavailable at the moment
 	SGLERR_UNKNOWN			/// unknow error
 };
 

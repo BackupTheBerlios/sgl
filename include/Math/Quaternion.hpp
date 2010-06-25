@@ -343,6 +343,94 @@ inline Matrix<T, 4, 4> to_matrix_4x4(const Quaternion<T>& quat)
 }
 
 template<typename T>
+inline Matrix<T, 4, 4> to_matrix_4x4(const Quaternion<T>& quat, const Matrix<T, 4, 1>& trans)
+{
+    T wx, wy, wz, xx, yy, yz, xy, xz, zz, x2, y2, z2;
+    x2 = quat.x * static_cast<T>(2);
+    y2 = quat.y * static_cast<T>(2);
+    z2 = quat.z * static_cast<T>(2);
+
+    xx = quat.x * x2;
+    xy = quat.x * y2;
+    xz = quat.x * z2;
+
+    yy = quat.y * y2;
+    yz = quat.y * z2;
+    zz = quat.z * z2;
+
+    wx = quat.w * x2;
+    wy = quat.w * y2;
+    wz = quat.w * z2;
+
+    Matrix<T, 4, 4> matrix;
+    matrix[0][0] = static_cast<T>(1) - (yy + zz);
+    matrix[1][0] = xy - wz;
+    matrix[2][0] = xz + wy;
+    matrix[3][0] = T(0.0);
+
+    matrix[0][1] = xy + wz;
+    matrix[1][1] = static_cast<T>(1) - (xx + zz);
+    matrix[2][1] = yz - wx;
+    matrix[3][1] = T(0.0);
+
+    matrix[0][2] = xz - wy;
+    matrix[1][2] = yz + wx;
+    matrix[2][2] = static_cast<T>(1) - (xx + yy);
+    matrix[3][2] = T(0.0);
+
+    matrix[0][3] = trans[0];
+    matrix[1][3] = trans[1];
+    matrix[2][3] = trans[2];
+    matrix[3][3] = trans[3];
+
+    return matrix;
+}
+
+template<typename T>
+inline Matrix<T, 4, 4> to_matrix_4x4(const Quaternion<T>& quat, const Matrix<T, 3, 1>& trans)
+{
+    T wx, wy, wz, xx, yy, yz, xy, xz, zz, x2, y2, z2;
+    x2 = quat.x * static_cast<T>(2);
+    y2 = quat.y * static_cast<T>(2);
+    z2 = quat.z * static_cast<T>(2);
+
+    xx = quat.x * x2;
+    xy = quat.x * y2;
+    xz = quat.x * z2;
+
+    yy = quat.y * y2;
+    yz = quat.y * z2;
+    zz = quat.z * z2;
+
+    wx = quat.w * x2;
+    wy = quat.w * y2;
+    wz = quat.w * z2;
+
+    Matrix<T, 4, 4> matrix;
+    matrix[0][0] = static_cast<T>(1) - (yy + zz);
+    matrix[1][0] = xy - wz;
+    matrix[2][0] = xz + wy;
+    matrix[3][0] = T(0.0);
+
+    matrix[0][1] = xy + wz;
+    matrix[1][1] = static_cast<T>(1) - (xx + zz);
+    matrix[2][1] = yz - wx;
+    matrix[3][1] = T(0.0);
+
+    matrix[0][2] = xz - wy;
+    matrix[1][2] = yz + wx;
+    matrix[2][2] = static_cast<T>(1) - (xx + yy);
+    matrix[3][2] = T(0.0);
+
+    matrix[0][3] = trans[0];
+    matrix[1][3] = trans[1];
+    matrix[2][3] = trans[2];
+    matrix[3][3] = T(1.0);
+
+    return matrix;
+}
+
+template<typename T>
 inline Quaternion<T> from_axis_angle(const Matrix<T, 3, 1>& axis)
 {
     T angle = length(axis);

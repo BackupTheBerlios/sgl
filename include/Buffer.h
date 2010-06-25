@@ -10,6 +10,43 @@ class Buffer :
     public Resource
 {
 public:
+    static const int LOCK_READ_BIT              = 1;
+    static const int LOCK_WRITE_BIT             = 1 << 1;
+    static const int LOCK_INVALIDATE_RANGE_BIT  = 1 << 2;
+    static const int LOCK_INVALIDATE_BUFFER_BIT = 1 << 3;
+    static const int LOCK_UNSYNCHRONIZED_BIT    = 1 << 4;
+
+public:
+    /** Gain access to the buffer data. Force buffer to be binded.
+     * @param hint - data access hints.
+     * @param data - pointer to the beginning of mapped data.
+     */
+    virtual SGL_HRESULT SGL_DLLCALL Map(int     hint, 
+                                        void**  data) = 0;
+
+    /** Gain access to the buffer data. Force buffer to be binded.
+     * @param offset - offset in data to lock in bytes.
+     * @param size - size of the data for lock.
+     * @param hint - data access hints.
+     * @param data - pointer to the beginning of mapped data.
+     */
+    virtual SGL_HRESULT SGL_DLLCALL MapRange(unsigned   offset, 
+                                             unsigned   size, 
+                                             int        hint, 
+                                             void**     data) = 0;
+
+    /** Flush currently mapped range to the buffer.
+     * @param offset - offset in data to lock in bytes.
+     * @param size - size of the data for lock.
+     */
+    virtual SGL_HRESULT SGL_DLLCALL FlushMappedRange(unsigned offset, unsigned size) = 0;
+
+    /** End work with buffer data */
+    virtual SGL_HRESULT SGL_DLLCALL Unmap() = 0;
+
+    /** Check wether buffer is mapped */
+    virtual bool SGL_DLLCALL Mapped() const = 0;
+
     /** Send data in the GPU buffer.
      * @param dataSize - size of the data
      * @param data - data to store in the buffer

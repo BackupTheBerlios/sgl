@@ -618,6 +618,22 @@ typedef Matrix<unsigned int, 4, 1>     Vector4ui;
 typedef Matrix<unsigned int, 3, 1>     Vector3ui;
 typedef Matrix<unsigned int, 2, 1>     Vector2ui;
 
+typedef Matrix<short, 4, 1>            Vector4s;
+typedef Matrix<short, 3, 1>            Vector3s;
+typedef Matrix<short, 2, 1>            Vector2s;
+
+typedef Matrix<unsigned short, 4, 1>   Vector4us;
+typedef Matrix<unsigned short, 3, 1>   Vector3us;
+typedef Matrix<unsigned short, 2, 1>   Vector2us;
+
+typedef Matrix<char, 4, 1>             Vector4c;
+typedef Matrix<char, 3, 1>             Vector3c;
+typedef Matrix<char, 2, 1>             Vector2c;
+
+typedef Matrix<unsigned char, 4, 1>    Vector4uc;
+typedef Matrix<unsigned char, 3, 1>    Vector3uc;
+typedef Matrix<unsigned char, 2, 1>    Vector2uc;
+
 typedef Matrix<bool, 4, 1>             Vector4b;
 typedef Matrix<bool, 3, 1>             Vector3b;
 typedef Matrix<bool, 2, 1>             Vector2b;
