@@ -196,7 +196,14 @@ SGL_HRESULT GLTextureCube<DeviceVersion>::GenerateMipmap()
     }
 #endif // SGL_NO_STATUS_CHECK
 
-    glGenerateMipmapEXT(base_type::glTarget);
+
+    if (glGenerateMipmapEXT) {
+        glGenerateMipmapEXT(base_type::glTarget);
+    }
+    else {
+        return EUnsupported("Hardware mipmap generation is not supported by the device");
+    }
+
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
