@@ -145,31 +145,32 @@ namespace {
             float scaleX = charHeight / width;
             float scaleY = charHeight / height;
 
-            modelViewMatrixUniform->Set( make_translation(x * scaleX, y * scaleY, 0.0f) );
+            math::Matrix4f modelViewMatrix;
+            modelViewMatrixUniform->Set( modelViewMatrix = make_translation(x * scaleX, y * scaleY, 0.0f) );
 	        for(int lines = 0; *str; str++)
 	        {
 		        if(*str == '\n')
 		        {
 			        lines++;
-			        modelViewMatrixUniform->Set( make_translation(x * scaleX, y * scaleY + charHeight * lines, 0.0f) );
+			        modelViewMatrixUniform->Set( modelViewMatrix = make_translation(x * scaleX, y * scaleY + charHeight * lines, 0.0f) );
 		        }
                 else if(*str == '\r')
 		        {
-			        modelViewMatrixUniform->Set( make_translation(x * scaleX, y * scaleY + charHeight * lines, 0.0f) );
+			        modelViewMatrixUniform->Set( modelViewMatrix = make_translation(x * scaleX, y * scaleY + charHeight * lines, 0.0f) );
 		        }
                 else if(*str == '\t')
                 {
-                    modelViewMatrixUniform->Set( modelViewMatrixUniform->Value() * make_translation(charHeight * 2.0f, 0.0f, 0.0f) );
+                    modelViewMatrixUniform->Set( modelViewMatrix *= make_translation(charHeight * 2.0f, 0.0f, 0.0f) );
 		        }
                 else if(*str == ' ')
                 {
-                    modelViewMatrixUniform->Set( modelViewMatrixUniform->Value() * make_translation(charHeight * 0.5f, 0.0f, 0.0f) );
+                    modelViewMatrixUniform->Set( modelViewMatrix *= make_translation(charHeight * 0.5f, 0.0f, 0.0f) );
 		        }
                 else
                 {
 			        unsigned char i = *reinterpret_cast<const unsigned char*>(str);
                     base_type::device->Draw(QUADS, 4*i, 4);
-			        modelViewMatrixUniform->Set( modelViewMatrixUniform->Value() * make_translation(static_cast<float>(charWidth), 0.0f, 0.0f) );
+			        modelViewMatrixUniform->Set( modelViewMatrix *= make_translation(static_cast<float>(charWidth), 0.0f, 0.0f) );
 		        }
 	        }
         }
@@ -392,16 +393,17 @@ SGL_HRESULT GLFont<DeviceVersion>::SetTexture(sgl::Texture2D* texture_)
     texture.reset(texture_);
     if (texture)
     {
-        SGL_HRESULT result = texture->GenerateMipmap();
+        bool        haveMipmaps = true;
+        SGL_HRESULT result      = texture->GenerateMipmap();
 	    if (SGL_OK != result) {
-		    return result;
+		    haveMipmaps = false;
 	    }
 
         SamplerState::DESC desc;
 
         desc.filter[0]   = SamplerState::LINEAR;
         desc.filter[1]   = SamplerState::LINEAR;
-        desc.filter[2]   = SamplerState::LINEAR;
+        desc.filter[2]   = haveMipmaps ? SamplerState::LINEAR : SamplerState::NONE;
 
         desc.wrapping[0] = SamplerState::REPEAT;
         desc.wrapping[1] = SamplerState::REPEAT;
