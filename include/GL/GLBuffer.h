@@ -48,32 +48,45 @@ public:
     SGL_HRESULT SGL_DLLCALL Map(int     hint, 
                                 void**  data)
     {
-        GLuint oldBuffer = GuardedBind(glTarget, glBuffer);
+        GLuint glHint = 0;
+        if (hint == LOCK_READ_BIT) {
+            glHint = GL_READ_ONLY;
+        }
+        else if (hint == LOCK_WRITE_BIT) {
+            glHint = GL_WRITE_ONLY;
+        }
+        else if (hint == (LOCK_READ_BIT | LOCK_WRITE_BIT)) {
+            glHint = GL_READ_WRITE;
+        }
+    #ifndef SGL_NO_STATUS_CHECK
+        else {
+            return EInvalidCall("GLBuffer::Map failed. Invalid call.");
+        }
+    #endif
 
-        GLuint glHint = (hint & LOCK_READ_BIT) * GL_MAP_READ_BIT
-                      | (hint & LOCK_WRITE_BIT) * GL_MAP_WRITE_BIT
-                      | (hint & LOCK_INVALIDATE_RANGE_BIT) * GL_MAP_INVALIDATE_RANGE_BIT
-                      | (hint & LOCK_INVALIDATE_BUFFER_BIT) * GL_MAP_INVALIDATE_BUFFER_BIT
-                      | (hint & LOCK_UNSYNCHRONIZED_BIT) * GL_MAP_UNSYNCHRONIZED_BIT;
+        GLenum error = glGetError();
+        error = glGetError();
+        GLuint oldBuffer = GuardedBind(glTarget, glBuffer);
+        error = glGetError();
 
         (*data) = glMapBuffer(glTarget, glHint);
 
     #ifndef SGL_NO_STATUS_CHECK
-        GLenum error = glGetError();
+        error = glGetError();
         if (error == GL_INVALID_VALUE || error == GL_INVALID_OPERATION || error == GL_INVALID_ENUM) 
         {
             glBindBuffer(glTarget, oldBuffer);
-            return EInvalidCall("GLBuffer::MapRange failed. Invalid call.");
+            return EInvalidCall("GLBuffer::Map failed. Invalid call.");
         }
         else if (error == GL_OUT_OF_MEMORY) 
         {
             glBindBuffer(glTarget, oldBuffer);
-            return EInvalidCall("GLBuffer::MapRange failed. Can't allocate memory for mapping.");
+            return EInvalidCall("GLBuffer::Map failed. Can't allocate memory for mapping.");
         }
         else if (error != GL_NO_ERROR) 
         {
             glBindBufferARB(glTarget, oldBuffer);
-            return EUnknown("GLBuffer::MapRange failed. OpenGL error");
+            return EUnknown("GLBuffer::Map failed. OpenGL error");
         }
     #endif
 
@@ -150,7 +163,13 @@ public:
     {
     #ifndef SGL_NO_STATUS_CHECK
         GLint currentBuffer;
-        glGetIntegerv(glTarget, &currentBuffer);
+        if ( glTarget == GL_ELEMENT_ARRAY_BUFFER ) {
+            glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &currentBuffer);
+        }
+        else if ( glTarget == GL_ARRAY_BUFFER ) {
+            glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &currentBuffer);
+        }
+
         if (currentBuffer != glBuffer) {
             return EInvalidCall("GLBuffer::Unmap failed. Buffer is not mapped.");
         }

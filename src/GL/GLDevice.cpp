@@ -708,6 +708,27 @@ void GLDevice<DeviceVersion>::SwapBuffers() const
     glXSwapBuffers(display, glxDrawable);
 #endif
 
+#if defined(DEBUG) && !defined(SGL_NO_STATUS_CHECK)
+    GLenum error = glGetError();
+    switch (error)
+    {
+    case GL_INVALID_ENUM:
+        sglSetError(SGLERR_INVALID_CALL, "GL_INVALID_ENUM error detected in previous frame");
+        break;
+
+    case GL_INVALID_VALUE:
+        sglSetError(SGLERR_INVALID_CALL, "GL_INVALID_VALUE error detected in previous frame");
+        break;
+
+    case GL_INVALID_OPERATION:
+        sglSetError(SGLERR_INVALID_CALL, "GL_INVALID_OPERATION error detected in previous frame");
+        break;
+
+    case GL_STACK_OVERFLOW:
+        sglSetError(SGLERR_INVALID_CALL, "GL_INVALID_ENUM error detected in previous frame");
+        break;
+    }
+#endif 
     //assert( GL_NO_ERROR == glGetError() );
 }
 
