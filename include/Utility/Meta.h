@@ -7,7 +7,7 @@ namespace sgl {
 template <bool B, class T = void>
 struct enable_if_c 
 {
-    typedef T type;
+    typedef T tag;
 };
 
 template <class T>

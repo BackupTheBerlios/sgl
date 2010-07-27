@@ -1,7 +1,6 @@
 #ifndef SIMPLE_GL_MATH_AABB_H
 #define SIMPLE_GL_MATH_AABB_H
 
-#include "../Utility/Meta.h"
 #include "MatrixFunctions.hpp"
 
 SGL_BEGIN_MATH_NAMESPACE
@@ -11,10 +10,6 @@ template<typename   ValueType,
          int        Dimension>
 class AABB
 {
-private:
-    typedef sgl::enable_if_c<Dimension == 2>*   enable_if_2;
-    typedef sgl::enable_if_c<Dimension == 3>*   enable_if_3;
-
 public:
     typedef AABB<ValueType, Dimension>          this_type;
     typedef ValueType                           value_type;
@@ -30,8 +25,7 @@ public:
     inline AABB(ValueType   minx,
                 ValueType   miny,
                 ValueType   maxx,
-                ValueType   maxy,
-                enable_if_2 toggle = 0) :
+                ValueType   maxy) :
         minVec(minx, miny),
         maxVec(maxx, maxy)
     {}
@@ -41,8 +35,7 @@ public:
                 ValueType   minz,
                 ValueType   maxx,
                 ValueType   maxy,
-                ValueType   maxz,
-                enable_if_3 toggle = 0) :
+                ValueType   maxz) :
         minVec(minx, miny, minz),
         maxVec(maxx, maxy, maxz)
     {}
