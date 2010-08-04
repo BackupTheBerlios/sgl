@@ -5,6 +5,7 @@
 #include "GL/GLVertexBuffer.h"
 #include <algorithm>
 #include <functional>
+#include <iterator>
 
 using namespace sgl;
 using namespace math;
