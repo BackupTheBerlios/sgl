@@ -211,6 +211,35 @@ inline T magnitude(const Quaternion<T>& quat)
     return sqrt(quat.x*quat.x + quat.y*quat.y + quat.z*quat.z + quat.w*quat.w);
 }
 
+template<typename T>
+inline T dot(const Quaternion<T>& a, const Quaternion<T>& b)
+{
+    return a.x*b.x + a.y*b.y + a.z*b.z + a.w*b.w;
+}
+
+/** Spherical interpolation.
+ * @param a - start quaternion. Should be normalized.
+ * @param b - end quaternion. Should be normalized.
+ * @param value - interpolation value in [0, 1] segment
+ */
+template<typename T>
+inline Quaternion<T> slerp(const Quaternion<T>& a, const Quaternion<T>& b, T value)
+{
+    T ca = dot(a, b);
+    if ( abs(ca) - T(1.0) < T(1E-3) ) // cos(x) -> 1 => angle -> 0
+    {
+        // approximate: sin(x) = x
+        return a * (T(1.0) - value) + b * value;
+    }
+    else
+    {
+        T angle = acos(ca);
+        T sa    = sin(angle);
+        T va    = value * angle;
+        return ( a*sin(angle - va) + b*sin(va) ) / sa;
+    }
+}
+
 /** normalize vector */
 template<typename T>
 inline Quaternion<T> normalize(const Quaternion<T>& quat)
