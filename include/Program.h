@@ -10,15 +10,16 @@ namespace sgl {
 /// Primitive type
 enum PRIMITIVE_TYPE
 {
-    POINTS,
+    POINTS,				
     LINES,
     LINE_STRIP,
-    LINE_LOOP,
+    LINE_LOOP,			
     TRIANGLES,
-    TRIANGLE_STRIP,
-    TRIANGLE_FAN,
-    QUADS,
-    QUAD_STRIP,
+    TRIANGLE_STRIP,		
+    TRIANGLE_FAN,		
+    QUADS,				/// Deprecated since OpenGL 3.1
+    QUAD_STRIP,			/// Deprecated since OpenGL 3.1
+	POLYGON,			/// Deprecated since OpenGL 3.1
     __NUMBER_OF_PRIMITIVE_TYPES__
 };
 
