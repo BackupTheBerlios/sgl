@@ -615,7 +615,7 @@ inline bool equal( const Matrix<T, n, m>& a,
 {
     for(int i = 0; i<n; ++i)
     {
-        if ( !equal(a[i] - b[i], threshold) ) {
+        if ( !equal(a[i], b[i], threshold) ) {
             return false;
         }
     }

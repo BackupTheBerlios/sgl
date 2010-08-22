@@ -257,36 +257,36 @@ inline Quaternion<T> from_matrix(const Matrix<T, n, n>& m)
     {
         // if trace positive than "w" is biggest component
         Quaternion<T> quat( m[1][2] - m[2][1],
-                                m[2][0] - m[0][2],
-                                m[0][1] - m[1][0],
-                                tr + T(1.0) );
+                            m[2][0] - m[0][2],
+                            m[0][1] - m[1][0],
+                            tr + T(1.0) );
         return quat * T(0.5 / sqrt(quat.w));
     }
     else if ( (m[0][0] > m[1][1]) && (m[0][0] > m[2][2]) )
     {
         // Some of vector components is bigger
         Quaternion<T> quat( T(1.0) + m[0][0] - m[1][1] - m[2][2],
-                                m[1][0] + m[0][1],
-                                m[2][0] + m[0][2],
-                                m[1][2] - m[2][1] );
+                            m[1][0] + m[0][1],
+                            m[2][0] + m[0][2],
+                            m[1][2] - m[2][1] );
         return quat * T(0.5 / sqrt(quat.x));
 
     }
     else if ( m[1][1] > m[2][2] )
     {
         Quaternion<T> quat( m[1][0] + m[0][1],
-                                T(1.0) + m[1][1] - m[0][0] - m[2][2],
-                                m[2][1] + m[1][2],
-                                m[2][0] - m[0][2] );
+                            T(1.0) + m[1][1] - m[0][0] - m[2][2],
+                            m[2][1] + m[1][2],
+                            m[2][0] - m[0][2] );
         return quat * T(0.5 / sqrt(quat.y));
 
     }
     else
     {
         Quaternion<T> quat( m[2][0] + m[0][2],
-                                m[2][1] + m[1][2],
-                                T(1.0) + m[2][2] - m[0][0] - m[1][1],
-                                m[0][1] - m[1][0] );
+                            m[2][1] + m[1][2],
+                            T(1.0) + m[2][2] - m[0][0] - m[1][1],
+                            m[0][1] - m[1][0] );
         return quat * T(0.5 / sqrt(quat.z));
     }
 }
