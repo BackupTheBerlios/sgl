@@ -373,59 +373,71 @@ void SGL_DLLCALL IlImage::Clear()
 
 Texture2D* IlImage::CreateTexture2D() const
 {
-    // setup desc
-    Texture2D::DESC desc;
-    desc.format = format;
-    desc.width  = width;
-    desc.height = height;
-    desc.data   = mipData[0];
-
-    // create
-    Texture2D* texture = device->CreateTexture2D(desc);
-    if (!texture) {
-        return 0;
-    }
-
-    // set mipmaps
-    for (size_t i = 1; i<mipData.size(); ++i) 
+    if ( !mipData.empty() )
     {
-        texture->SetSubImage( i,
-                              0,
-                              0,
-                              texture->Width()  >> i,
-                              texture->Height() >> i,
-                              mipData[i] );
+        // setup desc
+        Texture2D::DESC desc;
+        desc.format = format;
+        desc.width  = width;
+        desc.height = height;
+        desc.data   = mipData[0];
+
+        // create
+        Texture2D* texture = device->CreateTexture2D(desc);
+        if (!texture) {
+            return 0;
+        }
+
+        // set mipmaps
+        for (size_t i = 1; i<mipData.size(); ++i)
+        {
+            texture->SetSubImage( i,
+                                  0,
+                                  0,
+                                  texture->Width()  >> i,
+                                  texture->Height() >> i,
+                                  mipData[i] );
+        }
+
+        return texture;
     }
-    return texture;
+
+    return 0;
 }
 
 Texture3D* IlImage::CreateTexture3D() const
 {
-    // setup desc
-    Texture3D::DESC desc;
-    desc.format = format;
-    desc.width  = width;
-    desc.height = height;
-    desc.data   = mipData[0];
-
-    // create
-    Texture3D* texture = device->CreateTexture3D(desc);
-    if (!texture) {
-        return 0;
-    }
-
-    // set mipmaps
-    for (size_t i = 1; i<mipData.size(); ++i) 
+    if ( !mipData.empty() )
     {
-        texture->SetSubImage( i,
-                              0,
-                              0,
-                              0,
-                              texture->Width()  >> i,
-                              texture->Height() >> i,
-                              texture->Depth()  >> i,
-                              mipData[i] );
+        // setup desc
+        Texture3D::DESC desc;
+        desc.format = format;
+        desc.width  = width;
+        desc.height = height;
+        desc.data   = mipData[0];
+
+        // create
+        Texture3D* texture = device->CreateTexture3D(desc);
+        if (!texture) {
+            return 0;
+        }
+
+        // set mipmaps
+        for (size_t i = 1; i<mipData.size(); ++i)
+        {
+            texture->SetSubImage( i,
+                                  0,
+                                  0,
+                                  0,
+                                  texture->Width()  >> i,
+                                  texture->Height() >> i,
+                                  texture->Depth()  >> i,
+                                  mipData[i] );
+        }
+
+        return texture;
     }
-    return texture;
+
+    return 0;
 }
 

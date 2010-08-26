@@ -198,19 +198,42 @@ namespace {
                     {
                         size_t index0 = vertexLayout->elements[i].index;
                         size_t index1 = elements[j].index;
-                        if (index0 < index1) {
+                        if (index0 < index1)
+                        {
                             glDisableVertexAttribArray(index0);
+                            ++i;
                         }
-                        else if (index0 > index1) {
-                            glEnableVertexAttribArray(index1);
-                        }
+                        else
+                        {
+                            if (index0 > index1) {
+                                glEnableVertexAttribArray(index1);
+                            }
 
-                        glVertexAttribPointer( index1, 
-                                               elements[j].size, 
-                                               BIND_SCALAR_TYPE[ elements[j].type ], 
-                                               false, 
-                                               elements[j].stride, 
+                            glVertexAttribPointer( index1,
+                                                   elements[j].size,
+                                                   BIND_SCALAR_TYPE[ elements[j].type ],
+                                                   false,
+                                                   elements[j].stride,
+                                                   (GLvoid*)elements[j].offset );
+                            ++i; ++j;
+                        }
+                    }
+
+                    for (; i<vertexLayout->elements.size(); ++i) {
+                        glDisableVertexAttribArray(vertexLayout->elements[i].index);
+                    }
+
+                    for (; j<elements.size(); ++j)
+                    {
+                        glEnableVertexAttribArray(elements[j].index);
+
+                        glVertexAttribPointer( elements[j].index,
+                                               elements[j].size,
+                                               BIND_SCALAR_TYPE[ elements[j].type ],
+                                               false,
+                                               elements[j].stride,
                                                (GLvoid*)elements[j].offset );
+
                     }
 
                     device->SetVertexLayout(this);

@@ -236,7 +236,7 @@ inline Quaternion<T> slerp(const Quaternion<T>& a, const Quaternion<T>& b, T val
         T angle = acos(ca);
         T sa    = sin(angle);
         T va    = value * angle;
-        return ( a*sin(angle - va) + b*sin(va) ) / sa;
+        return ( a*std::sin(angle - va) + b*std::sin(va) ) / sa;
     }
 }
 

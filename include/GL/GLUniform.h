@@ -101,7 +101,7 @@ public:
 
     void SGL_DLLCALL Set(unsigned int stage, const T* texture)
     {
-        assert( device->CurrentProgram() == program );
+        assert( base_type::device->CurrentProgram() == base_type::program );
         if (texture) {
             texture->Bind(stage);
         }
@@ -110,7 +110,7 @@ public:
 
     unsigned int SGL_DLLCALL Value() const
     {
-        assert( device->CurrentProgram() == program );
+        assert( base_type::device->CurrentProgram() == base_type::program );
         int value;
         glGetUniformiv(base_type::glProgram, base_type::glLocation, &value);
         return value;

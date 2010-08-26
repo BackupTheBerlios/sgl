@@ -465,7 +465,9 @@ SGL_HRESULT GLDevice<DeviceVersion>::InitOpenGL()
 
     // create unqie objects
     deviceTraits.reset( new GLDeviceTraits(this) );
-    ffpProgram.reset( sglCreateFFPProgram(this) );
+    if ( device_traits<DeviceVersion>::support_fixed_pipeline() ) {
+        ffpProgram.reset( sglCreateFFPProgram(this) );
+    }
     assert( GL_NO_ERROR == glGetError() );
 
     // get viewport

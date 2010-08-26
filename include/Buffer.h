@@ -10,11 +10,11 @@ class Buffer :
     public Resource
 {
 public:
-    static const int LOCK_READ_BIT              = 1;
-    static const int LOCK_WRITE_BIT             = 1 << 1;
-    static const int LOCK_INVALIDATE_RANGE_BIT  = 1 << 2;
-    static const int LOCK_INVALIDATE_BUFFER_BIT = 1 << 3;
-    static const int LOCK_UNSYNCHRONIZED_BIT    = 1 << 4;
+    static const int MAP_READ_BIT              = 1;
+    static const int MAP_WRITE_BIT             = 1 << 1;
+    static const int MAP_INVALIDATE_RANGE_BIT  = 1 << 2;
+    static const int MAP_INVALIDATE_BUFFER_BIT = 1 << 3;
+    static const int MAP_UNSYNCHRONIZED_BIT    = 1 << 4;
 
 public:
     /** Gain access to the buffer data. Force buffer to be binded.

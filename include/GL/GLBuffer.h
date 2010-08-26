@@ -49,13 +49,13 @@ public:
                                 void**  data)
     {
         GLuint glHint = 0;
-        if (hint == LOCK_READ_BIT) {
+        if (hint == Buffer::MAP_READ_BIT) {
             glHint = GL_READ_ONLY;
         }
-        else if (hint == LOCK_WRITE_BIT) {
+        else if (hint == Buffer::MAP_WRITE_BIT) {
             glHint = GL_WRITE_ONLY;
         }
-        else if (hint == (LOCK_READ_BIT | LOCK_WRITE_BIT)) {
+        else if (hint == (Buffer::MAP_READ_BIT | Buffer::MAP_WRITE_BIT)) {
             glHint = GL_READ_WRITE;
         }
     #ifndef SGL_NO_STATUS_CHECK
@@ -100,11 +100,11 @@ public:
     {
         GLuint oldBuffer = GuardedBind(glTarget, glBuffer);
 
-        GLuint glHint = (hint & LOCK_READ_BIT) * GL_MAP_READ_BIT
-                      | (hint & LOCK_WRITE_BIT) * GL_MAP_WRITE_BIT
-                      | (hint & LOCK_INVALIDATE_RANGE_BIT) * GL_MAP_INVALIDATE_RANGE_BIT
-                      | (hint & LOCK_INVALIDATE_BUFFER_BIT) * GL_MAP_INVALIDATE_BUFFER_BIT
-                      | (hint & LOCK_UNSYNCHRONIZED_BIT) * GL_MAP_UNSYNCHRONIZED_BIT;
+        GLuint glHint = (hint & Buffer::MAP_READ_BIT) * GL_MAP_READ_BIT
+                      | (hint & Buffer::MAP_WRITE_BIT) * GL_MAP_WRITE_BIT
+                      | (hint & Buffer::MAP_INVALIDATE_RANGE_BIT) * GL_MAP_INVALIDATE_RANGE_BIT
+                      | (hint & Buffer::MAP_INVALIDATE_BUFFER_BIT) * GL_MAP_INVALIDATE_BUFFER_BIT
+                      | (hint & Buffer::MAP_UNSYNCHRONIZED_BIT) * GL_MAP_UNSYNCHRONIZED_BIT;
 
         (*data) = glMapBufferRange(glTarget, offset, size, glHint);
 

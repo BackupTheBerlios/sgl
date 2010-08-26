@@ -4,6 +4,7 @@
 #include "Utility/Referenced.h"
 #include "Texture3D.h"
 #include "TextureCube.h"
+#include <cmath>
 
 namespace sgl {
 
@@ -171,7 +172,7 @@ public:
                 assert(!"Can't get here");
             }
 
-            size = size_t( ceil(width / 4.0f) * ceil(height / 4.0f) * ceil(depth / 4.0f) * blockSize );
+            size = size_t( std::ceil(width / 4.0f) * std::ceil(height / 4.0f) * std::ceil(depth / 4.0f) * blockSize );
         }
         else {
             size = width * height * depth * Texture::FORMAT_TRAITS[format].sizeInBits / 8;
