@@ -112,14 +112,6 @@ namespace {
             device(device_),
             desc(desc_)
         {
-            bindDisplayList = glGenLists(1);
-
-            // generate setup list
-            glNewList(bindDisplayList, GL_COMPILE);
-            {
-
-            }
-            glEndList();
         }
 
         // Override State
@@ -164,11 +156,6 @@ namespace {
 
     private:
         GLDevice<DeviceVersion>*    device;
-
-        // setup display list
-        GLuint                      bindDisplayList;
-
-        // properties
         DESC                        desc;
     };
 

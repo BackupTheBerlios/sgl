@@ -6,23 +6,19 @@
 SGL_BEGIN_MATH_NAMESPACE
 
 // forward types
-template<typename ValueType, int n>
+template<typename T, int n>
 class AABB;
 
-// forward types
-template<typename ValueType, int n>
+template<typename T, int n>
 class Sphere;
 
-// forward types
-template<typename ValueType, int n, int m>
+template<typename T, int n, int m>
 class KDop;
 
-// forward types
-template<typename ValueType, int n>
+template<typename T, int n>
 class Ray;
 
-// forward type
-template<typename ValueType, int n>
+template<typename T, int n>
 class Plane;
 
 /** Check wether Sphere contains point */
@@ -125,6 +121,14 @@ inline bool test_intersection( const AABB<T, n>&    aabb,
     return tMax >= 0;
 }
 
+/** Check intersection with ray */
+template<typename T, int n>
+inline bool test_intersection( const Ray<T, n>&     ray,
+							   const AABB<T, n>&    aabb )
+{
+	return test_intersection(aabb, ray);
+}
+
 /** Check intersection with segment */
 template<typename T, int n>
 inline bool test_intersection( const AABB<T, n>&        aabb,
@@ -136,6 +140,44 @@ inline bool test_intersection( const AABB<T, n>&        aabb,
     return test_intersection(aabb, math::Ray<T,n>(a, b-a), epsilon) && test_intersection(aabb, math::Ray<T,n>(b, a-b), epsilon);
 }
 
+/** Check wether intersection is not empty */
+template<typename T, int n>
+inline bool test_intersection( const Sphere<T, n>&  a,
+                               const Sphere<T, n>&  b )
+{
+    return length(a.center - b.center) <= a.radius + b.radius;
+}
+
+/** Check wether intersection of KDop and BBOX is not empty*/
+template<typename T, int m>
+bool test_intersection(const KDop<T, 3, m>& kdop, const AABB<T, 3>& aabb)
+{
+    Matrix<T, 3, 1> vmin;
+    for(int i = 0; i<m; ++i)
+    {
+        const Matrix<T, 3, 1>& normal = kdop.planes[i].normal;
+
+        // X axis
+        vmin.x = normal.x < 0 ? aabb.minVec.x : aabb.maxVec.x;
+        vmin.y = normal.y < 0 ? aabb.minVec.y : aabb.maxVec.y;
+        vmin.z = normal.z < 0 ? aabb.minVec.z : aabb.maxVec.z;
+
+        if ( dot(normal, vmin) + kdop.planes[i].distance < 0 ) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+/** Check wether intersection of KDop and BBOX is not empty*/
+template<typename T, int m>
+bool test_intersection(const AABB<T, 3>& aabb, const KDop<T, 3, m>& kdop)
+{
+	return test_intersection(kdop, aabb);
+}
+
+/** Check intersection plane with ray and find intersection point */
 template<typename T, int n>
 bool find_intersection( const Plane<T, n>&  plane,
                         const Ray<T, n>&    ray,
@@ -157,13 +199,22 @@ bool find_intersection( const Plane<T, n>&  plane,
     return true;
 }
 
-/** Check intersection with ray and find intersection point */
+/** Check intersection plane with ray and find intersection point */
+template<typename T, int n>
+bool find_intersection( const Ray<T, n>&    ray,
+						const Plane<T, n>&  plane,
+                        Matrix<T, n, 1>&    out,
+                        T                   threshold = std::numeric_limits<T>::epsilon() )
+{
+	return find_intersection(plane, ray, out, threshold);
+}
+
+/** Check intersection aabb with ray and find intersection point */
 template<typename T, int n>
 inline bool find_intersection( const AABB<T, n>&   aabb,
                                const Ray<T, n>&    ray,
                                Matrix<T, n, 1>&    intPoint,
                                T                   epsilon = static_cast<T>(1e-7) )
-
 {
     T tMin = -std::numeric_limits<T>::max();
     T tMax =  std::numeric_limits<T>::max();
@@ -191,6 +242,16 @@ inline bool find_intersection( const AABB<T, n>&   aabb,
     return tMax >= 0;
 }
 
+/** Check intersection aabb with ray and find intersection point */
+template<typename T, int n>
+inline bool find_intersection( const Ray<T, n>&    ray,
+							   const AABB<T, n>&   aabb,
+                               Matrix<T, n, 1>&    intPoint,
+                               T                   epsilon = static_cast<T>(1e-7) )
+{
+	return find_intersection(aabb, ray, intPoint, epsilon);
+}
+
 /** Find intersection with segment */
 template<typename T, int n>
 inline bool find_intersection( const AABB<T, n>&        aabb,
@@ -201,36 +262,6 @@ inline bool find_intersection( const AABB<T, n>&        aabb,
 
 {
     return test_intersection(aabb, math::Ray<T,n>(a, b-a), epsilon) && find_intersection(aabb, math::Ray<T,n>(b, a-b), intPoint, epsilon);
-}
-
-/** Check wether intersection is not empty */
-template<typename T, int n>
-inline bool test_intersection( const Sphere<T, n>&  a,
-                               const Sphere<T, n>&  b )
-{
-    return length(a.center - b.center) <= a.radius + b.radius;
-}
-
-/** Check wether intersection of frustum and BBOX is not empty*/
-template<typename T, int m>
-bool test_intersection(const KDop<T, 3, m>& kdop, const AABB<T, 3>& aabb)
-{
-    Matrix<T, 3, 1> vmin;
-    for(int i = 0; i<m; ++i)
-    {
-        const Matrix<T, 3, 1>& normal = kdop.planes[i].normal;
-
-        // X axis
-        vmin.x = normal.x < 0 ? aabb.minVec.x : aabb.maxVec.x;
-        vmin.y = normal.y < 0 ? aabb.minVec.y : aabb.maxVec.y;
-        vmin.z = normal.z < 0 ? aabb.minVec.z : aabb.maxVec.z;
-
-        if ( dot(normal, vmin) + kdop.planes[i].distance < 0 ) {
-            return false;
-        }
-    }
-
-    return true;
 }
 
 SGL_END_MATH_NAMESPACE
