@@ -28,15 +28,27 @@ public:
 	    FRONT_AND_BACK	/// cull all
     };
 
+    enum COLOR_MASK
+    {
+        RED    = 1 << 0,
+        GREEN  = 1 << 1,
+        BLUE   = 1 << 2,
+        ALPHA  = 1 << 3,
+        RGB    = RED | GREEN | BLUE,
+        RGBA   = RED | GREEN | BLUE | ALPHA
+    };
+
     /** Description of the state */
     struct DESC 
     {
         FILL_MODE   fillMode      : 4;
         CULL_MODE   cullMode      : 4;
+        int         colorMask     : 4;
 
         DESC() :
             fillMode(SOLID),
-            cullMode(BACK)
+            cullMode(BACK),
+            colorMask(RGBA)
         {}
     };
 

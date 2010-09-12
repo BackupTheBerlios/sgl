@@ -29,8 +29,8 @@ namespace {
             device(device_),
             desc(desc_)
         {
-            glCullMode = BIND_CULL_MODE[desc.cullMode];
-            glFillMode = BIND_FILL_MODE[desc.fillMode];
+            glCullMode  = BIND_CULL_MODE[desc.cullMode];
+            glFillMode  = BIND_FILL_MODE[desc.fillMode];
         }
 
         // Override RasterizerState
@@ -50,6 +50,10 @@ namespace {
                 glDisable(GL_CULL_FACE);
             }
             glPolygonMode(GL_FRONT_AND_BACK, glFillMode);
+            glColorMask(desc.colorMask & RED,
+                        desc.colorMask & GREEN,
+                        desc.colorMask & BLUE,
+                        desc.colorMask & ALPHA);
 
             device->SetRasterizerState(this);
         }
@@ -59,8 +63,8 @@ namespace {
         DESC                        desc;
 
         // gl primitives
-        GLuint  glCullMode;
-        GLuint  glFillMode;
+        GLuint      glCullMode;
+        GLuint      glFillMode;
     };
 
 } // anonymous namespace
