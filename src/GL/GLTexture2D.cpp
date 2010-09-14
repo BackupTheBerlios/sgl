@@ -100,6 +100,12 @@ GLTexture2D<DeviceVersion>::GLTexture2D(GLDevice<DeviceVersion>* device, const T
 }
 
 template<DEVICE_VERSION DeviceVersion>
+GLTexture2D<DeviceVersion>::~GLTexture2D()
+{
+    Unbind();
+}
+
+template<DEVICE_VERSION DeviceVersion>
 SGL_HRESULT GLTexture2D<DeviceVersion>::SetSubImage( unsigned int  mipmap,
                                                      unsigned int  offsetx,
                                                      unsigned int  offsety,

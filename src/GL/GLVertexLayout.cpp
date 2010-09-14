@@ -44,6 +44,11 @@ namespace {
         {
         }
 
+        ~GLVertexLayoutMixed()
+        {
+            Unbind();
+        }
+
         // Override VertexLayout
         unsigned int    SGL_DLLCALL NumElements() const                 { return elements.size(); }
         ELEMENT         SGL_DLLCALL Element(unsigned int index) const   { return elements[index]; }
@@ -179,6 +184,11 @@ namespace {
             elements(elements_, elements_ + numElements) // copy elements
         {
             std::sort( elements.begin(), elements.end(), sort_by_index() );
+        }
+
+        ~GLVertexLayoutAttribute()
+        {
+            Unbind();
         }
 
         // Override VertexLayout

@@ -22,7 +22,6 @@ public:
     GLTextureCubeSide( GLTextureCube<DeviceVersion>*    texture,
                        const Texture2D::DESC&           desc,
                        TextureCube::SIDE                side );
-
     // Override Texture2D
     Texture::TYPE   SGL_DLLCALL Type() const    { return Texture::TEXTURE_2D; }
     Texture::FORMAT SGL_DLLCALL Format() const  { return format; }
@@ -71,6 +70,7 @@ public:
 public:
     GLTextureCube( GLDevice<DeviceVersion>* device,
                    const TextureCube::DESC& desc );
+    ~GLTextureCube();
 
     // Override TextureCube
     Texture::TYPE   SGL_DLLCALL Type() const                    { return Texture::TEXTURE_CUBE_MAP; }

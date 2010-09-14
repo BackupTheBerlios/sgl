@@ -33,6 +33,13 @@ namespace {
             glFillMode  = BIND_FILL_MODE[desc.fillMode];
         }
 
+        ~GLRasterizerStateDefault()
+        {
+            if (device->CurrentRasterizerState() == this) {
+                device->SetRasterizerState(0);
+            }
+        }
+
         // Override RasterizerState
         const DESC& SGL_DLLCALL Desc() const 
         { 

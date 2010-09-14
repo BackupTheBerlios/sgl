@@ -41,6 +41,7 @@ GLRenderTarget<DeviceVersion>::GLRenderTarget(GLDevice<DeviceVersion>* device_) 
 template<DEVICE_VERSION DeviceVersion>
 GLRenderTarget<DeviceVersion>::~GLRenderTarget()
 {
+    Unbind();
     if (fbo) {
         glDeleteFramebuffersEXT(1, &fbo);
     }

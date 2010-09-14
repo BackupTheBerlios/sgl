@@ -18,6 +18,7 @@ public:
 public:
     GLTexture2D(GLDevice<DeviceVersion>* device, const Texture2D::DESC& desc);
     GLTexture2D(GLDevice<DeviceVersion>* device, const Texture2D::DESC_MS& desc);
+    ~GLTexture2D();
 
     // Override Texture2
     Texture::TYPE   SGL_DLLCALL Type() const        { return Texture::TEXTURE_2D; }

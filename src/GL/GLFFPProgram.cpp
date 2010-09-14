@@ -450,6 +450,9 @@ template<DEVICE_VERSION DeviceVersion>
 void GLFFPProgram<DeviceVersion>::Unbind() const
 {
     // Actually we can't unbind ffp program
+    if (device->CurrentProgram() == this) {
+        device->SetProgram(0);
+    }
 }
 
 template<DEVICE_VERSION DeviceVersion>

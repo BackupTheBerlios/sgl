@@ -111,6 +111,12 @@ GLTexture3D<DeviceVersion>::GLTexture3D(GLDevice<DeviceVersion>* device_, const 
 }
 
 template<DEVICE_VERSION DeviceVersion>
+GLTexture3D<DeviceVersion>::~GLTexture3D()
+{
+    Unbind();
+}
+
+template<DEVICE_VERSION DeviceVersion>
 SGL_HRESULT GLTexture3D<DeviceVersion>::SetSubImage( unsigned int  mipmap,
                                                      unsigned int  offsetx,
                                                      unsigned int  offsety,

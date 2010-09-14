@@ -43,6 +43,7 @@ GLProgram<DeviceVersion>::GLProgram(GLDevice<DeviceVersion>* device_) :
 template<DEVICE_VERSION DeviceVersion> 
 GLProgram<DeviceVersion>::~GLProgram()
 {
+    Unbind();
     glDeleteProgram(glProgram);
     if (uniforms) {
         delete[] uniforms;

@@ -81,6 +81,9 @@ namespace {
         ~GLDepthStencilStateDisplayLists()
         {
             glDeleteLists(bindDisplayList, 1);
+            if (device->CurrentDepthStencilState() == this) {
+                device->SetDepthStencilState(0);
+            }
         }
 
         // Override State
@@ -112,6 +115,13 @@ namespace {
             device(device_),
             desc(desc_)
         {
+        }
+
+        ~GLDepthStencilStateSeparate()
+        {
+            if (device->CurrentDepthStencilState() == this) {
+                device->SetDepthStencilState(0);
+            }
         }
 
         // Override State

@@ -45,6 +45,9 @@ template<DEVICE_VERSION DeviceVersion, typename Interface>
 class GLTexture :
     public ReferencedImpl<Interface>
 {
+protected:
+    typedef ReferencedImpl<Interface> base_type;
+
 public:
     typedef GLSamplerState<DeviceVersion> sampler_state_type;
 

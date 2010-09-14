@@ -29,6 +29,9 @@ class GLBuffer :
     public ReferencedImpl<Interface>
 {
 protected:
+    typedef ReferencedImpl<Interface> base_type;
+
+protected:
     GLBuffer( GLDevice<DeviceVersion>*  _device,
               GLuint                    _glTarget ) :
         device(_device),
@@ -133,8 +136,8 @@ public:
     SGL_HRESULT SGL_DLLCALL FlushMappedRange(unsigned offset, unsigned size)
     {
     #ifndef SGL_NO_STATUS_CHECK
-        GLint currentBuffer;
-        glGetIntegerv(glTarget, &currentBuffer);
+        GLuint currentBuffer;
+        glGetIntegerv(glTarget, (GLint*)&currentBuffer);
         if (currentBuffer != glBuffer) {
             return EInvalidCall("GLBuffer::FlushMappedRange failed. Buffer is not mapped.");
         }
@@ -162,12 +165,12 @@ public:
     SGL_HRESULT SGL_DLLCALL Unmap()
     {
     #ifndef SGL_NO_STATUS_CHECK
-        GLint currentBuffer;
+        GLuint currentBuffer;
         if ( glTarget == GL_ELEMENT_ARRAY_BUFFER ) {
-            glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &currentBuffer);
+            glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, (GLint*)&currentBuffer);
         }
         else if ( glTarget == GL_ARRAY_BUFFER ) {
-            glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &currentBuffer);
+            glGetIntegerv(GL_ARRAY_BUFFER_BINDING, (GLint*)&currentBuffer);
         }
 
         if (currentBuffer != glBuffer) {
@@ -191,8 +194,8 @@ public:
 
     bool SGL_DLLCALL Mapped() const
     {
-        GLint currentBuffer;
-        glGetIntegerv(glTarget, &currentBuffer);
+        GLuint currentBuffer;
+        glGetIntegerv(glTarget, (GLint*)&currentBuffer);
         if (currentBuffer != glBuffer) {
             return false;
         }

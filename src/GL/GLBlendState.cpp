@@ -78,6 +78,9 @@ namespace {
         ~GLBlendStateDisplayLists()
         {
             glDeleteLists(bindDisplayList, 1);
+            if (device->CurrentBlendState() == this) {
+                device->SetBlendState(0);
+            }
         }
 
         void SGL_DLLCALL Bind() const
@@ -104,6 +107,13 @@ namespace {
             device(device_),
             desc(desc_)
         {
+        }
+
+        ~GLBlendStateSeparate()
+        {
+            if (device->CurrentBlendState() == this) {
+                device->SetBlendState(0);
+            }
         }
 
         void SGL_DLLCALL Bind() const
@@ -145,6 +155,13 @@ namespace {
             glSrcBlend  = BIND_BLEND_FUNCTION[desc.srcBlend];
             glDestBlend = BIND_BLEND_FUNCTION[desc.destBlend];
             glBlendOp   = BIND_BLEND_OPERATION[desc.blendOp];
+        }
+
+        ~GLBlendStateDefault()
+        {
+            if (device->CurrentBlendState() == this) {
+                device->SetBlendState(0);
+            }
         }
 
         void SGL_DLLCALL Bind() const

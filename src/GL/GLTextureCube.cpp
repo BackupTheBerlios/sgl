@@ -215,6 +215,12 @@ SGL_HRESULT GLTextureCube<DeviceVersion>::GenerateMipmap()
 }
 
 template<DEVICE_VERSION DeviceVersion>
+GLTextureCube<DeviceVersion>::~GLTextureCube()
+{
+    Unbind();
+}
+
+template<DEVICE_VERSION DeviceVersion>
 SGL_HRESULT GLTextureCube<DeviceVersion>::BindSamplerState(SamplerState* _samplerState)
 {
     base_type::samplerState.reset( static_cast<GLSamplerState<DeviceVersion>*>(_samplerState) );

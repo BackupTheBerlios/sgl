@@ -18,6 +18,7 @@ public:
 public:
     GLTexture3D(GLDevice<DeviceVersion>* device, const Texture3D::DESC& desc);
     GLTexture3D(GLDevice<DeviceVersion>* device, const Texture3D::DESC_MS& desc);
+    ~GLTexture3D();
 
     // Override Texture2
     Texture::TYPE   SGL_DLLCALL Type() const        { return Texture::TEXTURE_3D; }
