@@ -8,10 +8,6 @@ INCLUDE(Configure.cmake)
 SET (TARGET_NAME 		SimpleGL)
 SET (TARGET_UNIX_NAME 	sgl)
 
-# global dir
-INCLUDE_DIRECTORIES ( ${PROJECT_SOURCE_DIR}/include )
-LINK_DIRECTORIES ( ${PROJECT_BINARY_DIR}/lib )
-
 # sources
 ADD_SUBDIRECTORY (src)
 
