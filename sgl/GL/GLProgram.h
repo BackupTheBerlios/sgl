@@ -14,16 +14,14 @@ template<typename T>
 class GLSamplerUniform;
 
 /* Wraps gl function for working with shader programs */
-template<DEVICE_VERSION DeviceVersion> 
+
 class GLProgram :
     public ResourceImpl<Program>
 {
 private:
-    typedef scoped_ptr<AbstractUniform>         uniform_ptr;
-
-    typedef GLShader<DeviceVersion>             shader_type;
-    typedef ref_ptr<shader_type>                shader_ptr;
-    typedef std::vector<shader_ptr>             shader_vector;
+    typedef scoped_ptr<AbstractUniform> uniform_ptr;
+    typedef ref_ptr<GLShader>			shader_ptr;
+    typedef std::vector<shader_ptr>     shader_vector;
     
     struct attribute
     {
@@ -55,7 +53,7 @@ private:
                                     size_t      size );
 
 public:
-    GLProgram(GLDevice<DeviceVersion>* deviceState);
+    GLProgram(GLDevice* deviceState);
     ~GLProgram();
 
     // Override Program
@@ -127,10 +125,10 @@ public:
     GLuint SGL_DLLCALL Handle() const { return glProgram; }
 
 private:
-    GLDevice<DeviceVersion>*    device;
-    shader_vector               shaders;
-    attribute_vector            attributes;
-    uniform_ptr*                uniforms;
+    GLDevice*			device;
+    shader_vector       shaders;
+    attribute_vector    attributes;
+    uniform_ptr*        uniforms;
 
     // geometry shaders
     unsigned int        numActiveUniforms;
@@ -145,10 +143,6 @@ private:
     // log
     std::string         compilationLog;
 };
-
-/** Try to make shader program */
-template<DEVICE_VERSION DeviceVersion>
-sgl::Program* sglCreateProgram(GLDevice<DeviceVersion>* device);
 
 } // namespaec sgl
 

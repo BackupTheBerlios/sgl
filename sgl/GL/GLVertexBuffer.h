@@ -6,15 +6,11 @@
 
 namespace sgl {
 
-template<DEVICE_VERSION DeviceVersion>
 class GLVertexBuffer :
-    public GLBuffer<DeviceVersion, VertexBuffer>
+    public GLBuffer<VertexBuffer>
 {
 public:
-    typedef GLBuffer<DeviceVersion, VertexBuffer> base_type;
-
-public:
-    GLVertexBuffer(GLDevice<DeviceVersion>* device);
+    GLVertexBuffer(GLDevice* device);
     ~GLVertexBuffer();
 
     // Override VertexBuffer

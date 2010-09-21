@@ -19,9 +19,8 @@ namespace {
 
 namespace sgl {
 
-template<DEVICE_VERSION DeviceVersion>
-GLShader<DeviceVersion>::GLShader( GLDevice<DeviceVersion>*  device_, 
-                                   const DESC&               desc ) :
+GLShader::GLShader( GLDevice*	device_, 
+                    const DESC& desc ) :
     device(device_),
     type(desc.type)
 {
@@ -53,41 +52,9 @@ GLShader<DeviceVersion>::GLShader( GLDevice<DeviceVersion>*  device_,
     }
 }
 
-template<DEVICE_VERSION DeviceVersion>
-GLShader<DeviceVersion>::~GLShader()
+GLShader::~GLShader()
 {
     glDeleteShader(shader);
 }
-
-/** Make shader */
-template<DEVICE_VERSION DeviceVersion>
-sgl::Shader* sglCreateShader(GLDevice<DeviceVersion>* device, const Shader::DESC& desc)
-{
-    if (!GLEW_VERSION_2_0) {
-        throw gl_error("Shaders are not supported", SGLERR_UNSUPPORTED);
-    }
-
-    if (desc.type == Shader::GEOMETRY && !GL_ARB_geometry_shader4) {
-        throw gl_error("Geometry shaders are not supported", SGLERR_UNSUPPORTED);
-    }
-
-    return new GLShader<DeviceVersion>(device, desc);
-}
-
-// explicit template instantiation
-template class GLShader<DV_OPENGL_2_0>;
-template class GLShader<DV_OPENGL_2_1>;
-template class GLShader<DV_OPENGL_3_0>;
-template class GLShader<DV_OPENGL_3_1>;
-template class GLShader<DV_OPENGL_3_2>;
-
-template sgl::Shader* sglCreateShader<DV_OPENGL_1_3>(GLDevice<DV_OPENGL_1_3>*, const Shader::DESC&);
-template sgl::Shader* sglCreateShader<DV_OPENGL_1_4>(GLDevice<DV_OPENGL_1_4>*, const Shader::DESC&);
-template sgl::Shader* sglCreateShader<DV_OPENGL_1_5>(GLDevice<DV_OPENGL_1_5>*, const Shader::DESC&);
-template sgl::Shader* sglCreateShader<DV_OPENGL_2_0>(GLDevice<DV_OPENGL_2_0>*, const Shader::DESC&);
-template sgl::Shader* sglCreateShader<DV_OPENGL_2_1>(GLDevice<DV_OPENGL_2_1>*, const Shader::DESC&);
-template sgl::Shader* sglCreateShader<DV_OPENGL_3_0>(GLDevice<DV_OPENGL_3_0>*, const Shader::DESC&);
-template sgl::Shader* sglCreateShader<DV_OPENGL_3_1>(GLDevice<DV_OPENGL_3_1>*, const Shader::DESC&);
-template sgl::Shader* sglCreateShader<DV_OPENGL_3_2>(GLDevice<DV_OPENGL_3_2>*, const Shader::DESC&);
 
 } // namespace sgl

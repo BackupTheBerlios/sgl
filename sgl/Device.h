@@ -37,81 +37,89 @@ struct device_traits;
 template<>
 struct device_traits<DV_OPENGL_1_3>
 {
-    static bool support_fixed_pipeline()        { return true; }
-    static bool support_programmable_pipeline() { return false; }
-    static bool support_generic_attributes()    { return false; }
-    static bool support_fixed_attributes()      { return true; }
-    static bool support_display_lists()         { return true; }
+	static const bool support_fixed_pipeline		= true;
+	static const bool support_programmable_pipeline	= false;
+	static const bool support_generic_attributes	= false;
+	static const bool support_fixed_attributes		= true;
+	static const bool support_display_lists			= true;
+	static const bool support_render_target			= false;
 };
 
 template<>
 struct device_traits<DV_OPENGL_1_4>
 {
-    static bool support_fixed_pipeline()        { return true; }
-    static bool support_programmable_pipeline() { return false; }
-    static bool support_generic_attributes()    { return false; }
-    static bool support_fixed_attributes()      { return true; }
-    static bool support_display_lists()         { return true; }
+    static const bool support_fixed_pipeline		= true;
+    static const bool support_programmable_pipeline	= false;
+    static const bool support_generic_attributes	= false;
+    static const bool support_fixed_attributes		= true;
+	static const bool support_display_lists			= true;
+	static const bool support_render_target			= false;
 };
 
 template<>
 struct device_traits<DV_OPENGL_1_5>
 {
-    static bool support_fixed_pipeline()        { return true; }
-    static bool support_programmable_pipeline() { return false; }
-    static bool support_generic_attributes()    { return false; }
-    static bool support_fixed_attributes()      { return true; }
-    static bool support_display_lists()         { return true; }
+	static const bool support_fixed_pipeline		= true;
+	static const bool support_programmable_pipeline	= false;
+	static const bool support_generic_attributes	= false;
+	static const bool support_fixed_attributes		= true;
+	static const bool support_display_lists			= true;
+	static const bool support_render_target			= false;
 };
 
 template<>
 struct device_traits<DV_OPENGL_2_0>
 {
-    static bool support_fixed_pipeline()        { return true; }
-    static bool support_programmable_pipeline() { return true; }
-    static bool support_generic_attributes()    { return true; }
-    static bool support_fixed_attributes()      { return true; }
-    static bool support_display_lists()         { return true; }
+	static const bool support_fixed_pipeline		= true;
+	static const bool support_programmable_pipeline	= true;
+	static const bool support_generic_attributes	= true;
+	static const bool support_fixed_attributes		= true;
+	static const bool support_display_lists			= true;
+	static const bool support_render_target			= true;
 };
 
 template<>
 struct device_traits<DV_OPENGL_2_1>
 {
-    static bool support_fixed_pipeline()        { return true; }
-    static bool support_programmable_pipeline() { return true; }
-    static bool support_generic_attributes()    { return true; }
-    static bool support_fixed_attributes()      { return true; }
-    static bool support_display_lists()         { return true; }
+	static const bool support_fixed_pipeline		= true;
+	static const bool support_programmable_pipeline	= true;
+	static const bool support_generic_attributes	= true;
+	static const bool support_fixed_attributes		= true;
+	static const bool support_display_lists			= true;
+	static const bool support_render_target			= true;
 };
 
 template<>
 struct device_traits<DV_OPENGL_3_0>
 {
-    static bool support_fixed_pipeline()        { return true; }
-    static bool support_programmable_pipeline() { return true; }
-    static bool support_generic_attributes()    { return true; }
-    static bool support_fixed_attributes()      { return true; }
-    static bool support_display_lists()         { return false; }
+	static const bool support_fixed_pipeline		= true;
+	static const bool support_programmable_pipeline	= true;
+	static const bool support_generic_attributes	= true;
+	static const bool support_fixed_attributes		= true;
+	static const bool support_display_lists			= false;
+	static const bool support_render_target			= true;
 };
 
 template<>
 struct device_traits<DV_OPENGL_3_1>
 {
-    static bool support_fixed_pipeline()        { return false; }
-    static bool support_programmable_pipeline() { return true; }
-    static bool support_generic_attributes()    { return true; }
-    static bool support_fixed_attributes()      { return false; }
-    static bool support_display_lists()         { return false; }
+	static const bool support_fixed_pipeline		= false;
+	static const bool support_programmable_pipeline	= true;
+	static const bool support_generic_attributes	= true;
+	static const bool support_fixed_attributes		= false;
+	static const bool support_display_lists			= false;
+	static const bool support_render_target			= true;
 };
 
 template<>
 struct device_traits<DV_OPENGL_3_2>
 {
-    static bool support_fixed_pipeline()        { return false; }
-    static bool support_programmable_pipeline() { return true; }
-    static bool support_generic_attributes()    { return true; }
-    static bool support_fixed_attributes()      { return false; }
-    static bool support_display_lists()         { return false; }
+	static const bool support_fixed_pipeline		= false;
+	static const bool support_programmable_pipeline	= true;
+	static const bool support_generic_attributes	= true;
+	static const bool support_fixed_attributes		= false;
+	static const bool support_display_lists			= false;
+	static const bool support_render_target			= true;
 };
 
 /** Device class wraps graphics functions */

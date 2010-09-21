@@ -8,12 +8,49 @@ namespace sgl {
 
 extern const unsigned BIND_SCALAR_TYPE[__NUMBER_OF_SCALAR_TYPES__];
 
-/** Make suitable vertex layout */
-template<DEVICE_VERSION DeviceVersion>
-sgl::VertexLayout* sglCreateVertexLayout(GLDevice<DeviceVersion>*       device, 
-                                         unsigned int                   numElements, 
-                                         const VertexLayout::ELEMENT*   element);
+/* Vertex declaration */
+class GLVertexLayoutMixed:
+	public ReferencedImpl<VertexLayout>
+{
+public:
+	GLVertexLayoutMixed( GLDevice*		device, 
+						 unsigned int   numElements, 
+					 	 const ELEMENT* elements );
+	~GLVertexLayoutMixed();
 
+	// Override VertexLayout
+	unsigned int    SGL_DLLCALL NumElements() const                 { return elements.size(); }
+	ELEMENT         SGL_DLLCALL Element(unsigned int index) const   { return elements[index]; }
+
+	void SGL_DLLCALL Bind() const;
+	void SGL_DLLCALL Unbind() const;
+
+private:
+	GLDevice*				device;
+	std::vector<ELEMENT>	elements;
+};
+
+/* Vertex layout with attributes only */
+class GLVertexLayoutAttribute :
+	public ReferencedImpl<VertexLayout>
+{
+public:
+	GLVertexLayoutAttribute( GLDevice*		device, 
+							 unsigned int   numElements, 
+							 const ELEMENT* elements );
+	~GLVertexLayoutAttribute();
+
+	// Override VertexLayout
+	unsigned int    SGL_DLLCALL NumElements() const                 { return elements.size(); }
+	ELEMENT         SGL_DLLCALL Element(unsigned int index) const   { return elements[index]; }
+
+	void SGL_DLLCALL Bind() const;
+	void SGL_DLLCALL Unbind() const;
+
+private:
+	GLDevice*				device;
+	std::vector<ELEMENT>	elements;
+};
 
 } // namespace sgl
 

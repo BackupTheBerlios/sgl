@@ -24,7 +24,7 @@ inline GLint GuardedBind(GLuint glTarget, GLuint glBuffer)
     return oldBuffer;
 }
 
-template<DEVICE_VERSION DeviceVersion, typename Interface>
+template<typename Interface>
 class GLBuffer :
     public ReferencedImpl<Interface>
 {
@@ -32,7 +32,7 @@ protected:
     typedef ReferencedImpl<Interface> base_type;
 
 protected:
-    GLBuffer( GLDevice<DeviceVersion>*  _device,
+    GLBuffer( GLDevice*  _device,
               GLuint                    _glTarget ) :
         device(_device),
         glTarget(_glTarget),
@@ -296,7 +296,7 @@ public:
     unsigned int SGL_DLLCALL Size() const { return dataSize; }
 
 protected:
-    GLDevice<DeviceVersion>*    device;
+    GLDevice*    device;
 
     // data
     GLuint  glTarget;

@@ -27,7 +27,6 @@
 namespace sgl {
 
 /* GLDevice class wraps gl functions */
-template<DEVICE_VERSION deviceVersion>
 class GLDevice :
 	public ReferencedImpl<Device>
 {
@@ -64,11 +63,7 @@ public:
     void                        SGL_DLLCALL SetProgram(const Program* program);
     void                        SGL_DLLCALL SetRenderTarget(const RenderTarget* renderTarget);
 
-    // misc
-    SGL_HRESULT                 SGL_DLLCALL TakeScreenshot(Image* image) const;
-
     // ============================ DRAW ============================ //
-
     void                SGL_DLLCALL Draw( PRIMITIVE_TYPE primType, 
                                           unsigned       firstVertex, 
                                           unsigned       numVertices ) const;
@@ -94,34 +89,9 @@ public:
 
     SGL_HRESULT         SGL_DLLCALL Sync() const;
 
-    // ============================ TEXTURES ============================ //
-
-	Image*              SGL_DLLCALL CreateImage();
-    //Texture1D*          SGL_DLLCALL CreateTexture1D(const Texture::TEXTURE_1D_DESC& desc);
-    //TextureBuffer*      SGL_DLLCALL CreateTextureBuffer(const Texture::TEXTURE_BUFFER_DESC& desc);
-    Texture2D*          SGL_DLLCALL CreateTexture2D(const Texture2D::DESC& desc);
-    Texture2D*          SGL_DLLCALL CreateTexture2DMS(const Texture2D::DESC_MS& desc);
-    Texture3D*          SGL_DLLCALL CreateTexture3D(const Texture3D::DESC& desc);
-    Texture3D*          SGL_DLLCALL CreateTexture3DMS(const Texture3D::DESC_MS& desc);
-    TextureCube*        SGL_DLLCALL CreateTextureCube(const TextureCube::DESC& desc);
-
-    // ============================ BUFFERS ============================ //
-
-    VertexLayout*       SGL_DLLCALL CreateVertexLayout(unsigned int                 numElements, 
-                                                       const VertexLayout::ELEMENT* elements);
-
-    VertexBuffer*       SGL_DLLCALL CreateVertexBuffer();
-    IndexBuffer*        SGL_DLLCALL CreateIndexBuffer();
-    //UniformBuffer*      SGL_DLLCALL CreateUniformBuffer();
-
     // ============================ STATES ============================ //
 
-    BlendState*         SGL_DLLCALL CreateBlendState(const BlendState::DESC& desc);
-    DepthStencilState*  SGL_DLLCALL CreateDepthStencilState(const DepthStencilState::DESC& desc);
-    RasterizerState*    SGL_DLLCALL CreateRasterizerState(const RasterizerState::DESC& desc);
-    SamplerState*       SGL_DLLCALL CreateSamplerState(const SamplerState::DESC& desc);
-    
-    void                SGL_DLLCALL PushState(State::TYPE type);
+	void                SGL_DLLCALL PushState(State::TYPE type);
     SGL_HRESULT         SGL_DLLCALL PopState(State::TYPE type);
 
     // ============================ OTHER ============================ //
@@ -134,10 +104,6 @@ public:
 
     FFPProgram*         SGL_DLLCALL FixedPipelineProgram()          { return ffpProgram.get(); }
     DeviceTraits*       SGL_DLLCALL Traits() const                  { return deviceTraits.get(); }
-    Shader*             SGL_DLLCALL CreateShader(const Shader::DESC& desc);
-    Program*            SGL_DLLCALL CreateProgram();
-    Font*               SGL_DLLCALL CreateFont();
-    RenderTarget*       SGL_DLLCALL CreateRenderTarget();
 
     // ============================ RETRIEVE ============================ //
 
@@ -170,26 +136,68 @@ protected:
     sgl::rectangle              viewport;
 
     // states
-    state_stack             stateStack[State::__NUMBER_OF_STATES_WITH_SAMPLERS__];
+    state_stack					stateStack[State::__NUMBER_OF_STATES_WITH_SAMPLERS__];
 
     // unique device objects
-    ref_ptr<FFPProgram>     ffpProgram;
-    ref_ptr<DeviceTraits>   deviceTraits;
+    ref_ptr<FFPProgram>			ffpProgram;
+    ref_ptr<DeviceTraits>		deviceTraits;
 
-    #ifdef WIN32
+#ifdef WIN32
     HDC			hDC;
     HGLRC		hGLRC;
     HWND		hWnd;
-    #elif defined(__linux__)
+#elif defined(__linux__)
     Display*    display;
     Window      window;
     GLXDrawable glxDrawable;
     GLXWindow   glxWindow;
     GLXContext  glxContext;
-    #endif
+#endif
 
     // settings
     bool    makeCleanup;
+};
+
+template<DEVICE_VERSION DeviceVersion>
+class GLDeviceConcrete :
+	public GLDevice
+{
+public:
+	GLDeviceConcrete();
+	GLDeviceConcrete(const Device::VIDEO_DESC& desc);
+
+	// ============================ TEXTURES ============================ //
+
+	Image*              SGL_DLLCALL CreateImage();
+	//Texture1D*          SGL_DLLCALL CreateTexture1D(const Texture::TEXTURE_1D_DESC& desc);
+	//TextureBuffer*      SGL_DLLCALL CreateTextureBuffer(const Texture::TEXTURE_BUFFER_DESC& desc);
+	Texture2D*          SGL_DLLCALL CreateTexture2D(const Texture2D::DESC& desc);
+	Texture2D*          SGL_DLLCALL CreateTexture2DMS(const Texture2D::DESC_MS& desc);
+	Texture3D*          SGL_DLLCALL CreateTexture3D(const Texture3D::DESC& desc);
+	Texture3D*          SGL_DLLCALL CreateTexture3DMS(const Texture3D::DESC_MS& desc);
+	TextureCube*        SGL_DLLCALL CreateTextureCube(const TextureCube::DESC& desc);
+
+	// ============================ BUFFERS ============================ //
+
+	VertexLayout*       SGL_DLLCALL CreateVertexLayout(unsigned int                 numElements, 
+													   const VertexLayout::ELEMENT* elements);
+
+	VertexBuffer*       SGL_DLLCALL CreateVertexBuffer();
+	IndexBuffer*        SGL_DLLCALL CreateIndexBuffer();
+
+	// ============================ STATES ============================ //
+
+	BlendState*         SGL_DLLCALL CreateBlendState(const BlendState::DESC& desc);
+	DepthStencilState*  SGL_DLLCALL CreateDepthStencilState(const DepthStencilState::DESC& desc);
+	RasterizerState*    SGL_DLLCALL CreateRasterizerState(const RasterizerState::DESC& desc);
+	SamplerState*       SGL_DLLCALL CreateSamplerState(const SamplerState::DESC& desc);
+
+	// ============================ OTHER ============================ //
+
+	Shader*             SGL_DLLCALL CreateShader(const Shader::DESC& desc);
+	Program*            SGL_DLLCALL CreateProgram();
+	Font*               SGL_DLLCALL CreateFont();
+	RenderTarget*       SGL_DLLCALL CreateRenderTarget();
 };
 
 } // namesapce sgl

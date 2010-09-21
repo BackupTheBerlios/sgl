@@ -6,9 +6,40 @@
 
 namespace sgl {
 
-/** Make suitable depth stencil state */
-template<DEVICE_VERSION DeviceVersion>
-sgl::DepthStencilState* sglCreateDepthStencilState(GLDevice<DeviceVersion>* device, const DepthStencilState::DESC& desc);
+class GLDepthStencilStateDisplayLists :
+	public ReferencedImpl<DepthStencilState>
+{
+public:
+	GLDepthStencilStateDisplayLists(GLDevice* device, const DESC& desc);
+	~GLDepthStencilStateDisplayLists();
+
+	// Override DepthStencilState
+	void SGL_DLLCALL Bind() const;
+	const DESC& SGL_DLLCALL Desc() const { return desc; }
+
+private:
+	GLDevice*    device;
+	unsigned     bindDisplayList;
+	DESC         desc;
+};
+
+class GLDepthStencilStateSeparate :
+	public ReferencedImpl<DepthStencilState>
+{
+public:
+	GLDepthStencilStateSeparate(GLDevice* device, const DESC& desc);
+	~GLDepthStencilStateSeparate();
+
+	// Override State
+	void SGL_DLLCALL Bind() const;
+
+	// Override DepthStencilState
+	const DESC& SGL_DLLCALL Desc() const { return desc; }
+
+private:
+	GLDevice*	device;
+	DESC        desc;
+};
 
 } // namepsace sgl
 

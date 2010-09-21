@@ -5,15 +5,11 @@
 
 namespace sgl {
 
-template<DEVICE_VERSION DeviceVersion>
 class GLIndexBuffer :
-    public GLBuffer<DeviceVersion, IndexBuffer>
+    public GLBuffer<IndexBuffer>
 {
 public:
-    typedef GLBuffer<DeviceVersion, IndexBuffer> base_type;
-
-public:
-    GLIndexBuffer(GLDevice<DeviceVersion>* device);
+    GLIndexBuffer(GLDevice* device);
     ~GLIndexBuffer();
 
     // Override IndexBufferView

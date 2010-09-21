@@ -5,9 +5,9 @@
 
 namespace sgl {
 
-template<DEVICE_VERSION deviceVersion>
 class GLDevice;
 
-} // namepsace sgl
+} // namespace sgl
+
 
 #endif // SIMPLE_GL_GL_FORWARD_H_

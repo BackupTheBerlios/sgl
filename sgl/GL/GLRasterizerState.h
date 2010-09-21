@@ -6,10 +6,26 @@
 
 namespace sgl {
 
-/** Make suitable rasterizer state */
-template<DEVICE_VERSION DeviceVersion>
-sgl::RasterizerState* sglCreateRasterizerState(GLDevice<DeviceVersion>* device, const RasterizerState::DESC& desc);
+class GLRasterizerState :
+	public ReferencedImpl<RasterizerState>
+{
+public:
+	GLRasterizerState(GLDevice* device, const DESC& desc);
+	~GLRasterizerState();
 
-} // namepsace sgl
+	// Override RasterizerState
+	const DESC& SGL_DLLCALL Desc() const { return desc; }
+	void SGL_DLLCALL Bind() const;
+
+private:
+	GLDevice*   device;
+	DESC        desc;
+
+	// gl primitives
+	unsigned    glCullMode;
+	unsigned    glFillMode;
+};
+
+} // namespace sgl
 
 #endif // SIMPLE_GL_GL_RASTERIZER_STATE_H

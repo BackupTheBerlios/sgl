@@ -6,22 +6,20 @@
 namespace sgl {
 
 // forward
-template<DEVICE_VERSION DeviceVersion>
 class GLTextureCube;
 
-template<DEVICE_VERSION DeviceVersion>
 class GLTextureCubeSide :
-    public GLTexture<DeviceVersion, Texture2D>
+    public GLTexture<Texture2D>
 {
 public:
-    typedef GLTexture<DeviceVersion, Texture2D>                                 base_type;
-    typedef typename GLTexture<DeviceVersion, TextureCube>::guarded_binding     guarded_binding;
-    typedef typename GLTexture<DeviceVersion, TextureCube>::guarded_binding_ptr guarded_binding_ptr;
+    typedef GLTexture<Texture2D>                        base_type;
+    typedef GLTexture<TextureCube>::guarded_binding     guarded_binding;
+    typedef GLTexture<TextureCube>::guarded_binding_ptr guarded_binding_ptr;
 
 public:
-    GLTextureCubeSide( GLTextureCube<DeviceVersion>*    texture,
-                       const Texture2D::DESC&           desc,
-                       TextureCube::SIDE                side );
+    GLTextureCubeSide( GLTextureCube*			texture,
+                       const Texture2D::DESC&   desc,
+                       TextureCube::SIDE        side );
     // Override Texture2D
     Texture::TYPE   SGL_DLLCALL Type() const    { return Texture::TEXTURE_2D; }
     Texture::FORMAT SGL_DLLCALL Format() const  { return format; }
@@ -48,7 +46,7 @@ public:
 
 private:
     // master
-    GLTextureCube<DeviceVersion>* texture;
+    GLTextureCube*		texture;
 
     // props
     TextureCube::SIDE   side;
@@ -57,18 +55,17 @@ private:
     unsigned int        height;
 };
 
-template<DEVICE_VERSION DeviceVersion>
 class GLTextureCube :
-    public GLTexture<DeviceVersion, TextureCube>
+    public GLTexture<TextureCube>
 {
-friend class GLTextureCubeSide<DeviceVersion>;
+friend class GLTextureCubeSide;
 public:
-    typedef GLTexture<DeviceVersion, TextureCube>   base_type;
-    typedef typename base_type::guarded_binding     guarded_binding;
-    typedef typename base_type::guarded_binding_ptr guarded_binding_ptr;
+    typedef GLTexture<TextureCube>		   base_type;
+    typedef base_type::guarded_binding     guarded_binding;
+    typedef base_type::guarded_binding_ptr guarded_binding_ptr;
 
 public:
-    GLTextureCube( GLDevice<DeviceVersion>* device,
+    GLTextureCube( GLDevice*				device,
                    const TextureCube::DESC& desc );
     ~GLTextureCube();
 
@@ -83,7 +80,7 @@ public:
     void            SGL_DLLCALL Unbind() const;
 
 private:
-    ref_ptr< GLTextureCubeSide<DeviceVersion> >  sides[6];
+    ref_ptr<GLTextureCubeSide> sides[6];
 };
 
 } // namesapce sgl

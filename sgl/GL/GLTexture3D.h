@@ -6,18 +6,17 @@
 
 namespace sgl {
 
-template<DEVICE_VERSION DeviceVersion>
 class GLTexture3D :
-    public GLTexture<DeviceVersion, Texture3D>
+    public GLTexture<Texture3D>
 {
 public:
-    typedef GLTexture<DeviceVersion, Texture3D>     base_type;
-    typedef typename base_type::guarded_binding     guarded_binding;
-    typedef typename base_type::guarded_binding_ptr guarded_binding_ptr;
+    typedef GLTexture<Texture3D>			base_type;
+    typedef base_type::guarded_binding      guarded_binding;
+    typedef base_type::guarded_binding_ptr  guarded_binding_ptr;
 
 public:
-    GLTexture3D(GLDevice<DeviceVersion>* device, const Texture3D::DESC& desc);
-    GLTexture3D(GLDevice<DeviceVersion>* device, const Texture3D::DESC_MS& desc);
+    GLTexture3D(GLDevice* device, const Texture3D::DESC& desc);
+    GLTexture3D(GLDevice* device, const Texture3D::DESC_MS& desc);
     ~GLTexture3D();
 
     // Override Texture2

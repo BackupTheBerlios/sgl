@@ -4,8 +4,6 @@
 
 namespace {
 
-    using namespace sgl;
-
     GLenum BIND_BLEND_OPERATION[] =
     {
         GL_FUNC_ADD,
@@ -34,169 +32,127 @@ namespace {
         GL_SRC_ALPHA_SATURATE
     };
 
-    template<DEVICE_VERSION deviceVersion>
-    class GLBlendStateDisplayLists :
-        public ReferencedImpl<BlendState>
-    {
-    public:
-        GLBlendStateDisplayLists(GLDevice<deviceVersion>*       device_, 
-                                 const BlendState::DESC&        desc_) :
-            device(device_),
-            desc(desc_)
-        {
-            bindDisplayList = glGenLists(1);
-
-            // generate setup list
-            glNewList(bindDisplayList, GL_COMPILE);
-            {
-                if (desc.blendEnable)
-                {
-                    glEnable(GL_BLEND);
-                    if (desc.srcBlend != desc.srcBlendAlpha || desc.destBlend != desc.destBlendAlpha)
-                    {
-                        glBlendFuncSeparate( BIND_BLEND_FUNCTION[desc.srcBlend], 
-                                             BIND_BLEND_FUNCTION[desc.destBlend],
-                                             BIND_BLEND_FUNCTION[desc.srcBlendAlpha],
-                                             BIND_BLEND_FUNCTION[desc.destBlendAlpha] );
-                    }
-                    else 
-                    {
-                        glBlendFunc(BIND_BLEND_FUNCTION[desc.srcBlend], BIND_BLEND_FUNCTION[desc.destBlend]);
-                    }
-
-                    if (desc.blendOp != desc.blendOpAlpha) {
-                        glBlendEquationSeparate(BIND_BLEND_OPERATION[desc.blendOp], BIND_BLEND_OPERATION[desc.blendOpAlpha]);
-                    }
-                }
-                else {
-                    glDisable(GL_BLEND);
-                }
-            }
-            glEndList();
-        }
-            
-        ~GLBlendStateDisplayLists()
-        {
-            glDeleteLists(bindDisplayList, 1);
-            if (device->CurrentBlendState() == this) {
-                device->SetBlendState(0);
-            }
-        }
-
-        void SGL_DLLCALL Bind() const
-        {
-            glCallList(bindDisplayList);
-            device->SetBlendState(this);
-        }
-        
-        const BlendState::DESC& SGL_DLLCALL Desc() const { return desc; }
-
-    private:
-        GLDevice<deviceVersion>*        device;
-        GLuint                          bindDisplayList;
-        BlendState::DESC                desc;
-    };
-
-    template<DEVICE_VERSION deviceVersion>
-    class GLBlendStateSeparate :
-        public ReferencedImpl<BlendState>
-    {
-    public:
-        GLBlendStateSeparate(GLDevice<deviceVersion>*       device_, 
-                             const BlendState::DESC&        desc_) :
-            device(device_),
-            desc(desc_)
-        {
-        }
-
-        ~GLBlendStateSeparate()
-        {
-            if (device->CurrentBlendState() == this) {
-                device->SetBlendState(0);
-            }
-        }
-
-        void SGL_DLLCALL Bind() const
-        {
-            if (desc.blendEnable)
-            {
-                glEnable(GL_BLEND);
-                glBlendFuncSeparate( BIND_BLEND_FUNCTION[desc.srcBlend],
-                                     BIND_BLEND_FUNCTION[desc.destBlend],
-                                     BIND_BLEND_FUNCTION[desc.srcBlendAlpha],
-                                     BIND_BLEND_FUNCTION[desc.destBlendAlpha] );
-                glBlendEquationSeparate( BIND_BLEND_OPERATION[desc.blendOp],
-                                         BIND_BLEND_OPERATION[desc.blendOpAlpha] );
-            }
-            else {
-                glDisable(GL_BLEND);
-            }
-
-            device->SetBlendState(this);
-        }
-        
-        const BlendState::DESC& SGL_DLLCALL Desc() const { return desc; }
-
-    private:
-        GLDevice<deviceVersion>*        device;
-        BlendState::DESC                desc;
-    };
-
-    template<DEVICE_VERSION deviceVersion>
-    class GLBlendStateDefault :
-        public ReferencedImpl<BlendState>
-    {
-    public:
-        GLBlendStateDefault(GLDevice<deviceVersion>*   device_, 
-                            const BlendState::DESC&    desc_) :
-            device(device_),
-            desc(desc_)
-        {
-            glSrcBlend  = BIND_BLEND_FUNCTION[desc.srcBlend];
-            glDestBlend = BIND_BLEND_FUNCTION[desc.destBlend];
-            glBlendOp   = BIND_BLEND_OPERATION[desc.blendOp];
-        }
-
-        ~GLBlendStateDefault()
-        {
-            if (device->CurrentBlendState() == this) {
-                device->SetBlendState(0);
-            }
-        }
-
-        void SGL_DLLCALL Bind() const
-        {
-            if (desc.blendEnable)
-            {
-                glEnable(GL_BLEND);
-                glBlendFunc(glSrcBlend, glDestBlend);
-                glBlendEquation(glBlendOp);
-            }
-            else {
-                glDisable(GL_BLEND);
-            }
-
-            device->SetBlendState(this);
-        }
-        
-        const BlendState::DESC& SGL_DLLCALL Desc() const { return desc; }
-
-    private:
-        GLDevice<deviceVersion>*    device;
-        BlendState::DESC            desc;
-
-        // gl bindings
-        GLuint  glSrcBlend;
-        GLuint  glDestBlend;
-        GLuint  glBlendOp;
-    };
-
 } // anonymous namespace
 
 namespace sgl {
 
+GLBlendStateDisplayLists::GLBlendStateDisplayLists(GLDevice*              device_, 
+												  const BlendState::DESC& desc_) :
+    device(device_),
+    desc(desc_)
+{
+    bindDisplayList = glGenLists(1);
+
+    // generate setup list
+    glNewList(bindDisplayList, GL_COMPILE);
+    {
+        if (desc.blendEnable)
+        {
+            glEnable(GL_BLEND);
+            if (desc.srcBlend != desc.srcBlendAlpha || desc.destBlend != desc.destBlendAlpha)
+            {
+                glBlendFuncSeparate( BIND_BLEND_FUNCTION[desc.srcBlend], 
+                                        BIND_BLEND_FUNCTION[desc.destBlend],
+                                        BIND_BLEND_FUNCTION[desc.srcBlendAlpha],
+                                        BIND_BLEND_FUNCTION[desc.destBlendAlpha] );
+            }
+            else 
+            {
+                glBlendFunc(BIND_BLEND_FUNCTION[desc.srcBlend], BIND_BLEND_FUNCTION[desc.destBlend]);
+            }
+
+            if (desc.blendOp != desc.blendOpAlpha) {
+                glBlendEquationSeparate(BIND_BLEND_OPERATION[desc.blendOp], BIND_BLEND_OPERATION[desc.blendOpAlpha]);
+            }
+        }
+        else {
+            glDisable(GL_BLEND);
+        }
+    }
+    glEndList();
+}
+            
+GLBlendStateDisplayLists::~GLBlendStateDisplayLists()
+{
+    glDeleteLists(bindDisplayList, 1);
+    if (device->CurrentBlendState() == this) {
+        device->SetBlendState(0);
+    }
+}
+
+void GLBlendStateDisplayLists::Bind() const
+{
+    glCallList(bindDisplayList);
+    device->SetBlendState(this);
+}
+
+GLBlendStateSeparate::GLBlendStateSeparate(GLDevice*               device_, 
+										   const BlendState::DESC& desc_) :
+    device(device_),
+    desc(desc_)
+{
+}
+
+GLBlendStateSeparate::~GLBlendStateSeparate()
+{
+    if (device->CurrentBlendState() == this) {
+        device->SetBlendState(0);
+    }
+}
+
+void GLBlendStateSeparate::Bind() const
+{
+    if (desc.blendEnable)
+    {
+        glEnable(GL_BLEND);
+        glBlendFuncSeparate( BIND_BLEND_FUNCTION[desc.srcBlend],
+                             BIND_BLEND_FUNCTION[desc.destBlend],
+                             BIND_BLEND_FUNCTION[desc.srcBlendAlpha],
+                             BIND_BLEND_FUNCTION[desc.destBlendAlpha] );
+        glBlendEquationSeparate( BIND_BLEND_OPERATION[desc.blendOp],
+                                 BIND_BLEND_OPERATION[desc.blendOpAlpha] );
+    }
+    else {
+        glDisable(GL_BLEND);
+    }
+
+    device->SetBlendState(this);
+}
+
+GLBlendStateDefault::GLBlendStateDefault(GLDevice*   device_, 
+										 const BlendState::DESC&    desc_) :
+    device(device_),
+    desc(desc_)
+{
+    glSrcBlend  = BIND_BLEND_FUNCTION[desc.srcBlend];
+    glDestBlend = BIND_BLEND_FUNCTION[desc.destBlend];
+    glBlendOp   = BIND_BLEND_OPERATION[desc.blendOp];
+}
+
+GLBlendStateDefault::~GLBlendStateDefault()
+{
+    if (device->CurrentBlendState() == this) {
+        device->SetBlendState(0);
+    }
+}
+
+void GLBlendStateDefault::Bind() const
+{
+    if (desc.blendEnable)
+    {
+        glEnable(GL_BLEND);
+        glBlendFunc(glSrcBlend, glDestBlend);
+        glBlendEquation(glBlendOp);
+    }
+    else {
+        glDisable(GL_BLEND);
+    }
+
+    device->SetBlendState(this);
+}
+
 template<DEVICE_VERSION DeviceVersion>
-sgl::BlendState* sglCreateBlendState(GLDevice<DeviceVersion>* device, const BlendState::DESC& desc)
+sgl::BlendState* sglCreateBlendState(GLDevice* device, const BlendState::DESC& desc)
 {
     if ( desc.destBlend != desc.destBlendAlpha 
          || desc.srcBlend != desc.srcBlendAlpha
@@ -217,15 +173,5 @@ sgl::BlendState* sglCreateBlendState(GLDevice<DeviceVersion>* device, const Blen
         return new GLBlendStateDefault<DeviceVersion>(device, desc);
     }
 }
-
-// explicit template instantiation
-template sgl::BlendState* sglCreateBlendState<DV_OPENGL_1_3>(GLDevice<DV_OPENGL_1_3>*, const BlendState::DESC&);
-template sgl::BlendState* sglCreateBlendState<DV_OPENGL_1_4>(GLDevice<DV_OPENGL_1_4>*, const BlendState::DESC&);
-template sgl::BlendState* sglCreateBlendState<DV_OPENGL_1_5>(GLDevice<DV_OPENGL_1_5>*, const BlendState::DESC&);
-template sgl::BlendState* sglCreateBlendState<DV_OPENGL_2_0>(GLDevice<DV_OPENGL_2_0>*, const BlendState::DESC&);
-template sgl::BlendState* sglCreateBlendState<DV_OPENGL_2_1>(GLDevice<DV_OPENGL_2_1>*, const BlendState::DESC&);
-template sgl::BlendState* sglCreateBlendState<DV_OPENGL_3_0>(GLDevice<DV_OPENGL_3_0>*, const BlendState::DESC&);
-template sgl::BlendState* sglCreateBlendState<DV_OPENGL_3_1>(GLDevice<DV_OPENGL_3_1>*, const BlendState::DESC&);
-template sgl::BlendState* sglCreateBlendState<DV_OPENGL_3_2>(GLDevice<DV_OPENGL_3_2>*, const BlendState::DESC&);
 
 } // namespace sgl

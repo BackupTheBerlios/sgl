@@ -244,8 +244,7 @@ namespace {
 
 namespace sgl {
 
-template<DEVICE_VERSION DeviceVersion>
-GLFFPProgram<DeviceVersion>::GLFFPProgram(GLDevice<DeviceVersion>* device_) :
+GLFFPProgram::GLFFPProgram(GLDevice* device_) :
     device(device_)
 {
     using namespace math;
@@ -429,14 +428,12 @@ GLFFPProgram<DeviceVersion>::GLFFPProgram(GLDevice<DeviceVersion>* device_) :
     offset += uniformSize;
 }
 
-template<DEVICE_VERSION DeviceVersion>
-SGL_HRESULT GLFFPProgram<DeviceVersion>::BindAttributeLocation(const char* /*name*/, unsigned /*index*/)
+SGL_HRESULT GLFFPProgram::BindAttributeLocation(const char* /*name*/, unsigned /*index*/)
 {
     return EInvalidCall("Can't bind attribute location for ffp program.");
 }
 
-template<DEVICE_VERSION DeviceVersion>
-SGL_HRESULT GLFFPProgram<DeviceVersion>::Bind() const
+SGL_HRESULT GLFFPProgram::Bind() const
 {
     if (glUseProgram) {
         glUseProgram(0);
@@ -446,40 +443,12 @@ SGL_HRESULT GLFFPProgram<DeviceVersion>::Bind() const
 	return SGL_OK;
 }
 
-template<DEVICE_VERSION DeviceVersion>
-void GLFFPProgram<DeviceVersion>::Unbind() const
+void GLFFPProgram::Unbind() const
 {
     // Actually we can't unbind ffp program
     if (device->CurrentProgram() == this) {
         device->SetProgram(0);
     }
 }
-
-template<DEVICE_VERSION DeviceVersion>
-sgl::FFPProgram* sglCreateFFPProgram(GLDevice<DeviceVersion>* device)
-{
-    if ( device_traits<DeviceVersion>::support_fixed_pipeline() ) {
-        return new GLFFPProgram<DeviceVersion>(device);
-    }
-
-    throw gl_error("Device profile doesn't support fixed pipeline", SGLERR_UNSUPPORTED);
-}
-
-// explicit template instantiation
-template class GLFFPProgram<DV_OPENGL_1_3>;
-template class GLFFPProgram<DV_OPENGL_1_4>;
-template class GLFFPProgram<DV_OPENGL_1_5>;
-template class GLFFPProgram<DV_OPENGL_2_0>;
-template class GLFFPProgram<DV_OPENGL_2_1>;
-template class GLFFPProgram<DV_OPENGL_3_0>;
-
-template sgl::FFPProgram* sglCreateFFPProgram<DV_OPENGL_1_3>(GLDevice<DV_OPENGL_1_3>*);
-template sgl::FFPProgram* sglCreateFFPProgram<DV_OPENGL_1_4>(GLDevice<DV_OPENGL_1_4>*);
-template sgl::FFPProgram* sglCreateFFPProgram<DV_OPENGL_1_5>(GLDevice<DV_OPENGL_1_5>*);
-template sgl::FFPProgram* sglCreateFFPProgram<DV_OPENGL_2_0>(GLDevice<DV_OPENGL_2_0>*);
-template sgl::FFPProgram* sglCreateFFPProgram<DV_OPENGL_2_1>(GLDevice<DV_OPENGL_2_1>*);
-template sgl::FFPProgram* sglCreateFFPProgram<DV_OPENGL_3_0>(GLDevice<DV_OPENGL_3_0>*);
-template sgl::FFPProgram* sglCreateFFPProgram<DV_OPENGL_3_1>(GLDevice<DV_OPENGL_3_1>*);
-template sgl::FFPProgram* sglCreateFFPProgram<DV_OPENGL_3_2>(GLDevice<DV_OPENGL_3_2>*);
 
 } // namespace sgl

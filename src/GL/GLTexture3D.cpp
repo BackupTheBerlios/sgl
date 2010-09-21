@@ -3,9 +3,8 @@
 
 namespace sgl {
 
-template<DEVICE_VERSION DeviceVersion>
-GLTexture3D<DeviceVersion>::GLTexture3D(GLDevice<DeviceVersion>* device_, const Texture3D::DESC& desc) :
-    GLTexture<DeviceVersion, Texture3D>(device_, GL_TEXTURE_3D),
+GLTexture3D::GLTexture3D(GLDevice* device_, const Texture3D::DESC& desc) :
+    GLTexture<Texture3D>(device_, GL_TEXTURE_3D),
     format(desc.format),
     width(desc.width),
     height(desc.height),
@@ -21,7 +20,7 @@ GLTexture3D<DeviceVersion>::GLTexture3D(GLDevice<DeviceVersion>* device_, const 
     bool   compressed  = Texture::FORMAT_TRAITS[format].compressed;
 
     // save previous state & bind texture
-    guarded_binding_ptr guardedTexture( new guarded_binding(base_type::device, this, 0) );
+    guarded_binding_ptr guardedTexture( new guarded_binding(device, this, 0) );
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
@@ -32,7 +31,7 @@ GLTexture3D<DeviceVersion>::GLTexture3D(GLDevice<DeviceVersion>* device_, const 
     // copy image
     if (compressed)
     {
-        glCompressedTexImage3D( base_type::glTarget,
+        glCompressedTexImage3D( glTarget,
                                 0,
                                 glFormat,
                                 width,
@@ -44,7 +43,7 @@ GLTexture3D<DeviceVersion>::GLTexture3D(GLDevice<DeviceVersion>* device_, const 
     }
     else
     {
-        glTexImage3D( base_type::glTarget,
+        glTexImage3D( glTarget,
                       0,
                       glFormat,
                       width,
@@ -64,9 +63,8 @@ GLTexture3D<DeviceVersion>::GLTexture3D(GLDevice<DeviceVersion>* device_, const 
 #endif // SGL_NO_STATUS_CHECK
 }
 
-template<DEVICE_VERSION DeviceVersion>
-GLTexture3D<DeviceVersion>::GLTexture3D(GLDevice<DeviceVersion>* device_, const Texture3D::DESC_MS& desc) :
-    GLTexture<DeviceVersion, Texture3D>(device_, 0xFFFFFF), // FIXME
+GLTexture3D::GLTexture3D(GLDevice* device_, const Texture3D::DESC_MS& desc) :
+    GLTexture<Texture3D>(device_, 0xFFFFFF), // FIXME
     format(desc.format),
     width(desc.width),
     height(desc.height),
@@ -84,7 +82,7 @@ GLTexture3D<DeviceVersion>::GLTexture3D(GLDevice<DeviceVersion>* device_, const 
     bool   compressed  = Texture::FORMAT_TRAITS[format].compressed;
 
     // save previous state & bind texture
-    guarded_binding_ptr guardedTexture( new guarded_binding(base_type::device.get(), this, 0) );
+    guarded_binding_ptr guardedTexture( new guarded_binding(device.get(), this, 0) );
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
@@ -93,7 +91,7 @@ GLTexture3D<DeviceVersion>::GLTexture3D(GLDevice<DeviceVersion>* device_, const 
 #endif // SGL_NO_STATUS_CHECK
 
     // create image
-    glTexImage3DMultisample( base_type::glTarget,
+    glTexImage3DMultisample( glTarget,
                              numSamples,
                              glFormat,
                              width,
@@ -110,21 +108,19 @@ GLTexture3D<DeviceVersion>::GLTexture3D(GLDevice<DeviceVersion>* device_, const 
     */
 }
 
-template<DEVICE_VERSION DeviceVersion>
-GLTexture3D<DeviceVersion>::~GLTexture3D()
+GLTexture3D::~GLTexture3D()
 {
     Unbind();
 }
 
-template<DEVICE_VERSION DeviceVersion>
-SGL_HRESULT GLTexture3D<DeviceVersion>::SetSubImage( unsigned int  mipmap,
-                                                     unsigned int  offsetx,
-                                                     unsigned int  offsety,
-                                                     unsigned int  offsetz,
-                                                     unsigned int  regionWidth,
-                                                     unsigned int  regionHeight,
-                                                     unsigned int  regionDepth,
-                                                     const void*   data )
+SGL_HRESULT GLTexture3D::SetSubImage( unsigned int  mipmap,
+                                      unsigned int  offsetx,
+                                      unsigned int  offsety,
+                                      unsigned int  offsetz,
+                                      unsigned int  regionWidth,
+                                      unsigned int  regionHeight,
+                                      unsigned int  regionDepth,
+                                      const void*   data )
 {
     // image settings
     GLenum glError;
@@ -133,7 +129,7 @@ SGL_HRESULT GLTexture3D<DeviceVersion>::SetSubImage( unsigned int  mipmap,
     bool   compressed  = Texture::FORMAT_TRAITS[format].compressed;
 
     // save previous state & bind texture
-    guarded_binding_ptr guardedTexture( new guarded_binding(base_type::device, this, 0) );
+    guarded_binding_ptr guardedTexture( new guarded_binding(device, this, 0) );
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
@@ -144,7 +140,7 @@ SGL_HRESULT GLTexture3D<DeviceVersion>::SetSubImage( unsigned int  mipmap,
     // copy image
     if (compressed)
     {
-        glCompressedTexSubImage3D( base_type::glTarget,
+        glCompressedTexSubImage3D( glTarget,
                                    mipmap,
                                    offsetx,
                                    offsety,
@@ -158,7 +154,7 @@ SGL_HRESULT GLTexture3D<DeviceVersion>::SetSubImage( unsigned int  mipmap,
     }
     else
     {
-        glTexSubImage3D( base_type::glTarget,
+        glTexSubImage3D( glTarget,
                          mipmap,
                          offsetx,
                          offsety,
@@ -184,9 +180,8 @@ SGL_HRESULT GLTexture3D<DeviceVersion>::SetSubImage( unsigned int  mipmap,
     return SGL_OK;
 }
 
-template<DEVICE_VERSION DeviceVersion>
-SGL_HRESULT GLTexture3D<DeviceVersion>::GetImage( unsigned int  mipmap,
-                                                  void*         data )
+SGL_HRESULT GLTexture3D::GetImage( unsigned int  mipmap,
+                                   void*         data )
 {
     GLenum glError;
 	GLenum glUsage     = BIND_GL_FORMAT_USAGE[format];
@@ -195,7 +190,7 @@ SGL_HRESULT GLTexture3D<DeviceVersion>::GetImage( unsigned int  mipmap,
     bool   compressed  = Texture::FORMAT_TRAITS[format].compressed;
 
     // save previous state & bind texture
-    guarded_binding_ptr guardedTexture( new guarded_binding(base_type::device, this, 0) );
+    guarded_binding_ptr guardedTexture( new guarded_binding(device, this, 0) );
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
@@ -206,13 +201,13 @@ SGL_HRESULT GLTexture3D<DeviceVersion>::GetImage( unsigned int  mipmap,
     // copy image
     if (compressed)
     {
-        glGetCompressedTexImage(base_type::glTarget,
+        glGetCompressedTexImage(glTarget,
                                 mipmap,
                                 data);
     }
     else
     {
-        glGetTexImage(base_type::glTarget,
+        glGetTexImage(glTarget,
                       mipmap,
                       glUsage,
                       glPixelType,
@@ -229,10 +224,9 @@ SGL_HRESULT GLTexture3D<DeviceVersion>::GetImage( unsigned int  mipmap,
     return SGL_OK;
 }
 
-template<DEVICE_VERSION DeviceVersion>
-SGL_HRESULT GLTexture3D<DeviceVersion>::GenerateMipmap()
+SGL_HRESULT GLTexture3D::GenerateMipmap()
 {
-    guarded_binding_ptr guardedTexture( new guarded_binding(base_type::device, this, 0) );
+    guarded_binding_ptr guardedTexture( new guarded_binding(device, this, 0) );
 
 #ifndef SGL_NO_STATUS_CHECK
     GLenum glError = glGetError();
@@ -242,7 +236,7 @@ SGL_HRESULT GLTexture3D<DeviceVersion>::GenerateMipmap()
 #endif // SGL_NO_STATUS_CHECK
 
     if (glGenerateMipmapEXT) {
-        glGenerateMipmapEXT(base_type::glTarget);
+        glGenerateMipmapEXT(glTarget);
     }
     else {
         return EUnsupported("Hardware mipmap generation is not supported by the device");
@@ -258,43 +252,31 @@ SGL_HRESULT GLTexture3D<DeviceVersion>::GenerateMipmap()
     return SGL_OK;
 }
 
-template<DEVICE_VERSION DeviceVersion>
-SGL_HRESULT GLTexture3D<DeviceVersion>::Bind(unsigned int stage_) const
+SGL_HRESULT GLTexture3D::Bind(unsigned int stage_) const
 {
 #ifndef SGL_NO_STATUS_CHECK
-    if ( base_type::stage >= Device::NUM_TEXTURE_STAGES ) {
+    if ( stage >= Device::NUM_TEXTURE_STAGES ) {
         return EInvalidCall("GLTexture3D<DeviceVersion>::Bind failed. Stage is too large.");
     }
 #endif
 
-    base_type::stage = stage_;
-    glActiveTexture(GL_TEXTURE0 + base_type::stage);
-    glBindTexture(base_type::glTarget, base_type::glTexture);
-    base_type::device->SetTexture(base_type::stage, this);
+    stage = stage_;
+    glActiveTexture(GL_TEXTURE0 + stage);
+    glBindTexture(glTarget, glTexture);
+    device->SetTexture(stage, this);
 
     return SGL_OK;
 }
 
-template<DEVICE_VERSION DeviceVersion>
-void GLTexture3D<DeviceVersion>::Unbind() const
+void GLTexture3D::Unbind() const
 {
-    if ( base_type::stage > 0 && base_type::device->CurrentTexture(base_type::stage) == this )
+    if ( stage > 0 && device->CurrentTexture(stage) == this )
     {
-        glActiveTexture(GL_TEXTURE0 + base_type::stage);
-        glBindTexture(base_type::glTarget, 0);
-        base_type::device->SetTexture(base_type::stage, 0);
-        base_type::stage = -1;
+        glActiveTexture(GL_TEXTURE0 + stage);
+        glBindTexture(glTarget, 0);
+        device->SetTexture(stage, 0);
+        stage = -1;
     }
 }
-
-// explicit template instantiation
-template class GLTexture3D<DV_OPENGL_1_3>;
-template class GLTexture3D<DV_OPENGL_1_4>;
-template class GLTexture3D<DV_OPENGL_1_5>;
-template class GLTexture3D<DV_OPENGL_2_0>;
-template class GLTexture3D<DV_OPENGL_2_1>;
-template class GLTexture3D<DV_OPENGL_3_0>;
-template class GLTexture3D<DV_OPENGL_3_1>;
-template class GLTexture3D<DV_OPENGL_3_2>;
 
 } // namespace sgl

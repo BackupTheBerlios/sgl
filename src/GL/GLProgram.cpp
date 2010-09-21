@@ -27,8 +27,8 @@ namespace {
 namespace sgl {
 
 // program
-template<DEVICE_VERSION DeviceVersion> 
-GLProgram<DeviceVersion>::GLProgram(GLDevice<DeviceVersion>* device_) :
+
+GLProgram::GLProgram(GLDevice* device_) :
     device(device_),
     uniforms(0),
     numVerticesOut(3),
@@ -40,8 +40,8 @@ GLProgram<DeviceVersion>::GLProgram(GLDevice<DeviceVersion>* device_) :
     glProgram = glCreateProgram();
 }
 
-template<DEVICE_VERSION DeviceVersion> 
-GLProgram<DeviceVersion>::~GLProgram()
+
+GLProgram::~GLProgram()
 {
     Unbind();
     glDeleteProgram(glProgram);
@@ -51,24 +51,22 @@ GLProgram<DeviceVersion>::~GLProgram()
 }
 
 // shaders
-template<DEVICE_VERSION DeviceVersion> 
-SGL_HRESULT GLProgram<DeviceVersion>::AddShader(Shader* shader)
+SGL_HRESULT GLProgram::AddShader(Shader* shader)
 {
 #ifndef SGL_NO_STATUS_CHECK
     if (!shader) {
 		return EInvalidCall("GLProgram::AddShader failed. Shader is NULL");
     }
 #endif
-    shaders.push_back( ref_ptr<shader_type>( static_cast<shader_type*>(shader) ) );
+    shaders.push_back( shader_ptr( static_cast<GLShader*>(shader) ) );
     dirty = true;
 
     return SGL_OK;
 }
 
-template<DEVICE_VERSION DeviceVersion> 
-bool GLProgram<DeviceVersion>::RemoveShader(Shader* shader)
+bool GLProgram::RemoveShader(Shader* shader)
 {
-    typename shader_vector::iterator iter = std::find( shaders.begin(), shaders.end(), ref_ptr<Shader>(shader) );
+    shader_vector::iterator iter = std::find( shaders.begin(), shaders.end(), ref_ptr<Shader>(shader) );
     if ( iter != shaders.end() ) 
     {
         std::swap(*iter, shaders.back() );
@@ -80,13 +78,12 @@ bool GLProgram<DeviceVersion>::RemoveShader(Shader* shader)
     return false;
 }
 
-template<DEVICE_VERSION DeviceVersion> 
-AbstractUniform* GLProgram<DeviceVersion>::CreateUniform( GLProgram*   program,
-                                                          const char*  name,
-                                                          GLuint       glIndex,
-                                                          GLuint       glLocation,
-                                                          GLenum       glUniformType,
-                                                          size_t       size )
+AbstractUniform* GLProgram::CreateUniform( GLProgram*   program,
+										   const char*  name,
+										   GLuint       glIndex,
+										   GLuint       glLocation,
+										   GLenum       glUniformType,
+										   size_t       size )
 {
     typedef GLUniform<float>      uniform1f;
     typedef GLUniform<Vector2f>   uniform2f;
@@ -297,8 +294,8 @@ AbstractUniform* GLProgram<DeviceVersion>::CreateUniform( GLProgram*   program,
 }
 
 // Work
-template<DEVICE_VERSION DeviceVersion> 
-SGL_HRESULT GLProgram<DeviceVersion>::Dirty(bool force)
+
+SGL_HRESULT GLProgram::Dirty(bool force)
 {
     if ( !force && !dirty ) {
         return SGL_OK;
@@ -475,8 +472,8 @@ SGL_HRESULT GLProgram<DeviceVersion>::Dirty(bool force)
 	return SGL_OK;
 }
 
-template<DEVICE_VERSION DeviceVersion> 
-void GLProgram<DeviceVersion>::Clear()
+
+void GLProgram::Clear()
 {
     dirty = true;
     shaders.clear();
@@ -486,8 +483,8 @@ void GLProgram<DeviceVersion>::Clear()
     compilationLog.clear();
 }
 
-template<DEVICE_VERSION DeviceVersion> 
-SGL_HRESULT GLProgram<DeviceVersion>::Bind() const
+
+SGL_HRESULT GLProgram::Bind() const
 {
 #ifndef SGL_NO_STATUS_CHECK
     if (dirty) {
@@ -504,8 +501,8 @@ SGL_HRESULT GLProgram<DeviceVersion>::Bind() const
 	return SGL_OK;
 }
 
-template<DEVICE_VERSION DeviceVersion> 
-void GLProgram<DeviceVersion>::Unbind() const
+
+void GLProgram::Unbind() const
 {
     if (device->CurrentProgram() == this) 
     {
@@ -514,8 +511,8 @@ void GLProgram<DeviceVersion>::Unbind() const
     }
 }
 
-template<DEVICE_VERSION DeviceVersion> 
-const char* GLProgram<DeviceVersion>::CompilationLog() const
+
+const char* GLProgram::CompilationLog() const
 {
     if (dirty) {
 		return 0;
@@ -524,30 +521,30 @@ const char* GLProgram<DeviceVersion>::CompilationLog() const
     return compilationLog.c_str();
 }
 
-template<DEVICE_VERSION DeviceVersion> 
-void GLProgram<DeviceVersion>::SetGeometryNumVerticesOut(unsigned int _numVerticesOut)
+
+void GLProgram::SetGeometryNumVerticesOut(unsigned int _numVerticesOut)
 {
     numVerticesOut = _numVerticesOut;
     dirty          = true;
 }
 
-template<DEVICE_VERSION DeviceVersion> 
-void GLProgram<DeviceVersion>::SetGeometryInputType(PRIMITIVE_TYPE _inputType)
+
+void GLProgram::SetGeometryInputType(PRIMITIVE_TYPE _inputType)
 {
     inputType = _inputType;
     dirty     = true;
 }
 
-template<DEVICE_VERSION DeviceVersion> 
-void GLProgram<DeviceVersion>::SetGeometryOutputType(PRIMITIVE_TYPE _outputType)
+
+void GLProgram::SetGeometryOutputType(PRIMITIVE_TYPE _outputType)
 {
     outputType = _outputType;
     dirty      = true;
 }
 
 // Attributes
-template<DEVICE_VERSION DeviceVersion> 
-SGL_HRESULT GLProgram<DeviceVersion>::BindAttributeLocation(const char* name, unsigned index)
+
+SGL_HRESULT GLProgram::BindAttributeLocation(const char* name, unsigned index)
 {
     glBindAttribLocation(glProgram, index, name);
 #ifndef SGL_NO_STATUS_CHECK
@@ -561,15 +558,15 @@ SGL_HRESULT GLProgram<DeviceVersion>::BindAttributeLocation(const char* name, un
     return SGL_OK;
 }
 
-template<DEVICE_VERSION DeviceVersion> 
-int GLProgram<DeviceVersion>::AttributeLocation(const char* name) const
+
+int GLProgram::AttributeLocation(const char* name) const
 {
     int location = glGetAttribLocation(glProgram, name);
     return location;
 }
 
-template<DEVICE_VERSION DeviceVersion> 
-Program::ATTRIBUTE GLProgram<DeviceVersion>::Attribute(unsigned index) const
+
+Program::ATTRIBUTE GLProgram::Attribute(unsigned index) const
 {
 #ifndef SGL_NO_STATUS_CHECK
     if (index >= attributes.size() ) 
@@ -583,8 +580,7 @@ Program::ATTRIBUTE GLProgram<DeviceVersion>::Attribute(unsigned index) const
 }
 
 // Uniforms
-template<DEVICE_VERSION DeviceVersion>
-AbstractUniform* GLProgram<DeviceVersion>::GetUniform(const char* name) const
+AbstractUniform* GLProgram::GetUniform(const char* name) const
 {
     if (dirty)
     {
@@ -680,120 +676,94 @@ AbstractUniform* GLProgram<DeviceVersion>::GetUniform(const char* name) const
     return 0;
 }
 
-template<DEVICE_VERSION DeviceVersion> 
-UniformI* GLProgram<DeviceVersion>::GetUniformI(const char* name) const
+
+UniformI* GLProgram::GetUniformI(const char* name) const
 {
     return GetUniform<int>(name);
 }
 
-template<DEVICE_VERSION DeviceVersion> 
-Uniform2I* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform2I(const char* name) const
+
+Uniform2I* SGL_DLLCALL GLProgram::GetUniform2I(const char* name) const
 {
     return GetUniform<Vector2i>(name);
 }
 
-template<DEVICE_VERSION DeviceVersion> 
-Uniform3I* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform3I(const char* name) const
+
+Uniform3I* SGL_DLLCALL GLProgram::GetUniform3I(const char* name) const
 {
     return GetUniform<Vector3i>(name);
 }
 
-template<DEVICE_VERSION DeviceVersion> 
-Uniform4I* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform4I(const char* name) const
+
+Uniform4I* SGL_DLLCALL GLProgram::GetUniform4I(const char* name) const
 {
     return GetUniform<Vector4i>(name);
 }
 
-template<DEVICE_VERSION DeviceVersion> 
-UniformF* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniformF(const char* name) const
+
+UniformF* SGL_DLLCALL GLProgram::GetUniformF(const char* name) const
 {
     return GetUniform<float>(name);
 }
 
-template<DEVICE_VERSION DeviceVersion> 
-Uniform2F* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform2F(const char* name) const
+
+Uniform2F* SGL_DLLCALL GLProgram::GetUniform2F(const char* name) const
 {
     return GetUniform<Vector2f>(name);
 }
 
-template<DEVICE_VERSION DeviceVersion> 
-Uniform3F* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform3F(const char* name) const
+
+Uniform3F* SGL_DLLCALL GLProgram::GetUniform3F(const char* name) const
 {
     return GetUniform<Vector3f>(name);
 }
 
-template<DEVICE_VERSION DeviceVersion> 
-Uniform4F* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform4F(const char* name) const
+
+Uniform4F* SGL_DLLCALL GLProgram::GetUniform4F(const char* name) const
 {
     return GetUniform<Vector4f>(name);
 }
 
-template<DEVICE_VERSION DeviceVersion> 
-Uniform2x2F* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform2x2F(const char* name) const
+
+Uniform2x2F* SGL_DLLCALL GLProgram::GetUniform2x2F(const char* name) const
 {
     return GetUniform<Matrix2f>(name);
 }
 
-template<DEVICE_VERSION DeviceVersion> 
-Uniform3x3F* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform3x3F(const char* name) const
+
+Uniform3x3F* SGL_DLLCALL GLProgram::GetUniform3x3F(const char* name) const
 {
     return GetUniform<Matrix3f>(name);
 }
 
-template<DEVICE_VERSION DeviceVersion> 
-Uniform4x4F* SGL_DLLCALL GLProgram<DeviceVersion>::GetUniform4x4F(const char* name) const
+
+Uniform4x4F* SGL_DLLCALL GLProgram::GetUniform4x4F(const char* name) const
 {
     return GetUniform<Matrix4f>(name);
 }
 
-template<DEVICE_VERSION DeviceVersion> 
-SamplerUniform1D* SGL_DLLCALL GLProgram<DeviceVersion>::GetSamplerUniform1D(const char* name) const
+
+SamplerUniform1D* SGL_DLLCALL GLProgram::GetSamplerUniform1D(const char* name) const
 {
     return GetSamplerUniform<Texture1D>(name);
 }
 
-template<DEVICE_VERSION DeviceVersion> 
-SamplerUniform2D* SGL_DLLCALL GLProgram<DeviceVersion>::GetSamplerUniform2D(const char* name) const
+
+SamplerUniform2D* SGL_DLLCALL GLProgram::GetSamplerUniform2D(const char* name) const
 {
     return GetSamplerUniform<Texture2D>(name);
 }
 
-template<DEVICE_VERSION DeviceVersion> 
-SamplerUniform3D* SGL_DLLCALL GLProgram<DeviceVersion>::GetSamplerUniform3D(const char* name) const
+
+SamplerUniform3D* SGL_DLLCALL GLProgram::GetSamplerUniform3D(const char* name) const
 {
     return GetSamplerUniform<Texture3D>(name);
 }
 
-template<DEVICE_VERSION DeviceVersion> 
-SamplerUniformCube* SGL_DLLCALL GLProgram<DeviceVersion>::GetSamplerUniformCube(const char* name) const
+
+SamplerUniformCube* SGL_DLLCALL GLProgram::GetSamplerUniformCube(const char* name) const
 {
     return GetSamplerUniform<TextureCube>(name);
 }
-
-template<DEVICE_VERSION DeviceVersion>
-sgl::Program* sglCreateProgram(GLDevice<DeviceVersion>* device)
-{
-    if ( device_traits<DeviceVersion>::support_programmable_pipeline() ) {
-        return new GLProgram<DeviceVersion>(device);
-    }
-
-    throw gl_error("Device profile doesn't programmable pipeline", SGLERR_UNSUPPORTED);
-}
-
-// explicit template instantiation
-template class GLProgram<DV_OPENGL_2_0>;
-template class GLProgram<DV_OPENGL_2_1>;
-template class GLProgram<DV_OPENGL_3_0>;
-template class GLProgram<DV_OPENGL_3_1>;
-template class GLProgram<DV_OPENGL_3_2>;
-
-template sgl::Program* sglCreateProgram<DV_OPENGL_1_3>(GLDevice<DV_OPENGL_1_3>*);
-template sgl::Program* sglCreateProgram<DV_OPENGL_1_4>(GLDevice<DV_OPENGL_1_4>*);
-template sgl::Program* sglCreateProgram<DV_OPENGL_1_5>(GLDevice<DV_OPENGL_1_5>*);
-template sgl::Program* sglCreateProgram<DV_OPENGL_2_0>(GLDevice<DV_OPENGL_2_0>*);
-template sgl::Program* sglCreateProgram<DV_OPENGL_2_1>(GLDevice<DV_OPENGL_2_1>*);
-template sgl::Program* sglCreateProgram<DV_OPENGL_3_0>(GLDevice<DV_OPENGL_3_0>*);
-template sgl::Program* sglCreateProgram<DV_OPENGL_3_1>(GLDevice<DV_OPENGL_3_1>*);
-template sgl::Program* sglCreateProgram<DV_OPENGL_3_2>(GLDevice<DV_OPENGL_3_2>*);
 
 } // namespace sgl

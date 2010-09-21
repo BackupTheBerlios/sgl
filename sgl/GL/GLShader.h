@@ -8,13 +8,12 @@
 namespace sgl {
 
 /* Wraps GLfunctions to work with shaders */
-template<DEVICE_VERSION DeviceVersion>
 class GLShader :
     public ResourceImpl<Shader>
 {
 public:
-    GLShader( GLDevice<DeviceVersion>*  device_, 
-              const DESC&               desc );
+    GLShader( GLDevice*		device, 
+              const DESC&   desc );
     ~GLShader();
 
     // Override Shader
@@ -26,7 +25,7 @@ public:
     unsigned SGL_DLLCALL Handle() const { return shader; }
  
 protected:
-    GLDevice<DeviceVersion>*    device;
+    GLDevice*    device;
 
     // data
     TYPE            type;
@@ -34,10 +33,6 @@ protected:
     std::string     source;
     std::string     compilationLog;
 };
-
-/** Make shader */
-template<DEVICE_VERSION DeviceVersion>
-sgl::Shader* sglCreateShader(GLDevice<DeviceVersion>* device, const Shader::DESC& desc);
 
 } // namespace sgl
 

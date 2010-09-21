@@ -41,7 +41,7 @@ Texture::FORMAT FindTextureFormat(const SDL_PixelFormat& format);
 #endif
 
 // Class for modifying texture data content
-template<DEVICE_VERSION DeviceVersion, typename Interface>
+template<typename Interface>
 class GLTexture :
     public ReferencedImpl<Interface>
 {
@@ -49,7 +49,7 @@ protected:
     typedef ReferencedImpl<Interface> base_type;
 
 public:
-    typedef GLSamplerState<DeviceVersion> sampler_state_type;
+    typedef GLSamplerState sampler_state_type;
 
     struct guarded_binding :
         public ReferencedImpl<Referenced>
@@ -81,12 +81,12 @@ public:
     typedef ref_ptr<guarded_binding>    guarded_binding_ptr;
 
 public:
-    GLTexture(  GLDevice<DeviceVersion>*    _device,
-                GLuint                      _glTarget,
-                bool                        _generateTexture = true ) :
-        device(_device),
-        glTarget(_glTarget),
-        generateTexture(_generateTexture),
+    GLTexture(  GLDevice*	device_,
+                GLuint      glTarget_,
+                bool        generateTexture_ = true ) :
+        device(device_),
+        glTarget(glTarget_),
+        generateTexture(generateTexture_),
         stage(-1)
     {
         if (generateTexture) {
@@ -121,16 +121,16 @@ protected:
 
 protected:
     // resource
-    GLDevice<DeviceVersion>*        device;
+    GLDevice* device;
 
     // OpenGL
-    GLuint                          glTarget;
-    GLuint                          glTexture;
-    bool                            generateTexture;
-    ref_ptr<sampler_state_type>     samplerState;
+    GLuint                  glTarget;
+    GLuint                  glTexture;
+    bool                    generateTexture;
+    ref_ptr<GLSamplerState>	samplerState;
 
     // binding
-    mutable int                     stage;
+    mutable int stage;
 };
 
 } // namespace sgl
