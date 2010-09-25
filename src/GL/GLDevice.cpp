@@ -764,7 +764,7 @@ namespace {
 	template<bool toggle> struct support_display_lists {};
 	template<bool toggle> struct support_render_target {};
 
-	#define SUPPORT(Feature, DeviceVersion) support_##Feature##<device_traits<DeviceVersion>::support_##Feature##>()
+    #define SUPPORT(Feature, DeviceVersion) support_##Feature<device_traits<DeviceVersion>::support_##Feature>()
 	
 	Shader* CreateShader(GLDevice* device, const Shader::DESC& desc)
 	{

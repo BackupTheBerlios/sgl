@@ -163,14 +163,14 @@ sgl::BlendState* sglCreateBlendState(GLDevice* device, const BlendState::DESC& d
         }
 
         if ( device_traits<DeviceVersion>::support_display_lists() ) {
-            return new GLBlendStateDisplayLists<DeviceVersion>(device, desc);
+            return new GLBlendStateDisplayLists(device, desc);
         }
         else {
-            return new GLBlendStateSeparate<DeviceVersion>(device, desc);
+            return new GLBlendStateSeparate(device, desc);
         }
     }
     else {
-        return new GLBlendStateDefault<DeviceVersion>(device, desc);
+        return new GLBlendStateDefault(device, desc);
     }
 }
 
