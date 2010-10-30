@@ -43,6 +43,14 @@ GLFont::GLFont(GLDevice* device_) :
     device(device_)
 {
     {
+        RasterizerState::DESC desc;
+        desc.colorMask  = RasterizerState::RGBA;
+        desc.cullMode   = RasterizerState::NONE;
+        desc.fillMode   = RasterizerState::SOLID;
+        rasterizerState.reset( device->CreateRasterizerState(desc) );
+    }
+
+    {
         BlendState::DESC_SIMPLE desc;
         desc.blendEnable = true;
         desc.srcBlend    = BlendState::ONE;
@@ -160,10 +168,12 @@ SGL_HRESULT GLFontFixed::Bind(int width, int height, const math::Vector4f& color
 		vp.height / (height / charHeight), 0.0f,
 		-1.0f, 1.0f ) );
 
+    device->PushState(State::RASTERIZER_STATE);
 	device->PushState(State::DEPTH_STENCIL_STATE);
 	device->PushState(State::BLEND_STATE);
 
 	ffpProgram->Bind();
+    rasterizerState->Bind();
 	depthStencilState->Bind();
 	blendState->Bind();
 	vbo->Bind( vertexLayout.get() );
@@ -175,6 +185,7 @@ void GLFontFixed::Unbind() const
 {
 	vbo->Unbind();
 	texture->Unbind();
+    device->PopState(State::RASTERIZER_STATE);
 	device->PopState(State::DEPTH_STENCIL_STATE);
 	device->PopState(State::BLEND_STATE);
 
@@ -306,9 +317,11 @@ SGL_HRESULT GLFontProgrammable::Bind(int width, int height, const math::Vector4f
 	scaleUniform->Set( math::Vector2f(charWidth, charHeight) );
 	textureUniform->Set( 0, texture.get() );
 
+	device->PushState(State::RASTERIZER_STATE);
 	device->PushState(State::DEPTH_STENCIL_STATE);
 	device->PushState(State::BLEND_STATE);
 
+    rasterizerState->Bind();
 	depthStencilState->Bind();
 	blendState->Bind();
 	vbo->Bind( vertexLayout.get() );
@@ -320,6 +333,7 @@ void GLFontProgrammable::Unbind() const
 {
 	vbo->Unbind();
 	texture->Unbind();
+	device->PopState(State::RASTERIZER_STATE);
 	device->PopState(State::DEPTH_STENCIL_STATE);
 	device->PopState(State::BLEND_STATE);
 	program->Unbind();

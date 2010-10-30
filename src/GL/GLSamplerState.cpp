@@ -27,9 +27,8 @@ namespace {
 
 namespace sgl {
 
-GLSamplerState::GLSamplerState( GLDevice*    device_, 
-	const DESC&  desc_ ) :
-device(device_),
+GLSamplerState::GLSamplerState(GLDevice* device_, const DESC& desc_) :
+    device(device_),
 	desc(desc_)
 {
 }

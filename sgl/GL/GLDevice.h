@@ -31,7 +31,7 @@ class GLDevice :
 	public ReferencedImpl<Device>
 {
 protected:
-    typedef std::stack<const State*>    state_stack;
+    typedef std::stack< ref_ptr<const State> > state_stack;
 
 public:
     GLDevice(const Device::VIDEO_DESC& desc);
@@ -121,15 +121,17 @@ private:
 
 protected:
     // current state
-    const RenderTarget*         currentRenderTarget;
-    const Program*              currentProgram;
-    const IndexBuffer*          currentIndexBuffer;
-    const VertexBuffer*         currentVertexBuffer;
-    const VertexLayout*         currentVertexLayout;
-    const Texture*              currentTexture[NUM_TEXTURE_STAGES];
-    const BlendState*           currentBlendState;
-    const DepthStencilState*    currentDepthStencilState;
-    const RasterizerState*      currentRasterizerState;
+    const RenderTarget*     currentRenderTarget;
+    const Program*          currentProgram;
+    const IndexBuffer*      currentIndexBuffer;
+    const VertexBuffer*     currentVertexBuffer;
+    const VertexLayout*     currentVertexLayout;
+    const Texture*          currentTexture[NUM_TEXTURE_STAGES];
+
+    ref_ptr<const BlendState>          currentBlendState;
+    ref_ptr<const DepthStencilState>   currentDepthStencilState;
+    ref_ptr<const RasterizerState>     currentRasterizerState;
+
     IndexBuffer::INDEX_TYPE     currentIndexFormat;
     GLuint                      glIndexType;
     GLsizei                     glIndexSize;

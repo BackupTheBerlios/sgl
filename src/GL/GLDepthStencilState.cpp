@@ -77,10 +77,8 @@ GLDepthStencilStateDisplayLists::GLDepthStencilStateDisplayLists(GLDevice* devic
 
 GLDepthStencilStateDisplayLists::~GLDepthStencilStateDisplayLists()
 {
+    assert(device->CurrentDepthStencilState() != this);
     glDeleteLists(bindDisplayList, 1);
-    if (device->CurrentDepthStencilState() == this) {
-        device->SetDepthStencilState(0);
-    }
 }
 
 // Override State
@@ -98,9 +96,7 @@ GLDepthStencilStateSeparate::GLDepthStencilStateSeparate(GLDevice* device_, cons
 
 GLDepthStencilStateSeparate::~GLDepthStencilStateSeparate()
 {
-    if (device->CurrentDepthStencilState() == this) {
-        device->SetDepthStencilState(0);
-    }
+    assert(device->CurrentDepthStencilState() != this);
 }
 
 // Override State

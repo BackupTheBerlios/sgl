@@ -416,16 +416,8 @@ SGL_HRESULT GLDevice::InitOpenGL()
     currentIndexBuffer          = 0;
     currentVertexBuffer         = 0;
     currentVertexLayout         = 0;
-    currentBlendState           = 0;
-    currentDepthStencilState    = 0;
-    currentRasterizerState      = 0;
 
-    std::fill(currentTexture, currentTexture + NUM_TEXTURE_STAGES, (Texture*)0);
-
-    // default settings
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
-    glDisable(GL_CULL_FACE);
+    std::fill( currentTexture, currentTexture + NUM_TEXTURE_STAGES, ref_ptr<const Texture>() );
 
     // create unqie objects
     deviceTraits.reset( new GLDeviceTraits(this) );
@@ -485,17 +477,17 @@ void GLDevice::SetViewport(const rectangle& vp)
 // internal binders
 void GLDevice::SetBlendState(const BlendState* blendState)
 {
-    currentBlendState = blendState;
+    currentBlendState.reset(blendState);
 }
 
 void GLDevice::SetDepthStencilState(const DepthStencilState* depthStencilState)
 {
-    currentDepthStencilState = depthStencilState;
+    currentDepthStencilState.reset(depthStencilState);
 }
 
 void GLDevice::SetRasterizerState(const RasterizerState* rasterizerState)
 {
-    currentRasterizerState = rasterizerState;
+    currentRasterizerState.reset(rasterizerState);
 }
 
 void GLDevice::SetTexture(unsigned int stage, const Texture* texture)
@@ -503,7 +495,6 @@ void GLDevice::SetTexture(unsigned int stage, const Texture* texture)
     assert(stage < NUM_TEXTURE_STAGES);
     currentTexture[stage] = texture;
 }
-
 
 void GLDevice::SetVertexBuffer(const VertexBuffer* vertexBuffer)
 {
@@ -611,18 +602,21 @@ void SGL_DLLCALL GLDevice::PushState(State::TYPE type)
     {
         case State::BLEND_STATE:
         {
+            assert(currentBlendState);
             stateStack[State::BLEND_STATE].push(currentBlendState);
             break;
         }
 
         case State::DEPTH_STENCIL_STATE:
         {
+            assert(currentDepthStencilState);
             stateStack[State::DEPTH_STENCIL_STATE].push(currentDepthStencilState);
             break;
         }
 
         case State::RASTERIZER_STATE:
         {
+            assert(currentRasterizerState);
             stateStack[State::RASTERIZER_STATE].push(currentRasterizerState);
             break;
         }

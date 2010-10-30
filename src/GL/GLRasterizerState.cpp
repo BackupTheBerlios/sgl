@@ -34,9 +34,7 @@ GLRasterizerState::GLRasterizerState(GLDevice* device_, const DESC& desc_) :
 
 GLRasterizerState::~GLRasterizerState()
 {
-	if (device->CurrentRasterizerState() == this) {
-		device->SetRasterizerState(0);
-	}
+    assert(device->CurrentRasterizerState() != this);
 }
 
 void GLRasterizerState::Bind() const

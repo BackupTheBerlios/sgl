@@ -23,6 +23,7 @@ protected:
     ref_ptr<Texture2D>          texture;
     ref_ptr<VertexBuffer>       vbo;
     ref_ptr<VertexLayout>       vertexLayout;
+    ref_ptr<RasterizerState>    rasterizerState;
     ref_ptr<BlendState>         blendState;
     ref_ptr<DepthStencilState>  depthStencilState;
 };

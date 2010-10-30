@@ -74,10 +74,8 @@ GLBlendStateDisplayLists::GLBlendStateDisplayLists(GLDevice*              device
             
 GLBlendStateDisplayLists::~GLBlendStateDisplayLists()
 {
+    assert(device->CurrentBlendState() != this);
     glDeleteLists(bindDisplayList, 1);
-    if (device->CurrentBlendState() == this) {
-        device->SetBlendState(0);
-    }
 }
 
 void GLBlendStateDisplayLists::Bind() const
@@ -95,9 +93,7 @@ GLBlendStateSeparate::GLBlendStateSeparate(GLDevice*               device_,
 
 GLBlendStateSeparate::~GLBlendStateSeparate()
 {
-    if (device->CurrentBlendState() == this) {
-        device->SetBlendState(0);
-    }
+    assert(device->CurrentBlendState() != this);
 }
 
 void GLBlendStateSeparate::Bind() const
@@ -131,9 +127,7 @@ GLBlendStateDefault::GLBlendStateDefault(GLDevice*   device_,
 
 GLBlendStateDefault::~GLBlendStateDefault()
 {
-    if (device->CurrentBlendState() == this) {
-        device->SetBlendState(0);
-    }
+    assert(device->CurrentBlendState() != this);
 }
 
 void GLBlendStateDefault::Bind() const
