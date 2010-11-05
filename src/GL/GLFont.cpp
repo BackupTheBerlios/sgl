@@ -122,7 +122,7 @@ GLFontFixed::GLFontFixed(GLDevice* device) :
 
 SGL_HRESULT GLFontFixed::SetTexture(sgl::Texture2D* texture)
 {
-	SGL_HRESULT result = SetTexture(texture);
+    SGL_HRESULT result = GLFont::SetTexture(texture);
 	if (SGL_OK != result) {
 		return result;
 	}
