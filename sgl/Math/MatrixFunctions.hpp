@@ -77,6 +77,55 @@ inline Matrix<T, 3, 1> get_scaling(const Matrix<T, 4, 4>& mat)
                             sqrt(mat[0][2]*mat[0][2] + mat[1][2]*mat[1][2] + mat[2][2]*mat[2][2]) );
 }
 
+/** Get euler rotation angles from matrix: http://www.geometrictools.com/LibFoundation/Mathematics/Wm4Matrix3.inl.html
+ * @param mat - rotation matrix
+ * @param res[out] - output angles
+ * @return true - if angles can be determined uniquely
+ */
+template <typename T>
+inline bool get_euler_angles(const Matrix<T, 3, 3>& mat, Matrix<T, 3, 1>& res)
+{
+    // +-           -+   +-                                        -+
+    // | r00 r01 r02 |   |  cy*cz           -cy*sz            sy    |
+    // | r10 r11 r12 | = |  cz*sx*sy+cx*sz   cx*cz-sx*sy*sz  -cy*sx |
+    // | r20 r21 r22 |   | -cx*cz*sy+sx*sz   cz*sx+cx*sy*sz   cx*cy |
+    // +-           -+   +-                                        -+
+    T elem = mat(2);
+    if (mat(2) < T(1))
+    {
+        if (mat(2) > T(-1))
+        {
+            // y_angle = asin(r02)
+            // x_angle = atan2(-r12,r22)
+            // z_angle = atan2(-r01,r00)
+            res[1] = asin(mat(2));
+            res[0] = atan2(-mat(5), mat(8));
+            res[2] = atan2(-mat(1), mat(0));
+            return true;
+        }
+        else
+        {
+            // y_angle = -pi/2
+            // z_angle - x_angle = atan2(r10,r11)
+            // WARNING.  The solution is not unique.  Choosing z_angle = 0.
+            res[1] = -T(HALF_PI);
+            res[0] = -atan2(mat(3), mat(4));
+            res[2] = T(0);
+            return false;
+        }
+    }
+    else
+    {
+        // y_angle = +pi/2
+        // z_angle + x_angle = atan2(r10,r11)
+        // WARNING.  The solutions is not unique.  Choosing z_angle = 0.
+        res[1] = T(HALF_PI);
+        res[0] = atan2(mat(3), mat(4));
+        res[2] = T(0);
+        return false;
+    }
+}
+
 /** Invert matrix. Code taken from Intel pdf "Streaming SIMD Extension - Inverse of 4x4 Matrix" */
 template<typename T>
 inline Matrix<T, 4, 4> invert(const Matrix<T, 4, 4>& mat)
