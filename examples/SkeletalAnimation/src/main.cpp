@@ -17,15 +17,15 @@ using namespace sgl;
 using namespace math;
 
 // sgl
-sgl::ref_ptr<sgl::Device>   device;
+ref_ptr<Device>   device;
 
 // gui
-sgl::ref_ptr<sgl::Font>     font;
-math::Vector2f              cursorPos;
+ref_ptr<Font>     font;
+math::Vector2f    cursorPos;
 
 // render
 class RoboHand;
-sgl::ref_ptr<RoboHand>      roboHand;
+ref_ptr<RoboHand> roboHand;
 
 struct Bone
 #ifdef SIMPLE_GL_USE_SSE
@@ -54,8 +54,7 @@ class RoboHand :
     public ReferencedImpl<Referenced>
 {
 private:
-    typedef sgl::vector< Bone,
-                         sgl::aligned_allocator<Bone> > bone_vector;
+    typedef vector< Bone, aligned_allocator<Bone> > bone_vector;
 
 public:
     RoboHand( float    length       = 1.0f,
@@ -82,7 +81,7 @@ public:
             calculateWorldTransforms( boneOrigins.begin(), boneOrients.begin() );
 
             // create vertices
-            typedef sgl::vector< skin_vertex, sgl::aligned_allocator<skin_vertex> > skin_vertex_vector;
+            typedef vector< skin_vertex, aligned_allocator<skin_vertex> > skin_vertex_vector;
             
             skin_vertex_vector vertices(numVertices);
             origin = math::Vector3f(0.0f, 0.0f, 0.0f);
@@ -134,13 +133,6 @@ public:
             }
 
             // create buffer for skinned mesh
-            /*
-            VertexDeclaration* vDecl = device->CreateVertexDeclaration();
-            vDecl->AddVertex(3, FLOAT);
-            vDecl->AddTexCoord(3, 4, FLOAT);
-            vDecl->AddTexCoord(4, 4, FLOAT);
-            vDecl->AddTexCoord(5, 4, FLOAT);
-            */
             {
                 VertexLayout::ELEMENT elements[4] =
                 {
@@ -156,12 +148,10 @@ public:
             vertexBuffer->SetData( vertices.size() * sizeof(skin_vertex), &vertices[0] );
 
             // create buffer for ckeleton
-            //vDecl = device->CreateVertexDeclaration();
-            //vDecl->AddVertex(3, FLOAT);
             {
                 VertexLayout::ELEMENT elements[1] =
                 {
-                    {0, 3, 0, 8, FLOAT, VertexLayout::ATTRIBUTE}
+                    {0, 3, 0, 12, FLOAT, VertexLayout::VERTEX}
                 };
                 skeletonVertexLayout.reset( device->CreateVertexLayout(1, elements) );
             }
@@ -172,8 +162,8 @@ public:
         // create programs
         {
             // shaders
-            Shader* vertexShader   = sgl::CreateShaderFromFile(device, Shader::VERTEX,   "data/Shaders/skeletal.vert") ;
-            Shader* fragmentShader = sgl::CreateShaderFromFile(device, Shader::FRAGMENT, "data/Shaders/fill.frag") ;
+            Shader* vertexShader   = CreateShaderFromFile(device, Shader::VERTEX,   "data/Shaders/skeletal.vert") ;
+            Shader* fragmentShader = CreateShaderFromFile(device, Shader::FRAGMENT, "data/Shaders/fill.frag") ;
 
             skeletalProgram.reset( device->CreateProgram() );
             skeletalProgram->AddShader(vertexShader);
@@ -189,12 +179,45 @@ public:
             if ( sgl::SGL_OK != skeletalProgram->Dirty() ) {
                 throw std::runtime_error("Can't compile program for skeletal animation");
             }
+            else if ( skeletalProgram->CompilationLog() != 0 )
+            {
+                std::cout << "Skeletal program compilation log:\n"
+                          << skeletalProgram->CompilationLog() << std::endl;
+            }
+            else {
+                std::cout << "Skeletal program succesfully compiled\n";
+            }
 
             // create uniforms
-            mvpMatrixUniform = skeletalProgram->GetUniform4x4F("modelViewProjectionMatrix");
-            colorUniform     = skeletalProgram->GetUniform4F("color");
-            boneQuatUniform  = skeletalProgram->GetUniform4F("boneQuat");
-            bonePosUniform   = skeletalProgram->GetUniform3F("bonePos");
+            mvpMatrixUniform[0] = skeletalProgram->GetUniform4x4F("modelViewProjectionMatrix");
+            colorUniform[0]     = skeletalProgram->GetUniform4F("color");
+            boneQuatUniform     = skeletalProgram->GetUniform4F("boneQuat");
+            bonePosUniform      = skeletalProgram->GetUniform3F("bonePos");
+
+            // shaders
+            vertexShader   = CreateShaderFromFile(device, Shader::VERTEX,   "data/Shaders/transform.vert") ;
+            fragmentShader = CreateShaderFromFile(device, Shader::FRAGMENT, "data/Shaders/fill.frag") ;
+
+            transformProgram.reset( device->CreateProgram() );
+            transformProgram->AddShader(vertexShader);
+            transformProgram->AddShader(fragmentShader);
+
+            // link program
+            if ( sgl::SGL_OK != transformProgram->Dirty() ) {
+                throw std::runtime_error("Can't compile program for skeletal animation");
+            }
+            else if ( transformProgram->CompilationLog() != 0 )
+            {
+                std::cout << "Transform program compilation log:\n"
+                          << transformProgram->CompilationLog() << std::endl;
+            }
+            else {
+                std::cout << "Transform program succesfully compiled\n";
+            }
+
+            // create uniforms
+            mvpMatrixUniform[1] = transformProgram->GetUniform4x4F("modelViewProjectionMatrix");
+            colorUniform[1]     = transformProgram->GetUniform4F("color");
         }
 
         // default values
@@ -217,6 +240,7 @@ public:
             // rotate around z
             bones[i].orient *= math::Quaternionf( cos(alpha * 0.5f), 0.0f, 0.0f, sin(alpha * 0.5f) );
             bones[i].orient  = math::normalize(bones[i].orient);
+            math::Matrix3f m = math::to_matrix( math::Quaternionf( cos(math::PI * 0.5f), 0.0f, 0.0f, sin(math::PI * 0.5f) ) );
         }
     }
 
@@ -226,33 +250,38 @@ public:
         math::vector_of_quaternionf boneOrients( bones.size() );
         math::vector_of_vector4f    boneOrientVecs( bones.size() );
         math::vector_of_vector3f    boneOrigins( bones.size() );
+        math::vector_of_vector3f    boneVerts( bones.size() );
         calculateWorldTransforms( boneOrigins.begin(), boneOrients.begin() );
 
         // transform quats
-        for (size_t i = 0; i<boneOrients.size(); ++i) {
+        for (size_t i = 0; i<boneOrients.size(); ++i) 
+        { 
             boneOrientVecs[i] = math::Vector4f(-boneOrients[i].x, -boneOrients[i].y, -boneOrients[i].z, boneOrients[i].w);
+            boneVerts[i]      = boneOrigins[i] + boneOrients[i] * math::Vector3f(0.0f, 0.0f, 0.0f) * math::conjugate(boneOrients[i]);
         }
 
         // setup uniforms
-
         skeletalProgram->Bind();
-
-        mvpMatrixUniform->Set(mvpMatrix);
-        colorUniform->Set( math::Vector4f(0.0f, 1.0f, 0.0f, 1.0f) );
-        boneQuatUniform->Set( &boneOrientVecs[0], boneOrientVecs.size() );
-        bonePosUniform->Set( &boneOrigins[0], boneOrigins.size() ); 
-        vertexBuffer->Bind( vertexLayout.get() );
-        device->Draw( LINE_STRIP, 0, numVertices );
-
+        {
+            mvpMatrixUniform[0]->Set(mvpMatrix);
+            colorUniform[0]->Set( math::Vector4f(0.0f, 1.0f, 0.0f, 1.0f) );
+            boneQuatUniform->Set( &boneOrientVecs[0], boneOrientVecs.size() );
+            bonePosUniform->Set( &boneOrigins[0], boneOrigins.size() ); 
+            vertexBuffer->Bind( vertexLayout.get() );
+            //device->Draw( LINE_STRIP, 0, numVertices );
+        }
         skeletalProgram->Unbind();
 
         // render skeleton
-        /*
-        skeletonVertexBuffer->SetData(boneOrigins.size() * sizeof(math::Vector3f), &boneOrigins[0].x);
-        skeletonVertexBuffer->Bind( skeletonVertexLayout.get() );
-        device->Draw( LINE_STRIP, 0, boneOrigins.size() );
-        skeletonVertexBuffer->Unbind();
-        */
+        transformProgram->Bind();
+        {
+            mvpMatrixUniform[1]->Set(mvpMatrix);
+            colorUniform[1]->Set( math::Vector4f(1.0f, 1.0f, 0.0f, 1.0f) );
+            skeletonVertexBuffer->SetData(boneVerts.size() * sizeof(math::Vector3f), &boneVerts[0].x);
+            skeletonVertexBuffer->Bind( skeletonVertexLayout.get() );
+            device->Draw( LINE_STRIP, 0, boneOrigins.size() );
+        }
+        transformProgram->Unbind();
     }
 
 private:
@@ -284,12 +313,13 @@ private:
     unsigned int            lastIKBone;
 
     // shaders
-    sgl::ref_ptr<sgl::Program>  skeletalProgram;
+    ref_ptr<Program>        transformProgram;
+    ref_ptr<Program>        skeletalProgram;
 
-    sgl::Uniform4x4F*           mvpMatrixUniform;
-    sgl::Uniform4F*             colorUniform;
-    sgl::Uniform4F*             boneQuatUniform;
-    sgl::Uniform3F*             bonePosUniform;
+    Uniform4x4F*            mvpMatrixUniform[2];
+    Uniform4F*              colorUniform[2];
+    Uniform4F*              boneQuatUniform;
+    Uniform3F*              bonePosUniform;
 };
 
 void RenderCommon(float time)
@@ -321,7 +351,6 @@ void RenderCommon(float time)
     }
 }
 
-
 void RenderScene()
 {
     // animate robo hand
@@ -336,7 +365,6 @@ void RenderScene()
     // render robo hand
     roboHand->render( math::make_ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f) );
 }
-
 
 void HandleKeys()
 {
@@ -423,7 +451,7 @@ void CreateScene()
     }
 
     // grab current context for rendering
-    device.reset( sglCreateDeviceFromCurrent(sgl::DV_OPENGL_2_1) );
+    device.reset( sglCreateDeviceFromCurrent(sgl::DV_OPENGL_2_0) );
 
     // Setup error handler
 	sglSetErrorHandler( new sgl::PrintErrorHandler() );

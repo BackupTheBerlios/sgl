@@ -598,8 +598,8 @@ inline math::Quaternion<T> operator * (const math::Quaternion<T>& lhs, const mat
 template<typename T>
 inline Matrix<T, 3, 1> operator * (const Matrix<T, 3, 1>& lhs, const Quaternion<T>& rhs)
 {
-    Matrix<T, 3, 1> tmp(rhs);
-    return tmp *= lhs;
+    Matrix<T, 3, 1> tmp(lhs);
+    return tmp *= rhs;
 }
 
 template<typename T>
