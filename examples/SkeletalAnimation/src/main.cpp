@@ -57,10 +57,11 @@ private:
     typedef vector< Bone, aligned_allocator<Bone> > bone_vector;
 
 public:
-    RoboHand( float    length       = 1.0f,
+    RoboHand( float    length_      = 1.0f,
               float    width        = 0.1f,
               unsigned numBones     = 10,
               unsigned numVertices_ = 100 ) :
+        length(length_),
         bones(numBones),
         numVertices(numVertices_)
     {
@@ -72,7 +73,7 @@ public:
             math::Vector3f origin(length / numBones, 0.0f, 0.0f);
             bones[0] = Bone( math::Quaternionf(1.0f, 0.0f, 0.0f, 0.0f), math::Vector3f(0.0f, 0.0f, 0.0f) );
             for (size_t i = 1; i<numBones; ++i) {
-                bones[i] = Bone( math::Quaternionf(1.0f, 0.0f, 0.0f, 0.0f), origin);
+                bones[i] = Bone( math::Quaternionf(0.0f, 0.0f, 0.0f, 1.0f), origin);
             }   
 
             // calculate world transforms
@@ -226,21 +227,20 @@ public:
 
     void animateIK(math::Vector2f target, float dt)
     {
+        math::vector_of_quaternionf boneOrients( bones.size() );
+        math::vector_of_vector3f    boneOrigins( bones.size() );
+        calculateWorldTransforms( boneOrigins.begin(), boneOrients.begin() );
+
         for(size_t i = 1; i<bones.size(); ++i)
         {
-            math::vector_of_quaternionf boneOrients( bones.size() );
-            math::vector_of_vector3f    boneOrigins( bones.size() );
-            calculateWorldTransforms( boneOrigins.begin(), boneOrients.begin() );
-
             // calculate rotation angle
             math::Vector2f boneVec  = normalize( math::xy(boneOrigins[i] - boneOrigins[i - 1]) );
             math::Vector2f force    = target - math::xy(boneOrigins[i]);
             float          alpha    = -dot( math::Vector2f(-boneVec.y, boneVec.x), force ) * dt;// * powf(i, 0.02f) * 2.0f;
 
             // rotate around z
-            bones[i].orient *= math::Quaternionf( cos(alpha * 0.5f), 0.0f, 0.0f, sin(alpha * 0.5f) );
+            bones[i].orient *= math::Quaternionf( 0.0f, 0.0f, sin(alpha * 0.5f), cos(alpha * 0.5f) );
             bones[i].orient  = math::normalize(bones[i].orient);
-            math::Matrix3f m = math::to_matrix( math::Quaternionf( cos(math::PI * 0.5f), 0.0f, 0.0f, sin(math::PI * 0.5f) ) );
         }
     }
 
@@ -250,14 +250,11 @@ public:
         math::vector_of_quaternionf boneOrients( bones.size() );
         math::vector_of_vector4f    boneOrientVecs( bones.size() );
         math::vector_of_vector3f    boneOrigins( bones.size() );
-        math::vector_of_vector3f    boneVerts( bones.size() );
         calculateWorldTransforms( boneOrigins.begin(), boneOrients.begin() );
 
         // transform quats
-        for (size_t i = 0; i<boneOrients.size(); ++i) 
-        { 
+        for (size_t i = 0; i<boneOrients.size(); ++i)  { 
             boneOrientVecs[i] = math::Vector4f(-boneOrients[i].x, -boneOrients[i].y, -boneOrients[i].z, boneOrients[i].w);
-            boneVerts[i]      = boneOrigins[i] + boneOrients[i] * math::Vector3f(0.0f, 0.0f, 0.0f) * math::conjugate(boneOrients[i]);
         }
 
         // setup uniforms
@@ -268,7 +265,7 @@ public:
             boneQuatUniform->Set( &boneOrientVecs[0], boneOrientVecs.size() );
             bonePosUniform->Set( &boneOrigins[0], boneOrigins.size() ); 
             vertexBuffer->Bind( vertexLayout.get() );
-            //device->Draw( LINE_STRIP, 0, numVertices );
+            device->Draw( LINE_STRIP, 0, numVertices );
         }
         skeletalProgram->Unbind();
 
@@ -277,7 +274,7 @@ public:
         {
             mvpMatrixUniform[1]->Set(mvpMatrix);
             colorUniform[1]->Set( math::Vector4f(1.0f, 1.0f, 0.0f, 1.0f) );
-            skeletonVertexBuffer->SetData(boneVerts.size() * sizeof(math::Vector3f), &boneVerts[0].x);
+            skeletonVertexBuffer->SetData(boneOrigins.size() * sizeof(math::Vector3f), &boneOrigins[0].x);
             skeletonVertexBuffer->Bind( skeletonVertexLayout.get() );
             device->Draw( LINE_STRIP, 0, boneOrigins.size() );
         }
@@ -294,7 +291,7 @@ private:
         // calculate world-space transforms
         for (size_t i = 1; i<bones.size(); ++i) 
         {
-            orient *= bones[i].orient;
+            orient  = math::normalize(orient * bones[i].orient);
             origin += orient * bones[i].origin;
             (*originIter++) = origin;
             (*orientIter++) = orient;
@@ -309,6 +306,7 @@ private:
     ref_ptr<VertexBuffer>   skeletonVertexBuffer;
 
     // setrtings
+    float                   length;
     unsigned int            numVertices;
     unsigned int            lastIKBone;
 
