@@ -4,7 +4,7 @@ PROJECT (SimpleGL)
 # standart
 INCLUDE(Configure.cmake)
 
-# vars
+# vars 
 SET (TARGET_NAME 		SimpleGL)
 SET (TARGET_UNIX_NAME 	sgl)
 
