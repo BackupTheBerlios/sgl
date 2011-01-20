@@ -52,8 +52,8 @@ public:
     typedef Matrix<float, 1, 4>         row_type;
 
 public:
-    inline Matrix() {}
-    inline Matrix(const this_type& matrix)
+    Matrix() {}
+    Matrix(const this_type& matrix)
     {
         rows[0] = matrix.rows[0];
         rows[1] = matrix.rows[1];
@@ -61,8 +61,16 @@ public:
         rows[3] = matrix.rows[3];
     }
 
+	explicit Matrix(float val)
+	{
+		rows[0] = row_type(val);
+		rows[1] = row_type(val);
+		rows[2] = row_type(val);
+		rows[3] = row_type(val);
+	}
+
     template<typename T>
-    inline explicit Matrix(const Matrix<T, 4, 4>& matrix)
+    explicit Matrix(const Matrix<T, 4, 4>& matrix)
     {
         rows[0] = row_type(matrix.rows[0]);
         rows[1] = row_type(matrix.rows[1]);
@@ -70,33 +78,33 @@ public:
         rows[3] = row_type(matrix.rows[3]);
     }
 
-    inline row_type& operator [] (unsigned int i)
+    row_type& operator [] (unsigned int i)
     {
         assert(i < 4);
         return rows[i];
     }
 
-    inline const row_type& operator [] (unsigned int i) const
+    const row_type& operator [] (unsigned int i) const
     {
         assert(i < 4);
         return rows[i];
     }
 
     /** Get plain matrix data */
-    inline float* data() { return rows[0].arr; }
+    float* data() { return rows[0].arr; }
 
     /** Get plain matrix data */
-    inline const float* data() const { return rows[0].arr; }
+    const float* data() const { return rows[0].arr; }
 
     /** Get item using linear index */
-    inline float& operator () (unsigned int i)
+    float& operator () (unsigned int i)
     {
         assert(i < 16);
         return *( data() + i );
     }
 
     /** Get item using linear index */
-    inline float operator () (unsigned int i) const
+    float operator () (unsigned int i) const
     {
         assert(i < 16);
         return *( data() + i );
@@ -121,42 +129,47 @@ public:
     typedef Matrix<ValueType, 1, m>         row_type;
 
 public:
-    inline Matrix() {}
-    inline Matrix(const this_type& matrix)  { std::copy(matrix.rows, matrix.rows + n, rows); }
+    Matrix() {}
+    Matrix(const this_type& matrix)  { std::copy(matrix.rows, matrix.rows + n, rows); }
+
+	explicit Matrix(float val)
+	{
+        std::fill(matrix.rows, matrix.rows + n, row_type(val));
+	}
 
     template<typename T>
-    inline explicit Matrix(const Matrix<T, n, m>& matrix)
+    explicit Matrix(const Matrix<T, n, m>& matrix)
     {
         std::copy(matrix.rows, matrix.rows + n, rows);
     }
 
-    inline row_type& operator [] (unsigned int i)
+    row_type& operator [] (unsigned int i)
     {
         assert(i < n);
         return rows[i];
     }
 
-    inline const row_type& operator [] (unsigned int i) const
+    const row_type& operator [] (unsigned int i) const
     {
         assert(i < n);
         return rows[i];
     }
 
     /** Get plain matrix data */
-    inline ValueType* data() { return rows[0].arr; }
+    ValueType* data() { return rows[0].arr; }
 
     /** Get plain matrix data */
-    inline const ValueType* data() const { return rows[0].arr; }
+    const ValueType* data() const { return rows[0].arr; }
 
     /** Get item using linear index */
-    inline ValueType& operator () (unsigned int i)
+    ValueType& operator () (unsigned int i)
     {
         assert(i < n * m);
         return *( data() + i );
     }
 
     /** Get item using linear index */
-    inline ValueType operator () (unsigned int i) const
+    ValueType operator () (unsigned int i) const
     {
         assert(i < n * m);
         return *( data() + i );

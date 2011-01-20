@@ -54,22 +54,27 @@ public:
     typedef Matrix<ValueType, n, 1>     this_type;
 
 public:
-    inline Matrix() {}
-    inline Matrix(const this_type& vec) { std::copy(vec.arr, vec.arr + n, arr); }
+    Matrix() {}
+    Matrix(const this_type& vec) { std::copy(vec.arr, vec.arr + n, arr); }
+    
+	explicit Matrix(ValueType val)
+    {
+        std::fill(vec.arr, vec.arr + n, val);
+    }
 
     template<typename T>
-    inline explicit Matrix(const Matrix<T, n, 1>& vec)
+    explicit Matrix(const Matrix<T, n, 1>& vec)
     {
         std::copy(vec.arr, vec.arr + n, arr);
     }
 
-    inline ValueType& operator [] (int i)
+    ValueType& operator [] (int i)
     {
         assert(i < n);
         return arr[i];
     }
 
-    inline ValueType operator [] (int i) const
+    ValueType operator [] (int i) const
     {
         assert(i < n);
         return arr[i];
@@ -89,22 +94,27 @@ public:
     typedef Matrix<ValueType, 1, m>     this_type;
 
 public:
-    inline Matrix() {}
-    inline Matrix(const this_type& vec) { std::copy(vec.arr, vec.arr + m, arr); }
+    Matrix() {}
+    Matrix(const this_type& vec) { std::copy(vec.arr, vec.arr + m, arr); }
+  
+    explicit Matrix(ValueType val)
+    {
+        std::fill(vec.arr, vec.arr + m, val);
+    }
 
     template<typename T>
-    inline explicit Matrix(const Matrix<T, 1, m>& vec)
+    explicit Matrix(const Matrix<T, 1, m>& vec)
     {
         std::copy(vec.arr, vec.arr + m, arr);
     }
 
-    inline ValueType& operator [] (int i)
+    ValueType& operator [] (int i)
     {
         assert(i < m);
         return arr[i];
     }
 
-    inline ValueType operator [] (int i) const
+    ValueType operator [] (int i) const
     {
         assert(i < m);
         return arr[i];
@@ -163,38 +173,43 @@ public:
     typedef Matrix<float, 4, 1>         this_type;
 
 public:
-    inline Matrix() {}
+    Matrix() {}
 
-    inline Matrix(__m128 sseReg) :
+    Matrix(__m128 sseReg) :
         m128(sseReg)
     {}
 
-    inline Matrix(const this_type& vec) :
+    Matrix(const this_type& vec) :
         m128(vec.m128)
     {
         m128 = _mm_set_ps(vec.w, vec.z, vec.y, vec.x);
     }
 
-    inline Matrix(float _x, float _y, float _z, float _w)
+	explicit Matrix(float val)
+	{
+		m128 = _mm_set1_ps(val);
+	}
+
+    Matrix(float _x, float _y, float _z, float _w)
     {
         m128 = _mm_set_ps(_w, _z, _y, _x);
     }
 
     template<typename T>
-    inline explicit Matrix(const Matrix<T, 4, 1>& vec) :
+    explicit Matrix(const Matrix<T, 4, 1>& vec) :
         x( static_cast<float>(vec.x) ),
         y( static_cast<float>(vec.y) ),
         z( static_cast<float>(vec.z) ),
         w( static_cast<float>(vec.w) )
     {}
 
-    inline float& operator [] (unsigned int i)
+    float& operator [] (unsigned int i)
     {
         assert(i < 4);
         return arr[i];
     }
 
-    inline float operator [] (unsigned int i) const
+    float operator [] (unsigned int i) const
     {
         assert(i < 4);
         return arr[i];
@@ -227,38 +242,43 @@ public:
     typedef Matrix<float, 1, 4>         this_type;
 
 public:
-    inline Matrix() {}
+    Matrix() {}
 
-    inline Matrix(__m128 sseReg) :
+    Matrix(__m128 sseReg) :
         m128(sseReg)
     {}
 
-    inline Matrix(const this_type& vec) :
+    Matrix(const this_type& vec) :
         m128(vec.m128)
     {
         m128 = _mm_set_ps(vec.w, vec.z, vec.y, vec.x);
     }
 
-    inline Matrix(float _x, float _y, float _z, float _w)
+	explicit Matrix(float val)
+	{
+		m128 = _mm_set1_ps(val);
+	}
+
+    Matrix(float _x, float _y, float _z, float _w)
     {
         m128 = _mm_set_ps(_w, _z, _y, _x);
     }
 
     template<typename T>
-    inline explicit Matrix(const Matrix<T, 4, 1>& vec) :
+    explicit Matrix(const Matrix<T, 4, 1>& vec) :
         x( static_cast<float>(vec.x) ),
         y( static_cast<float>(vec.y) ),
         z( static_cast<float>(vec.z) ),
         w( static_cast<float>(vec.w) )
     {}
 
-    inline float& operator [] (unsigned int i)
+    float& operator [] (unsigned int i)
     {
         assert(i < 4);
         return arr[i];
     }
 
-    inline float operator [] (unsigned int i) const
+    float operator [] (unsigned int i) const
     {
         assert(i < 4);
         return arr[i];
@@ -293,16 +313,23 @@ public:
     typedef Matrix<ValueType, 4, 1>         this_type;
 
 public:
-    inline Matrix() {}
+    Matrix() {}
 
-    inline Matrix(const this_type& vec) :
+    Matrix(const this_type& vec) :
         x(vec.x),
         y(vec.y),
         z(vec.z),
         w(vec.w)
     {}
 
-    inline Matrix(ValueType _x, ValueType _y, ValueType _z, ValueType _w) :
+	explicit Matrix(ValueType val) :
+		x(val),
+		y(val),
+		z(val),
+		w(val)
+	{}
+
+    Matrix(ValueType _x, ValueType _y, ValueType _z, ValueType _w) :
         x(_x),
         y(_y),
         z(_z),
@@ -310,20 +337,20 @@ public:
     {}
 
     template<typename T>
-    inline explicit Matrix(const Matrix<T, 4, 1>& vec) :
+    explicit Matrix(const Matrix<T, 4, 1>& vec) :
         x( static_cast<ValueType>(vec.x) ),
         y( static_cast<ValueType>(vec.y) ),
         z( static_cast<ValueType>(vec.z) ),
         w( static_cast<ValueType>(vec.w) )
     {}
 
-    inline ValueType& operator [] (unsigned int i)
+    ValueType& operator [] (unsigned int i)
     {
         assert(i < 4);
         return arr[i];
     }
 
-    inline ValueType operator [] (unsigned int i) const
+    ValueType operator [] (unsigned int i) const
     {
         assert(i < 4);
         return arr[i];
@@ -349,16 +376,23 @@ public:
     typedef Matrix<ValueType, 1, 4>         this_type;
 
 public:
-    inline Matrix() {}
+    Matrix() {}
 
-    inline Matrix(const this_type& vec) :
+    Matrix(const this_type& vec) :
         x(vec.x),
         y(vec.y),
         z(vec.z),
         w(vec.w)
     {}
 
-    inline Matrix(ValueType _x, ValueType _y, ValueType _z, ValueType _w) :
+	explicit Matrix(ValueType val) :
+		x(val),
+		y(val),
+		z(val),
+		w(val)
+	{}
+
+    Matrix(ValueType _x, ValueType _y, ValueType _z, ValueType _w) :
         x(_x),
         y(_y),
         z(_z),
@@ -366,20 +400,20 @@ public:
     {}
 
     template<typename T>
-    inline explicit Matrix(const Matrix<T, 1, 4>& vec) :
+    explicit Matrix(const Matrix<T, 1, 4>& vec) :
         x( static_cast<ValueType>(vec.x) ),
         y( static_cast<ValueType>(vec.y) ),
         z( static_cast<ValueType>(vec.z) ),
         w( static_cast<ValueType>(vec.w) )
     {}
 
-    inline ValueType& operator [] (unsigned int i)
+    ValueType& operator [] (unsigned int i)
     {
         assert(i < 4);
         return arr[i];
     }
 
-    inline ValueType operator [] (unsigned int i) const
+    ValueType operator [] (unsigned int i) const
     {
         assert(i < 4);
         return arr[i];
@@ -405,34 +439,40 @@ public:
     typedef Matrix<ValueType, 3, 1>         this_type;
 
 public:
-    inline Matrix() {}
+    Matrix() {}
 
-    inline Matrix(const this_type& vec) :
+    Matrix(const this_type& vec) :
         x(vec.x),
         y(vec.y),
         z(vec.z)
     {}
 
-    inline Matrix(ValueType _x, ValueType _y, ValueType _z) :
+	explicit Matrix(ValueType val) :
+		x(val),
+		y(val),
+		z(val)
+	{}
+
+    Matrix(ValueType _x, ValueType _y, ValueType _z) :
         x(_x),
         y(_y),
         z(_z)
     {}
 
     template<typename T>
-    inline explicit Matrix(const Matrix<T, 3, 1>& vec) :
+    explicit Matrix(const Matrix<T, 3, 1>& vec) :
         x( static_cast<ValueType>(vec.x) ),
         y( static_cast<ValueType>(vec.y) ),
         z( static_cast<ValueType>(vec.z) )
     {}
 
-    inline ValueType& operator [] (unsigned int i)
+    ValueType& operator [] (unsigned int i)
     {
         assert(i < 3);
         return arr[i];
     }
 
-    inline ValueType operator [] (unsigned int i) const
+    ValueType operator [] (unsigned int i) const
     {
         assert(i < 3);
         return arr[i];
@@ -458,34 +498,40 @@ public:
     typedef Matrix<ValueType, 1, 3>         this_type;
 
 public:
-    inline Matrix() {}
+    Matrix() {}
 
-    inline Matrix(const this_type& vec) :
+    Matrix(const this_type& vec) :
         x(vec.x),
         y(vec.y),
         z(vec.z)
     {}
 
-    inline Matrix(ValueType _x, ValueType _y, ValueType _z) :
+	explicit Matrix(ValueType val) :
+		x(val),
+		y(val),
+		z(val)
+	{}
+
+    Matrix(ValueType _x, ValueType _y, ValueType _z) :
         x(_x),
         y(_y),
         z(_z)
     {}
 
     template<typename T>
-    inline explicit Matrix(const Matrix<T, 1, 3>& vec) :
+    explicit Matrix(const Matrix<T, 1, 3>& vec) :
         x( static_cast<ValueType>(vec.x) ),
         y( static_cast<ValueType>(vec.y) ),
         z( static_cast<ValueType>(vec.z) )
     {}
 
-    inline ValueType& operator [] (unsigned int i)
+    ValueType& operator [] (unsigned int i)
     {
         assert(i < 3);
         return arr[i];
     }
 
-    inline ValueType operator [] (unsigned int i) const
+    ValueType operator [] (unsigned int i) const
     {
         assert(i < 3);
         return arr[i];
@@ -511,31 +557,36 @@ public:
     typedef Matrix<ValueType, 2, 1>         this_type;
 
 public:
-    inline Matrix() {}
+    Matrix() {}
 
-    inline Matrix(const this_type& vec) :
+    Matrix(const this_type& vec) :
         x(vec.x),
         y(vec.y)
     {}
 
-    inline Matrix(ValueType _x, ValueType _y) :
+	explicit Matrix(ValueType val) :
+		x(val),
+		y(val)
+	{}
+
+    Matrix(ValueType _x, ValueType _y) :
         x(_x),
         y(_y)
     {}
 
     template<typename T>
-    inline explicit Matrix(const Matrix<T, 2, 1>& vec) :
+    explicit Matrix(const Matrix<T, 2, 1>& vec) :
         x( static_cast<ValueType>(vec.x) ),
         y( static_cast<ValueType>(vec.y) )
     {}
 
-    inline ValueType& operator [] (unsigned int i)
+    ValueType& operator [] (unsigned int i)
     {
         assert(i < 2);
         return arr[i];
     }
 
-    inline ValueType operator [] (unsigned int i) const
+    ValueType operator [] (unsigned int i) const
     {
         assert(i < 2);
         return arr[i];
@@ -561,31 +612,36 @@ public:
     typedef Matrix<ValueType, 1, 2>         this_type;
 
 public:
-    inline Matrix() {}
+    Matrix() {}
 
-    inline Matrix(const this_type& vec) :
+    Matrix(const this_type& vec) :
         x(vec.x),
         y(vec.y)
     {}
 
-    inline Matrix(ValueType _x, ValueType _y) :
+	explicit Matrix(ValueType val) :
+		x(val),
+		y(val)
+	{}
+
+    Matrix(ValueType _x, ValueType _y) :
         x(_x),
         y(_y)
     {}
 
     template<typename T>
-    inline explicit Matrix(const Matrix<T, 1, 2>& vec) :
+    explicit Matrix(const Matrix<T, 1, 2>& vec) :
         x( static_cast<ValueType>(vec.x) ),
         y( static_cast<ValueType>(vec.y) )
     {}
 
-    inline ValueType& operator [] (unsigned int i)
+    ValueType& operator [] (unsigned int i)
     {
         assert(i < 2);
         return arr[i];
     }
 
-    inline ValueType operator [] (unsigned int i) const
+    ValueType operator [] (unsigned int i) const
     {
         assert(i < 2);
         return arr[i];
