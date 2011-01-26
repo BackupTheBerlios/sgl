@@ -265,7 +265,7 @@ public:
     }
 
     template<typename T>
-    explicit Matrix(const Matrix<T, 4, 1>& vec) :
+    explicit Matrix(const Matrix<T, 1, 4>& vec) :
         x( static_cast<float>(vec.x) ),
         y( static_cast<float>(vec.y) ),
         z( static_cast<float>(vec.z) ),

@@ -72,10 +72,10 @@ public:
     template<typename T>
     explicit Matrix(const Matrix<T, 4, 4>& matrix)
     {
-        rows[0] = row_type(matrix.rows[0]);
-        rows[1] = row_type(matrix.rows[1]);
-        rows[2] = row_type(matrix.rows[2]);
-        rows[3] = row_type(matrix.rows[3]);
+        rows[0] = row_type(matrix[0]);
+        rows[1] = row_type(matrix[1]);
+        rows[2] = row_type(matrix[2]);
+        rows[3] = row_type(matrix[3]);
     }
 
     row_type& operator [] (unsigned int i)
@@ -140,7 +140,9 @@ public:
     template<typename T>
     explicit Matrix(const Matrix<T, n, m>& matrix)
     {
-        std::copy(matrix.rows, matrix.rows + n, rows);
+		for (int i = 0; i<n; ++i) {
+			rows[i] = row_type(matrix[i]);
+		}
     }
 
     row_type& operator [] (unsigned int i)
