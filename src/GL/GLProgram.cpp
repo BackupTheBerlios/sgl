@@ -588,6 +588,12 @@ AbstractUniform* GLProgram::GetUniform(const char* name) const
         return 0;
     }
 
+	if (!name) 
+	{
+		sglSetError(SGLERR_INVALID_CALL, "GLProgram::GetUniform failed. Uniform name is 0.");
+		return 0;
+	}
+
     GLint uniform = glGetUniformLocation(glProgram, name);
     if (uniform == -1) {
         return 0;

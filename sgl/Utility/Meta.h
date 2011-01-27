@@ -1,6 +1,8 @@
 #ifndef SIMPLE_GL_UTILITY_META_H
 #define SIMPLE_GL_UTILITY_META_H
 
+#include "../Config.h"
+
 namespace sgl {
 
 /* Copied from boost */
