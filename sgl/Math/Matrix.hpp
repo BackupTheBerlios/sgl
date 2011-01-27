@@ -440,6 +440,12 @@ inline Matrix<float, 4, 4>& operator /= (Matrix<float, 4, 4>& lhs, float rhs)
     return lhs;
 }
 
+/** mul matrices */
+inline Matrix<float, 4, 4> operator * (const Matrix<float, 4, 4>& lhs, const Matrix<float, 4, 4>& rhs)
+{
+	Matrix<float, 4, 4> tmp(lhs);
+	return tmp *= rhs;
+}
 
 /** mul matrix per vertex column */
 inline Matrix<float, 4, 1> operator * (const Matrix<float, 4, 4>& mat, const Matrix<float, 4, 1>& vec)
