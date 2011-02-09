@@ -255,6 +255,42 @@ inline Matrix<T, 4, 4> make_scaling(T x, T y, T z)
 }
 
 template<typename T>
+inline Matrix<T, 4, 4> make_rotation_x(T angle)
+{
+    T c = cos(angle);
+    T s = sin(angle);
+
+    return make_matrix( T(1.0), T(0.0), T(0.0), T(0.0),
+                        T(0.0), c,      -s,     T(0.0),
+                        T(0.0), s,      c,      T(0.0),
+                        T(0.0), T(0.0), T(0.0), T(1.0) );
+}
+
+template<typename T>
+inline Matrix<T, 4, 4> make_rotation_y(T angle)
+{
+    T c = cos(angle);
+    T s = sin(angle);
+
+    return make_matrix( c,      T(0.0), s,      T(0.0),
+                        T(0.0), T(1.0), T(0.0), T(0.0),
+                        -s,     T(0.0), c,      T(0.0),
+                        T(0.0), T(0.0), T(0.0), T(1.0) );
+}
+
+template<typename T>
+inline Matrix<T, 4, 4> make_rotation_z(T angle)
+{
+    T c = cos(angle);
+    T s = sin(angle);
+
+    return make_matrix( c,      -s,     T(0.0), T(0.0),
+                        s,      c,      T(0.0), T(0.0),
+                        T(0.0), T(0.0), T(1.0), T(0.0),
+                        T(0.0), T(0.0), T(0.0), T(1.0) );
+}
+
+template<typename T>
 inline Matrix<T, 4, 4> make_rotation(T angle, const math::Matrix<T, 3, 1>& v)
 {
     T c = cos(angle);

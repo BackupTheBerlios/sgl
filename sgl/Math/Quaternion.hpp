@@ -478,6 +478,8 @@ inline Matrix<T, 3, 1> to_axis_angle(const Quaternion<T>& quat)
     else {
         axis *= T( 2.0 * atan2( vl,  quat.w) ); //0,PI
     }
+
+    return axis;
 }
 
 // ===================================== SSE ===================================== //
