@@ -11,7 +11,7 @@ template<typename ValueType,
 class Sphere
 {
 public:
-    typedef Sphere<ValueType>                   this_type;
+    typedef Sphere<ValueType, Dimension>        this_type;
     typedef ValueType                           value_type;
     typedef Matrix<value_type, Dimension, 1>    vec_type;
 
@@ -30,8 +30,8 @@ public:
 typedef Sphere<float, 2>    Circlef;
 typedef Sphere<double, 2>   Circled;
 
-typedef Sphere<float, 3>    Spheref;
-typedef Sphere<double, 3>   Sphered;
+typedef Sphere<float, 3>    Sphere3f;
+typedef Sphere<double, 3>   Sphere3d;
 
 typedef Sphere<float, 3>    Spheref;
 typedef Sphere<double, 3>   Sphered;
