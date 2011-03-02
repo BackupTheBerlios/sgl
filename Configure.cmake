@@ -15,10 +15,14 @@ MESSAGE ("Use SDL_image: " ${SIMPLE_GL_USE_SDL_IMAGE})
 OPTION_DEPENDENT_ON_PACKAGE (SIMPLE_GL_USE_DEVIL "Set to ON to build SimpleGL using DevIL library." DEVIL_FOUND)
 MESSAGE ("Use DevIL: " ${SIMPLE_GL_USE_DEVIL})
 
-# examples
 IF (NOT SIMPLE_GL_CONFIGURE_INTRUSIVE)
+    # examples
 	OPTION_DEPENDENT_ON_PACKAGE (BUILD_EXAMPLES "Set to ON to build examples" SDL_FOUND)
 	MESSAGE ("Build examples: " ${BUILD_EXAMPLES})
+    
+    # documentation
+    OPTION_DEPENDENT_ON_PACKAGE (SIMPLE_GL_BUILD_DOCUMENTATION "Set to ON to build doxygen reference documentation" DOXYGEN_FOUND)
+    MESSAGE ("Build documentation: " ${BUILD_DOCUMENTATION})
 ENDIF (NOT SIMPLE_GL_CONFIGURE_INTRUSIVE)
 
 # check settings
@@ -42,10 +46,6 @@ ENDIF (BUILD_QT_EXAMPLES AND NOT QT_FOUND)
 
 OPTION (INSTALL_EXAMPLES "Set to ON to install examples" NO)
 MESSAGE ("Install examples: " ${INSTALL_EXAMPLES})
-
-# documentation
-OPTION_DEPENDENT_ON_PACKAGE (BUILD_DOCUMENTATION "Set to ON to build doxygen reference documentation" DOXYGEN_FOUND)
-MESSAGE ("Build documentation: " ${BUILD_DOCUMENTATION})
 
 # sse optimization
 OPTION (SIMPLE_GL_USE_SSE "Set to ON to enable sse optimizations for math lib" ON)
