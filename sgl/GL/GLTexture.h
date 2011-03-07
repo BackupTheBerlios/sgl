@@ -55,28 +55,35 @@ public:
         public ReferencedImpl<Referenced>
     {
         guarded_binding( const Device*      device,
-                         const GLTexture*   target,
+                         const GLTexture*   texture,
                          unsigned int       stage_) :
             stage(stage_),
-            texture(0)
+            prevTexture(0),
+            glTarget(texture->glTarget)
         {
-            assert(device && target);
-            if ( device->CurrentTexture(stage) != target )
+            assert(device && texture);
+            if ( device->CurrentTexture(stage) != texture )
             {
-                texture = device->CurrentTexture(stage);
-                target->Bind(stage);
+                prevTexture = device->CurrentTexture(stage);
+                texture->Bind(stage);
             }
         }
 
         ~guarded_binding()
         {
-            if (texture) {
-                texture->Bind(stage);
+            if (prevTexture) {
+                prevTexture->Bind(stage);
+            }
+            else 
+            {
+                glActiveTexture(GL_TEXTURE0 + stage);
+                glDisable(glTarget);
             }
         }
 
         int             stage;
-        const Texture*  texture;
+        int             glTarget;
+        const Texture*  prevTexture;
     };
     typedef ref_ptr<guarded_binding>    guarded_binding_ptr;
 
