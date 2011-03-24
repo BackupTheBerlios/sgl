@@ -23,7 +23,7 @@ IF (WIN32)
         )
 
         # copy dlls into target binary dir
-        ADD_CUSTOM_TARGET (CopyDLL)
+        ADD_CUSTOM_TARGET (SimpleGLCopyDLL)
 
         MACRO (COPY_DLLS SOURCE DESTINATION COPY_FILES)
             FOREACH(FILENAME ${${COPY_FILES}})
