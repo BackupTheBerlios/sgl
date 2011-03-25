@@ -1,5 +1,5 @@
 # flags
-SET(BUILD_SHARED_LIBS ON)
+SET (BUILD_SHARED_LIBS ON)
 
 # standart
 INCLUDE (StandartIncludes)
