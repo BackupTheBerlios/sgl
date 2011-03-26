@@ -134,7 +134,7 @@ public:
 
 	explicit Matrix(float val)
 	{
-        std::fill(matrix.rows, matrix.rows + n, row_type(val));
+        std::fill(rows, rows + n, row_type(val));
 	}
 
     template<typename T>

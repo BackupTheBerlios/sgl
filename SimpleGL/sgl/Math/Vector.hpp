@@ -59,13 +59,13 @@ public:
     
 	explicit Matrix(ValueType val)
     {
-        std::fill(vec.arr, vec.arr + n, val);
+        std::fill(arr, arr + n, val);
     }
 
     template<typename T>
     explicit Matrix(const Matrix<T, n, 1>& vec)
     {
-        std::copy(vec.arr, vec.arr + n, arr);
+        std::copy(arr, arr + n, arr);
     }
 
     ValueType& operator [] (int i)
@@ -99,13 +99,13 @@ public:
   
     explicit Matrix(ValueType val)
     {
-        std::fill(vec.arr, vec.arr + m, val);
+        std::fill(arr, arr + m, val);
     }
 
     template<typename T>
     explicit Matrix(const Matrix<T, 1, m>& vec)
     {
-        std::copy(vec.arr, vec.arr + m, arr);
+        std::copy(arr, arr + m, arr);
     }
 
     ValueType& operator [] (int i)

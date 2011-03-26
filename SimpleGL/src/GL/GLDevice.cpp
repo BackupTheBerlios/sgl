@@ -793,7 +793,7 @@ namespace {
 		return new GLFFPProgram(device);
 	}
 
-	FFPProgram* CreateFFPProgram(GLDevice* device, support_fixed_pipeline<false>)
+    FFPProgram* CreateFFPProgram(GLDevice* /*device*/, support_fixed_pipeline<false>)
 	{
 		sglSetError(SGLERR_UNSUPPORTED, "Device profile doesn't support fixed pipeline");
 		return 0;
@@ -826,7 +826,7 @@ namespace {
 		return new GLRenderTarget(device);
 	}
 
-	RenderTarget* CreateRenderTarget(GLDevice* device, support_render_target<false>)
+    RenderTarget* CreateRenderTarget(GLDevice* /*device*/, support_render_target<false>)
 	{
 		sglSetError(SGLERR_UNSUPPORTED, "Render targets are not supported");
 		return 0;

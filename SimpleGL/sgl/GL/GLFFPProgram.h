@@ -41,7 +41,7 @@ public:
     ATTRIBUTE           SGL_DLLCALL Attribute(unsigned /*index*/) const           { sglSetError(SGLERR_INVALID_CALL, "FFP program doesn't have generic attributes"); return ATTRIBUTE(); }
 
     /* Standart uniforms */
-    AbstractUniform*    SGL_DLLCALL GetUniform(const char* name) const      { return 0; }
+    AbstractUniform*    SGL_DLLCALL GetUniform(const char* /*name*/) const  { return 0; }
 
     Uniform4x4F*        SGL_DLLCALL GetModelViewMatrixUniform() const       { return modelViewMatrixUniform.get(); }
     Uniform4x4F*        SGL_DLLCALL GetProjectionMatrixUniform() const      { return projectionMatrixUniform.get(); }
