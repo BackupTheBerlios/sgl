@@ -7,6 +7,19 @@
 
 namespace sgl {
 
+const GLuint BIND_GL_USAGE[] = 
+{
+	GL_STREAM_DRAW, 
+	GL_STREAM_READ, 
+	GL_STREAM_COPY, 
+    GL_STATIC_DRAW, 
+	GL_STATIC_READ, 
+	GL_STATIC_COPY, 
+    GL_DYNAMIC_DRAW, 
+	GL_DYNAMIC_READ, 
+	GL_DYNAMIC_COPY
+};
+
 inline GLint GuardedBind(GLuint glTarget, GLuint glBuffer)
 {
     GLint oldBuffer;
@@ -207,11 +220,12 @@ public:
 
     // Override BufferView
     SGL_HRESULT SGL_DLLCALL SetData( unsigned int   _dataSize,
-                                     const void*    data )
+                                     const void*    data,
+                                     Buffer::USAGE  usage )
     {
         // set buffer data
         GLuint oldBuffer = GuardedBind(glTarget, glBuffer);
-        glBufferDataARB(glTarget, _dataSize, data, glUsage);
+        glBufferDataARB(glTarget, _dataSize, data, BIND_GL_USAGE[usage]);
     
     #ifndef SGL_NO_STATUS_CHECK
         GLenum error = glGetError();

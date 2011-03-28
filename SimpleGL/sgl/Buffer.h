@@ -16,6 +16,19 @@ public:
     static const int MAP_INVALIDATE_BUFFER_BIT = 1 << 3;
     static const int MAP_UNSYNCHRONIZED_BIT    = 1 << 4;
 
+	enum USAGE
+	{
+		STREAM_DRAW, 
+		STREAM_READ, 
+		STREAM_COPY, 
+        STATIC_DRAW, 
+		STATIC_READ, 
+		STATIC_COPY, 
+        DYNAMIC_DRAW, 
+		DYNAMIC_READ, 
+		DYNAMIC_COPY
+	};
+
 public:
     /** Gain access to the buffer data. Force buffer to be binded.
      * @param hint - data access hints.
@@ -53,7 +66,8 @@ public:
 	 * @return the result of the operation. Can be SGLERR_OUT_OF_MEMORY
      */
     virtual SGL_HRESULT SGL_DLLCALL SetData( unsigned int   dataSize,
-                                             const void*    data ) = 0;
+                                             const void*    data,
+											 USAGE			usage = STATIC_DRAW ) = 0;
 
     /** Send sub data chunk in the GPU buffer.
      * @param offset - offset in the buffer where to store the data
