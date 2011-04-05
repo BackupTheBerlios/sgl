@@ -126,6 +126,35 @@ inline bool get_euler_angles(const Matrix<T, 3, 3>& mat, Matrix<T, 3, 1>& res)
     }
 }
 
+/** Invert homogeneous matrix (faster than ordinary invert, but works only for homogeneous matrices) */
+template<typename T>
+inline Matrix<T, 4, 4> invert_homogeneous(const Matrix<T, 4, 4>& mat)
+{
+    Matrix<T, 4, 4> res;
+
+	res[0][0] =  mat[0][0];
+	res[0][1] =  mat[1][0];
+	res[0][2] =  mat[2][0];
+	res[0][3] = -mat[0][3];
+
+	res[1][0] =  mat[0][1];
+	res[1][1] =  mat[1][1];
+	res[1][2] =  mat[2][1];
+	res[1][3] = -mat[1][3];
+	
+	res[2][0] =  mat[0][2];
+	res[2][1] =  mat[1][2];
+	res[2][2] =  mat[2][2];
+	res[2][3] = -mat[2][3];
+	
+	res[3][0] =  mat[3][0];
+	res[3][1] =  mat[3][1];
+	res[3][2] =  mat[3][2];
+	res[3][3] =  mat[3][3];
+
+	return res;
+}
+
 /** Invert matrix. Code taken from Intel pdf "Streaming SIMD Extension - Inverse of 4x4 Matrix" */
 template<typename T>
 inline Matrix<T, 4, 4> invert(const Matrix<T, 4, 4>& mat)
@@ -133,7 +162,7 @@ inline Matrix<T, 4, 4> invert(const Matrix<T, 4, 4>& mat)
     Matrix<T, 4, 3> tmp;
     Matrix<T, 4, 4> src;
     Matrix<T, 4, 4> res;
-    T                   det;
+    T               det;
 
     /* transpose matrix */
     for (int i = 0; i < 4; ++i)
