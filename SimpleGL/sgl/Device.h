@@ -402,8 +402,9 @@ extern "C" SGL_DLLEXPORT sgl::Device* SGL_DLLCALL sglCreateDevice(sgl::DEVICE_VE
 
 /** Create device for rendering and grab context from current window.
  * @param devType - device type(OPENGL_DEVICE).
+ * @param force - force using specified version even if glew reports it is not supported.
  * @return fresh and hot device.
  */
-extern "C" SGL_DLLEXPORT sgl::Device* SGL_DLLCALL sglCreateDeviceFromCurrent(sgl::DEVICE_VERSION devType);
+extern "C" SGL_DLLEXPORT sgl::Device* SGL_DLLCALL sglCreateDeviceFromCurrent(sgl::DEVICE_VERSION devType, bool force = false);
 
 #endif // SIMPLE_GL_DEVICE_H

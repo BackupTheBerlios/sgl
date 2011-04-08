@@ -43,7 +43,7 @@ extern "C" SGL_DLLEXPORT sgl::Device* SGL_DLLCALL sglCreateDevice(sgl::DEVICE_VE
     }
 }
 
-extern "C" SGL_DLLEXPORT sgl::Device* SGL_DLLCALL sglCreateDeviceFromCurrent(sgl::DEVICE_VERSION deviceVersion)
+extern "C" SGL_DLLEXPORT sgl::Device* SGL_DLLCALL sglCreateDeviceFromCurrent(sgl::DEVICE_VERSION deviceVersion, bool force)
 {
     // init extensions
     static bool glewInitialized = false;
@@ -65,49 +65,49 @@ extern "C" SGL_DLLEXPORT sgl::Device* SGL_DLLCALL sglCreateDeviceFromCurrent(sgl
         switch (deviceVersion)
         {
         case DV_OPENGL_1_3:
-            if (GLEW_VERSION_1_3) {
+            if (GLEW_VERSION_1_3 || force) {
                 return new GLDeviceConcrete<DV_OPENGL_1_3>();
             }
             return 0;
 
         case DV_OPENGL_1_4:
-            if (GLEW_VERSION_1_4) {
+            if (GLEW_VERSION_1_4 || force) {
                 return new GLDeviceConcrete<DV_OPENGL_1_4>();
             }
             return 0;
 
         case DV_OPENGL_1_5:
-            if (GLEW_VERSION_1_5) {
+            if (GLEW_VERSION_1_5 || force) {
                 return new GLDeviceConcrete<DV_OPENGL_1_5>();
             }
             return 0;
 
         case DV_OPENGL_2_0:
-            if (GLEW_VERSION_2_0) {
+            if (GLEW_VERSION_2_0 || force) {
                 return new GLDeviceConcrete<DV_OPENGL_2_0>();
             }
             return 0;
 
         case DV_OPENGL_2_1:
-            if (GLEW_VERSION_2_1) {
+            if (GLEW_VERSION_2_1 || force) {
                 return new GLDeviceConcrete<DV_OPENGL_2_1>();
             }
             return 0;
             
         case DV_OPENGL_3_0:
-            if (GLEW_VERSION_3_0) {
+            if (GLEW_VERSION_3_0 || force) {
                 return new GLDeviceConcrete<DV_OPENGL_3_0>();
             }
             return 0;
 
         case DV_OPENGL_3_1:
-            if (GLEW_VERSION_3_1) {
+            if (GLEW_VERSION_3_1 || force) {
                 return new GLDeviceConcrete<DV_OPENGL_3_1>();
             }
             return 0;
 
         case DV_OPENGL_3_2:
-            if (GLEW_VERSION_3_2) {
+            if (GLEW_VERSION_3_2 || force) {
                 return new GLDeviceConcrete<DV_OPENGL_3_2>();
             }
             return 0;
