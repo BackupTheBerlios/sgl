@@ -4,10 +4,11 @@
 namespace sgl {
 
 //================================= GLTextureCubeSide =================================//
-GLTextureCubeSide::GLTextureCubeSide( GLTextureCube*		 texture,
+GLTextureCubeSide::GLTextureCubeSide( GLTextureCube*		 texture_,
                                       const Texture2D::DESC& desc,
                                       TextureCube::SIDE      side_ ) :
-    GLTexture<Texture2D>(texture->device, GL_TEXTURE_CUBE_MAP, false),
+    GLTexture<Texture2D>(texture_->device, GL_TEXTURE_CUBE_MAP, false),
+    texture(texture_),
     side(side_),
     format(desc.format),
     width(desc.width),
@@ -161,7 +162,7 @@ SGL_HRESULT GLTextureCubeSide::GetImage( unsigned int  mipmap,
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();
     if ( glError != GL_NO_ERROR ) {
-        return CheckGLError( "GLTextureCubeSide<DeviceVersion>::GetImage failed: ", glError );
+        return CheckGLError( "GLTextureCubeSide::GetImage failed: ", glError );
     }
 #endif // SGL_NO_STATUS_CHECK
 
@@ -184,27 +185,47 @@ SGL_HRESULT GLTextureCube::GenerateMipmap()
 {
     guarded_binding_ptr guardedTexture( new guarded_binding(device, this, 0) );
 
-#ifndef SGL_NO_STATUS_CHECK
-    GLenum glError = glGetError();
-    if ( glError != GL_NO_ERROR ) {
-        return CheckGLError( "GLTextureCube::GenerateMipmap failed: ", glError );
-    }
-#endif // SGL_NO_STATUS_CHECK
-
-
-    if (glGenerateMipmapEXT) {
+    if (glGenerateMipmapEXT) 
+    {
         glGenerateMipmapEXT(glTarget);
+    #ifndef SGL_NO_STATUS_CHECK
+        GLenum glError = glGetError();
+        if ( glError != GL_NO_ERROR ) {
+            return CheckGLError( "GLTextureCube::GenerateMipmap failed: ", glError );
+        }
+    #endif // SGL_NO_STATUS_CHECK
     }
-    else {
-        return EUnsupported("Hardware mipmap generation is not supported by the device");
-    }
+    else 
+    {
+        for (int i = 0; i<6; ++i) 
+        {
+            GLTextureCubeSide* side = sides[i];
+            
+            size_t dataSize = Image::SizeOfData(side->format, side->width, side->height, 1);
+            void*  data = malloc(dataSize);
+            if (!data) {
+                return EOutOfMemory("GLTextureCube::GenerateMipmap failed: out of memory");
+            }
 
-#ifndef SGL_NO_STATUS_CHECK
-    glError = glGetError();
-    if ( glError != GL_NO_ERROR ) {
-        return CheckGLError( "GLTextureCube::GenerateMipmap failed: ", glError );
+            SGL_HRESULT result = side->GetImage(0, data);
+            if (result != SGL_OK) {
+                return result;
+            }
+
+            GLint gluError = gluBuild2DMipmaps( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                                                BIND_GL_FORMAT[side->format],
+                                                side->width,
+                                                side->height,
+                                                BIND_GL_FORMAT_USAGE[side->format],
+                                                BIND_GL_FORMAT_PIXEL_TYPE[side->format],
+                                                data );
+        #ifndef SGL_NO_STATUS_CHECK
+            if ( gluError != GL_NO_ERROR ) {
+                return CheckGLUError( "GLTextureCube::GenerateMipmap failed: ", gluError );
+            }
+        #endif // SGL_NO_STATUS_CHECK
+        }
     }
-#endif // SGL_NO_STATUS_CHECK
 
     return SGL_OK;
 }

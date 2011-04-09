@@ -5,12 +5,10 @@
 
 namespace sgl {
 
-// forward
-class GLTextureCube;
-
 class GLTextureCubeSide :
     public GLTexture<Texture2D>
 {
+friend class GLTextureCube;
 public:
     typedef GLTexture<Texture2D>                        base_type;
     typedef GLTexture<TextureCube>::guarded_binding     guarded_binding;

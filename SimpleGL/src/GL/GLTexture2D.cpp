@@ -221,8 +221,31 @@ SGL_HRESULT GLTexture2D::GenerateMipmap()
     if (glGenerateMipmapEXT) {
         glGenerateMipmapEXT(glTarget);
     }
-    else {
-        return EUnsupported("Hardware mipmap generation is not supported by the device");
+    else 
+    {
+        size_t dataSize = Image::SizeOfData(format, width, height, 1);
+        void*  data = malloc(dataSize);
+        if (!data) {
+            return EOutOfMemory("GLTexture2D::GenerateMipmap failed: out of memory");
+        }
+
+        SGL_HRESULT result = GetImage(0, data);
+        if (result != SGL_OK) {
+            return result;
+        }
+
+        GLint gluError = gluBuild2DMipmaps( GL_TEXTURE_2D,
+                                            BIND_GL_FORMAT[format],
+                                            width,
+                                            height,
+                                            BIND_GL_FORMAT_USAGE[format],
+                                            BIND_GL_FORMAT_PIXEL_TYPE[format],
+                                            data );
+    #ifndef SGL_NO_STATUS_CHECK
+        if ( gluError != GL_NO_ERROR ) {
+            return CheckGLUError( "GLTexture2D::GenerateMipmap failed: ", gluError );
+        }
+    #endif // SGL_NO_STATUS_CHECK
     }
 
 #ifndef SGL_NO_STATUS_CHECK

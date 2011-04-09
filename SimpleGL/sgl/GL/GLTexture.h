@@ -101,20 +101,6 @@ public:
         }
     }
 
-    guarded_binding_ptr GuardedBind(unsigned int stage) const
-    {
-        if ( device->CurrentTexture(stage) != this )
-        {
-            guarded_binding_ptr guardedTexture( new guarded_binding(device->CurrentTexture(stage), stage) );
-
-            glActiveTexture(GL_TEXTURE0 + stage);
-            glBindTexture(glTarget, glTexture);
-            return guardedTexture;
-        }
-
-        return guarded_binding();
-    }
-
     GLuint Target() const   { return glTarget; }
     GLuint Handle() const   { return glTexture; }
 
