@@ -71,7 +71,10 @@ public:
 
         ~guarded_binding()
         {
-            if (prevTexture) {
+            if (prevTexture) 
+            {
+                glActiveTexture(GL_TEXTURE0 + stage);
+                glDisable(glTarget);
                 prevTexture->Bind(stage);
             }
             else 
