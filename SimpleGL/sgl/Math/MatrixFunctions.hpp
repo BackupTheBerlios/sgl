@@ -126,6 +126,37 @@ inline bool get_euler_angles(const Matrix<T, 3, 3>& mat, Matrix<T, 3, 1>& res)
     }
 }
 
+/** Get 3x3 matrix determinant. Code taken from: http://www.geometrictools.com/LibMathematics/Algebra/Wm5Matrix4.inl */
+template <typename T>
+T get_determinant(const Matrix<T, 3, 3>& mat)
+{
+    Real co00 = mat(4)*mat(8) - mat(5)*mat(7);
+    Real co10 = mat(5)*mat(6) - mat(3)*mat(8);
+    Real co20 = mat(3)*mat(7) - mat(4)*mat(6);
+
+    return mat(0)*co00 + mat(1)*co10 + mat(2)*co20;
+}
+
+/** Get 4x4 matrix determinant. Code taken from: http://www.geometrictools.com/LibMathematics/Algebra/Wm5Matrix4.inl */
+template<typename T>
+T get_determinant(const Matrix<T, 4, 4>& mat)
+{
+    T a0 = mat( 0)*mat( 5) - mat( 1)*mat( 4);
+    T a1 = mat( 0)*mat( 6) - mat( 2)*mat( 4);
+    T a2 = mat( 0)*mat( 7) - mat( 3)*mat( 4);
+    T a3 = mat( 1)*mat( 6) - mat( 2)*mat( 5);
+    T a4 = mat( 1)*mat( 7) - mat( 3)*mat( 5);
+    T a5 = mat( 2)*mat( 7) - mat( 3)*mat( 6);
+    T b0 = mat( 8)*mat(13) - mat( 9)*mat(12);
+    T b1 = mat( 8)*mat(14) - mat(10)*mat(12);
+    T b2 = mat( 8)*mat(15) - mat(11)*mat(12);
+    T b3 = mat( 9)*mat(14) - mat(10)*mat(13);
+    T b4 = mat( 9)*mat(15) - mat(11)*mat(13);
+    T b5 = mat(10)*mat(15) - mat(11)*mat(14);
+
+    return a0*b5 - a1*b4 + a2*b3 + a3*b2 - a4*b1 + a5*b0;;
+}
+
 /** Invert homogeneous matrix (faster than ordinary invert, but works only for homogeneous matrices) */
 template<typename T>
 inline Matrix<T, 4, 4> invert_homogeneous(const Matrix<T, 4, 4>& mat)
@@ -155,100 +186,178 @@ inline Matrix<T, 4, 4> invert_homogeneous(const Matrix<T, 4, 4>& mat)
 	return res;
 }
 
-/** Invert matrix. Code taken from Intel pdf "Streaming SIMD Extension - Inverse of 4x4 Matrix" */
+/** Invert 3x3 matrix using cofactors. Code taken from: http://www.geometrictools.com/LibMathematics/Algebra/Wm5Matrix3.inl */
+template<typename T>
+inline math::Matrix<T, 3, 3> invert(const math::Matrix<T, 3, 3>& mat)
+{
+    math::Matrix<T, 3, 3> inverse;
+
+    // Compute the adjoint.
+    inverse(0) = mat(4)*mat(8) - mat(5)*mat(7);
+    inverse(1) = mat(2)*mat(7) - mat(1)*mat(8);
+    inverse(2) = mat(1)*mat(5) - mat(2)*mat(4);
+    inverse(3) = mat(5)*mat(6) - mat(3)*mat(8);
+    inverse(4) = mat(0)*mat(8) - mat(2)*mat(6);
+    inverse(5) = mat(2)*mat(3) - mat(0)*mat(5);
+    inverse(6) = mat(3)*mat(7) - mat(4)*mat(6);
+    inverse(7) = mat(1)*mat(6) - mat(0)*mat(7);
+    inverse(8) = mat(0)*mat(4) - mat(1)*mat(3);
+
+    T det = mat(0)*inverse(0) + mat(1)*inverse(3) + mat(2)*inverse(6);
+    T invDet = T(1) / det;
+    for (int i = 0; i<9; ++i) {
+        inverse(i) *= invDet;
+    }
+
+    return inverse;
+}
+
+/** Invert 3x3 matrix if it can be inverted. Code taken from: http://www.geometrictools.com/LibMathematics/Algebra/Wm5Matrix3.inl */
+template<typename T>
+inline bool invert( const math::Matrix<T, 3, 3>& mat, math::Matrix<T, 3, 3>& inverse, T eps = std::numeric_limits<T>::min() )
+{
+    // Compute the adjoint.
+    inverse(0) = mat(4)*mat(8) - mat(5)*mat(7);
+    inverse(1) = mat(2)*mat(7) - mat(1)*mat(8);
+    inverse(2) = mat(1)*mat(5) - mat(2)*mat(4);
+    inverse(3) = mat(5)*mat(6) - mat(3)*mat(8);
+    inverse(4) = mat(0)*mat(8) - mat(2)*mat(6);
+    inverse(5) = mat(2)*mat(3) - mat(0)*mat(5);
+    inverse(6) = mat(3)*mat(7) - mat(4)*mat(6);
+    inverse(7) = mat(1)*mat(6) - mat(0)*mat(7);
+    inverse(8) = mat(0)*mat(4) - mat(1)*mat(3);
+
+    T det = mat(0)*inverse(0) + mat(1)*inverse(3) + mat(2)*inverse(6);
+    if (abs(det) > eps)
+    {
+        T invDet = T(1) / det;
+        for (int i = 0; i<9; ++i) {
+            inverse(i) *= invDet;
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+/** Invert matrix using cofactors. Code taken from: http://www.geometrictools.com/LibMathematics/Algebra/Wm5Matrix4.inl */
 template<typename T>
 inline Matrix<T, 4, 4> invert(const Matrix<T, 4, 4>& mat)
 {
-    Matrix<T, 4, 3> tmp;
-    Matrix<T, 4, 4> src;
-    Matrix<T, 4, 4> res;
-    T               det;
+    Real a0 = mat( 0)*mat( 5) - mat( 1)*mat( 4);
+    Real a1 = mat( 0)*mat( 6) - mat( 2)*mat( 4);
+    Real a2 = mat( 0)*mat( 7) - mat( 3)*mat( 4);
+    Real a3 = mat( 1)*mat( 6) - mat( 2)*mat( 5);
+    Real a4 = mat( 1)*mat( 7) - mat( 3)*mat( 5);
+    Real a5 = mat( 2)*mat( 7) - mat( 3)*mat( 6);
+    Real b0 = mat( 8)*mat(13) - mat( 9)*mat(12);
+    Real b1 = mat( 8)*mat(14) - mat(10)*mat(12);
+    Real b2 = mat( 8)*mat(15) - mat(11)*mat(12);
+    Real b3 = mat( 9)*mat(14) - mat(10)*mat(13);
+    Real b4 = mat( 9)*mat(15) - mat(11)*mat(13);
+    Real b5 = mat(10)*mat(15) - mat(11)*mat(14);
 
-    /* transpose matrix */
-    for (int i = 0; i < 4; ++i)
+    Real det = a0*b5 - a1*b4 + a2*b3 + a3*b2 - a4*b1 + a5*b0;
+
+    Matrix<T, 4, 4> inverse;
+    inverse( 0) = + mat( 5)*b5 - mat( 6)*b4 + mat( 7)*b3;
+    inverse( 4) = - mat( 4)*b5 + mat( 6)*b2 - mat( 7)*b1;
+    inverse( 8) = + mat( 4)*b4 - mat( 5)*b2 + mat( 7)*b0;
+    inverse(12) = - mat( 4)*b3 + mat( 5)*b1 - mat( 6)*b0;
+    inverse( 1) = - mat( 1)*b5 + mat( 2)*b4 - mat( 3)*b3;
+    inverse( 5) = + mat( 0)*b5 - mat( 2)*b2 + mat( 3)*b1;
+    inverse( 9) = - mat( 0)*b4 + mat( 1)*b2 - mat( 3)*b0;
+    inverse(13) = + mat( 0)*b3 - mat( 1)*b1 + mat( 2)*b0;
+    inverse( 2) = + mat(13)*a5 - mat(14)*a4 + mat(15)*a3;
+    inverse( 6) = - mat(12)*a5 + mat(14)*a2 - mat(15)*a1;
+    inverse(10) = + mat(12)*a4 - mat(13)*a2 + mat(15)*a0;
+    inverse(14) = - mat(12)*a3 + mat(13)*a1 - mat(14)*a0;
+    inverse( 3) = - mat( 9)*a5 + mat(10)*a4 - mat(11)*a3;
+    inverse( 7) = + mat( 8)*a5 - mat(10)*a2 + mat(11)*a1;
+    inverse(11) = - mat( 8)*a4 + mat( 9)*a2 - mat(11)*a0;
+    inverse(15) = + mat( 8)*a3 - mat( 9)*a1 + mat(10)*a0;
+
+    T invDet = T(1) / det;
+    inverse( 0) *= invDet;
+    inverse( 1) *= invDet;
+    inverse( 2) *= invDet;
+    inverse( 3) *= invDet;
+    inverse( 4) *= invDet;
+    inverse( 5) *= invDet;
+    inverse( 6) *= invDet;
+    inverse( 7) *= invDet;
+    inverse( 8) *= invDet;
+    inverse( 9) *= invDet;
+    inverse(10) *= invDet;
+    inverse(11) *= invDet;
+    inverse(12) *= invDet;
+    inverse(13) *= invDet;
+    inverse(14) *= invDet;
+    inverse(15) *= invDet;
+
+    return inverse;
+}
+
+/** Invert matrix if it can be inverted. Code taken from: http://www.geometrictools.com/LibMathematics/Algebra/Wm5Matrix4.inl */
+template<typename T>
+inline bool invert( const Matrix<T, 4, 4>& mat, Matrix<T, 4, 4>& inverse, T eps = T eps = std::numeric_limits<T>::min() )
+{
+    Real a0 = mat( 0)*mat( 5) - mat( 1)*mat( 4);
+    Real a1 = mat( 0)*mat( 6) - mat( 2)*mat( 4);
+    Real a2 = mat( 0)*mat( 7) - mat( 3)*mat( 4);
+    Real a3 = mat( 1)*mat( 6) - mat( 2)*mat( 5);
+    Real a4 = mat( 1)*mat( 7) - mat( 3)*mat( 5);
+    Real a5 = mat( 2)*mat( 7) - mat( 3)*mat( 6);
+    Real b0 = mat( 8)*mat(13) - mat( 9)*mat(12);
+    Real b1 = mat( 8)*mat(14) - mat(10)*mat(12);
+    Real b2 = mat( 8)*mat(15) - mat(11)*mat(12);
+    Real b3 = mat( 9)*mat(14) - mat(10)*mat(13);
+    Real b4 = mat( 9)*mat(15) - mat(11)*mat(13);
+    Real b5 = mat(10)*mat(15) - mat(11)*mat(14);
+
+    Real det = a0*b5 - a1*b4 + a2*b3 + a3*b2 - a4*b1 + a5*b0;
+    if ( abs(det) > eps)
     {
-        src(i)      = mat(i*4);
-        src(i + 4)  = mat(i*4 + 1);
-        src(i + 8)  = mat(i*4 + 2);
-        src(i + 12) = mat(i*4 + 3);
+        inverse( 0) = + mat( 5)*b5 - mat( 6)*b4 + mat( 7)*b3;
+        inverse( 4) = - mat( 4)*b5 + mat( 6)*b2 - mat( 7)*b1;
+        inverse( 8) = + mat( 4)*b4 - mat( 5)*b2 + mat( 7)*b0;
+        inverse(12) = - mat( 4)*b3 + mat( 5)*b1 - mat( 6)*b0;
+        inverse( 1) = - mat( 1)*b5 + mat( 2)*b4 - mat( 3)*b3;
+        inverse( 5) = + mat( 0)*b5 - mat( 2)*b2 + mat( 3)*b1;
+        inverse( 9) = - mat( 0)*b4 + mat( 1)*b2 - mat( 3)*b0;
+        inverse(13) = + mat( 0)*b3 - mat( 1)*b1 + mat( 2)*b0;
+        inverse( 2) = + mat(13)*a5 - mat(14)*a4 + mat(15)*a3;
+        inverse( 6) = - mat(12)*a5 + mat(14)*a2 - mat(15)*a1;
+        inverse(10) = + mat(12)*a4 - mat(13)*a2 + mat(15)*a0;
+        inverse(14) = - mat(12)*a3 + mat(13)*a1 - mat(14)*a0;
+        inverse( 3) = - mat( 9)*a5 + mat(10)*a4 - mat(11)*a3;
+        inverse( 7) = + mat( 8)*a5 - mat(10)*a2 + mat(11)*a1;
+        inverse(11) = - mat( 8)*a4 + mat( 9)*a2 - mat(11)*a0;
+        inverse(15) = + mat( 8)*a3 - mat( 9)*a1 + mat(10)*a0;
+
+        T invDet = T(1) / det;
+        inverse( 0) *= invDet;
+        inverse( 1) *= invDet;
+        inverse( 2) *= invDet;
+        inverse( 3) *= invDet;
+        inverse( 4) *= invDet;
+        inverse( 5) *= invDet;
+        inverse( 6) *= invDet;
+        inverse( 7) *= invDet;
+        inverse( 8) *= invDet;
+        inverse( 9) *= invDet;
+        inverse(10) *= invDet;
+        inverse(11) *= invDet;
+        inverse(12) *= invDet;
+        inverse(13) *= invDet;
+        inverse(14) *= invDet;
+        inverse(15) *= invDet;
+
+        return true;
     }
 
-    /* calculate pairs for first 8 elements (cofactors) */
-    tmp(0)  = src(10) * src(15);
-    tmp(1)  = src(11) * src(14);
-    tmp(2)  = src(9)  * src(15);
-    tmp(3)  = src(11) * src(13);
-    tmp(4)  = src(9)  * src(14);
-    tmp(5)  = src(10) * src(13);
-    tmp(6)  = src(8)  * src(15);
-    tmp(7)  = src(11) * src(12);
-    tmp(8)  = src(8)  * src(14);
-    tmp(9)  = src(10) * src(12);
-    tmp(10) = src(8)  * src(13);
-    tmp(11) = src(9)  * src(12);
-
-    /* calculate first 8 elements (cofactors) */
-    res(0)  = tmp(0)*src(5) + tmp(3)*src(6) + tmp(4)*src(7);
-    res(0) -= tmp(1)*src(5) + tmp(2)*src(6) + tmp(5)*src(7);
-    res(1)  = tmp(1)*src(4) + tmp(6)*src(6) + tmp(9)*src(7);
-    res(1) -= tmp(0)*src(4) + tmp(7)*src(6) + tmp(8)*src(7);
-    res(2)  = tmp(2)*src(4) + tmp(7)*src(5) + tmp(10)*src(7);
-    res(2) -= tmp(3)*src(4) + tmp(6)*src(5) + tmp(11)*src(7);
-    res(3)  = tmp(5)*src(4) + tmp(8)*src(5) + tmp(11)*src(6);
-    res(3) -= tmp(4)*src(4) + tmp(9)*src(5) + tmp(10)*src(6);
-    res(4)  = tmp(1)*src(1) + tmp(2)*src(2) + tmp(5)*src(3);
-    res(4) -= tmp(0)*src(1) + tmp(3)*src(2) + tmp(4)*src(3);
-    res(5)  = tmp(0)*src(0) + tmp(7)*src(2) + tmp(8)*src(3);
-    res(5) -= tmp(1)*src(0) + tmp(6)*src(2) + tmp(9)*src(3);
-    res(6)  = tmp(3)*src(0) + tmp(6)*src(1) + tmp(11)*src(3);
-    res(6) -= tmp(2)*src(0) + tmp(7)*src(1) + tmp(10)*src(3);
-    res(7)  = tmp(4)*src(0) + tmp(9)*src(1) + tmp(10)*src(2);
-    res(7) -= tmp(5)*src(0) + tmp(8)*src(1) + tmp(11)*src(2);
-
-    /* calculate pairs for second 8 elements (cofactors) */
-    tmp(0)  = src(2)*src(7);
-    tmp(1)  = src(3)*src(6);
-    tmp(2)  = src(1)*src(7);
-    tmp(3)  = src(3)*src(5);
-    tmp(4)  = src(1)*src(6);
-    tmp(5)  = src(2)*src(5);
-    tmp(6)  = src(0)*src(7);
-    tmp(7)  = src(3)*src(4);
-    tmp(8)  = src(0)*src(6);
-    tmp(9)  = src(2)*src(4);
-    tmp(10) = src(0)*src(5);
-    tmp(11) = src(1)*src(4);
-
-    /* calculate second 8 elements (cofactors) */
-    res(8)   = tmp(0)*src(13)  + tmp(3)*src(14)  + tmp(4)*src(15);
-    res(8)  -= tmp(1)*src(13)  + tmp(2)*src(14)  + tmp(5)*src(15);
-    res(9)   = tmp(1)*src(12)  + tmp(6)*src(14)  + tmp(9)*src(15);
-    res(9)  -= tmp(0)*src(12)  + tmp(7)*src(14)  + tmp(8)*src(15);
-    res(10)  = tmp(2)*src(12)  + tmp(7)*src(13)  + tmp(10)*src(15);
-    res(10) -= tmp(3)*src(12)  + tmp(6)*src(13)  + tmp(11)*src(15);
-    res(11)  = tmp(5)*src(12)  + tmp(8)*src(13)  + tmp(11)*src(14);
-    res(11) -= tmp(4)*src(12)  + tmp(9)*src(13)  + tmp(10)*src(14);
-    res(12)  = tmp(2)*src(10)  + tmp(5)*src(11)  + tmp(1)*src(9);
-    res(12) -= tmp(4)*src(11)  + tmp(0)*src(9)   + tmp(3)*src(10);
-    res(13)  = tmp(8)*src(11)  + tmp(0)*src(8)   + tmp(7)*src(10);
-    res(13) -= tmp(6)*src(10)  + tmp(9)*src(11)  + tmp(1)*src(8);
-    res(14)  = tmp(6)*src(9)   + tmp(11)*src(11) + tmp(3)*src(8);
-    res(14) -= tmp(10)*src(11) + tmp(2)*src(8)   + tmp(7)*src(9);
-    res(15)  = tmp(10)*src(10) + tmp(4)*src(8)   + tmp(9)*src(9);
-    res(15) -= tmp(8)*src(9)   + tmp(11)*src(10) + tmp(5)*src(8);
-
-    /* calculate determinant */
-    det = src(0)*res(0)
-        + src(1)*res(1)
-        + src(2)*res(2)
-        + src(3)*res(3);
-
-    /* calculate matrix inverse */
-    det = 1.0f / det;
-    for ( int j = 0; j < 16; j++)
-        res(j) *= det;
-
-    return res;
+    return false;
 }
 
 template<typename T, int n>
