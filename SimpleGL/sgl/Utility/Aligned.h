@@ -397,7 +397,9 @@ public:
         }
 
         // fill with default values
-        construct_default(data + dataSize, data + size);
+        if (dataSize < size) {
+            construct_default(data + dataSize, data + size);
+        }
         dataSize = size;
     }
 
