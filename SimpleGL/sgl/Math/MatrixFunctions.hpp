@@ -83,7 +83,7 @@ inline Matrix<T, 3, 1> get_scaling(const Matrix<T, 4, 4>& mat)
  * @return true - if angles can be determined uniquely
  */
 template <typename T>
-inline bool get_euler_angles(const Matrix<T, 3, 3>& mat, Matrix<T, 3, 1>& res)
+inline bool to_euler_xyz(const Matrix<T, 3, 3>& mat, Matrix<T, 3, 1>& res)
 {
     // +-           -+   +-                                        -+
     // | r00 r01 r02 |   |  cy*cz           -cy*sz            sy    |
@@ -122,6 +122,54 @@ inline bool get_euler_angles(const Matrix<T, 3, 3>& mat, Matrix<T, 3, 1>& res)
         res[1] = T(HALF_PI);
         res[0] = atan2(mat(3), mat(4));
         res[2] = T(0);
+        return false;
+    }
+}
+
+/** Get euler rotation angles from matrix: http://www.geometrictools.com/LibFoundation/Mathematics/Wm4Matrix3.inl.html
+ * @param mat - rotation matrix
+ * @param res[out] - output angles
+ * @return true - if angles can be determined uniquely
+ */
+template <typename T>
+inline bool to_euler_xzy(const Matrix<T, 3, 3>& mat, Matrix<T, 3, 1>& res)
+{
+    // +-           -+   +-                                        -+
+    // | r00 r01 r02 |   |  cy*cz           -sz      cz*sy          |
+    // | r10 r11 r12 | = |  sx*sy+cx*cy*sz   cx*cz  -cy*sx+cx*sy*sz |
+    // | r20 r21 r22 |   | -cx*sy+cy*sx*sz   cz*sx   cx*cy+sx*sy*sz |
+    // +-           -+   +-                                        -+
+    if (mat(1) < (Real)1)
+    {
+        if (mat(1) > -(Real)1)
+        {
+            // z_angle = asin(-r01)
+            // x_angle = atan2(r21,r11)
+            // y_angle = atan2(r02,r00)
+            zAngle = (T)asin(-(double)mat(1));
+            xAngle = atan2(mat(7), mat(4));
+            yAngle = atan2(mat(2), mat(0));
+            return true;
+        }
+        else
+        {
+            // z_angle = +pi/2
+            // y_angle - x_angle = atan2(-r20,r22)
+            // WARNING.  The solution is not unique.  Choosing y_angle = 0.
+            zAngle = HALF_PI;
+            xAngle = -atan2(-mat(6) ,mat(8));
+            yAngle = (T)0;
+            return false;
+        }
+    }
+    else
+    {
+        // z_angle = -pi/2
+        // y_angle + x_angle = atan2(-r20,r22)
+        // WARNING.  The solution is not unique.  Choosing y_angle = 0.
+        zAngle = -HALF_PI;
+        xAngle = atan2(-mat(6), mat(8));
+        yAngle = (T)0;
         return false;
     }
 }
