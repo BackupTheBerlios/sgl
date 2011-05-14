@@ -46,11 +46,12 @@ protected:
 
 protected:
     GLBuffer( GLDevice*  _device,
-              GLuint                    _glTarget ) :
+              GLuint     _glTarget ) :
         device(_device),
         glTarget(_glTarget),
         glUsage(GL_STATIC_DRAW),
-	    glBuffer(0)
+	    glBuffer(0),
+        dataSize(0)
     {
         glGenBuffersARB(1, &glBuffer);
     }
