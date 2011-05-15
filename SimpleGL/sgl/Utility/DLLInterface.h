@@ -9,6 +9,19 @@
 
 namespace sgl {
 
+// some libraries may define their own new/delete
+#ifdef new
+#   pragma push_macro("new")
+#   undef new
+#   define _POP_NEW_MACRO
+#endif
+
+#ifdef delete
+#   pragma push_macro("delete")
+#   undef delete
+#   define _POP_DELETE_MACRO
+#endif
+
 /**
  * Interface for any classes within dll to simplify
  * the creation of the binary-compatible dll
@@ -90,6 +103,13 @@ public:
         delete this;
 	}
 };
+
+#ifdef _POP_NEW_MACRO
+#   pragma pop_macro("new")
+#endif
+#ifdef _POP_DELETE_MACRO
+#   pragma pop_macro("delete")
+#endif
 
 } // namespace sgl
 

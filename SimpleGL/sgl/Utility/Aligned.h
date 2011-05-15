@@ -10,6 +10,19 @@
 #include <stdexcept>
 #include "Meta.h"
 
+// some libraries may define their own new/delete
+#ifdef new
+#   pragma push_macro("new")
+#   undef new
+#   define _POP_NEW_MACRO
+#endif
+
+#ifdef delete
+#   pragma push_macro("delete")
+#   undef delete
+#   define _POP_DELETE_MACRO
+#endif
+
 namespace sgl {
 
 /** Allocate aligned data.
@@ -578,5 +591,12 @@ private:
 };
 
 } // namespace sgl
+
+#ifdef _POP_NEW_MACRO
+#   pragma pop_macro("new")
+#endif
+#ifdef _POP_DELETE_MACRO
+#   pragma pop_macro("delete")
+#endif
 
 #endif // SIMPLE_GL_UTILITY_ALIGNED_HPP
