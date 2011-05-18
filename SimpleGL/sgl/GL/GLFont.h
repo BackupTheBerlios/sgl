@@ -12,6 +12,7 @@ class GLFont :
 {
 public:
     GLFont(GLDevice* _pDevice);
+    ~GLFont();
 
     // Override Font
     SGL_HRESULT     SGL_DLLCALL SetTexture(sgl::Texture2D* texture);

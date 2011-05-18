@@ -68,6 +68,10 @@ GLFont::GLFont(GLDevice* device_) :
     }
 }
 
+GLFont::~GLFont()
+{
+}
+
 SGL_HRESULT GLFont::SetTexture(sgl::Texture2D* texture_)
 {
     texture.reset(texture_);
