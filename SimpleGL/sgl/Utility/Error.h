@@ -20,8 +20,7 @@ enum SGL_HRESULT
 };
 
 /** Handler to handle simple gl errors. For example log it into the file */
-class ErrorHandler :
-    public Referenced
+class ErrorHandler
 {
 public:
 	/** Handle sgl error
