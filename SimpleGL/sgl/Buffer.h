@@ -87,7 +87,7 @@ public:
      */
     virtual SGL_HRESULT SGL_DLLCALL GetData( void*         data,
                                              unsigned int  offset,
-                                             unsigned int  dataSize ) = 0;
+                                             unsigned int  dataSize ) const = 0;
 
     /** Get size of the data stored in the buffer
 	 * @return size of the data buffer

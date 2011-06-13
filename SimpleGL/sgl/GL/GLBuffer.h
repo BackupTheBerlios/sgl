@@ -274,7 +274,7 @@ public:
 
     SGL_HRESULT SGL_DLLCALL GetData( void*         data,
                                      unsigned int  offset,
-                                     unsigned int  dataSize )
+                                     unsigned int  dataSize ) const
     {
         // get buffer data
         GLuint oldBuffer = GuardedBind(glTarget, glBuffer);
