@@ -5,6 +5,9 @@
 
 namespace sgl {
 
+// forward
+class GLTextureCube;
+
 class GLTextureCubeSide :
     public GLTexture<Texture2D>
 {
