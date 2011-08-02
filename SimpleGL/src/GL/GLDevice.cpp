@@ -751,12 +751,12 @@ VBORenderTarget* SGL_DLLCALL GLDevice::CreateVBORenderTarget() const
 */
 namespace {
 
-	template<bool toggle> struct support_fixed_pipeline {};
-	template<bool toggle> struct support_programmable_pipeline {};
-	template<bool toggle> struct support_generic_attributes {};
-	template<bool toggle> struct support_fixed_attributes {};
-	template<bool toggle> struct support_display_lists {};
-	template<bool toggle> struct support_render_target {};
+    template<bool toggle> struct support_fixed_pipeline { static const bool value = toggle; };
+    template<bool toggle> struct support_programmable_pipeline { static const bool value = toggle; };
+    template<bool toggle> struct support_generic_attributes { static const bool value = toggle; };
+    template<bool toggle> struct support_fixed_attributes { static const bool value = toggle; };
+    template<bool toggle> struct support_display_lists { static const bool value = toggle; };
+    template<bool toggle> struct support_render_target { static const bool value = toggle; };
 
     #define SUPPORT(Feature, DeviceVersion) support_##Feature<device_traits<DeviceVersion>::support_##Feature>()
 	
@@ -794,8 +794,7 @@ namespace {
 	}
 
     FFPProgram* CreateFFPProgram(GLDevice* /*device*/, support_fixed_pipeline<false>)
-	{
-		sglSetError(SGLERR_UNSUPPORTED, "Device profile doesn't support fixed pipeline");
+    {
 		return 0;
 	}
 
@@ -1002,8 +1001,8 @@ GLDeviceConcrete<DeviceVersion>::GLDeviceConcrete()
 	}
 	assert( GL_NO_ERROR == glGetError() );
 
-	ffpProgram.reset( CreateFFPProgram( this, SUPPORT(fixed_pipeline, DeviceVersion) ) );
-	assert( GL_NO_ERROR == glGetError() );
+    ffpProgram.reset( CreateFFPProgram( this, SUPPORT(fixed_pipeline, DeviceVersion) ) );
+    assert( GL_NO_ERROR == glGetError() );
 }
 
 template<DEVICE_VERSION DeviceVersion>
