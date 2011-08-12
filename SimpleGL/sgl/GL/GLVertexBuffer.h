@@ -6,8 +6,9 @@
 
 namespace sgl {
 
+template<typename BufferImpl>
 class GLVertexBuffer :
-    public GLBuffer<VertexBuffer>
+    public BufferImpl
 {
 public:
     GLVertexBuffer(GLDevice* device);

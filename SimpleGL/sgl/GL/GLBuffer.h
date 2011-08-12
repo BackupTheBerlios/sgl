@@ -1,6 +1,7 @@
 #ifndef SIMPLE_GL_GL_BUFFER_OBJECT_H
 #define SIMPLE_GL_GL_BUFFER_OBJECT_H
 
+#include "GLCommon.h"
 #include "GLDevice.h"
 #include <cstdlib>
 #include <cstring>
@@ -49,7 +50,7 @@ protected:
               GLuint     _glTarget ) :
         device(_device),
         glTarget(_glTarget),
-        glUsage(GL_STATIC_DRAW),
+        usage(Buffer::STATIC_DRAW),
 	    glBuffer(0),
         dataSize(0)
     {
@@ -219,14 +220,19 @@ public:
         return bufferMapped != 0;
     }
 
+    Buffer::USAGE SGL_DLLCALL Usage() const
+    {
+        return usage;
+    }
+
     // Override BufferView
     SGL_HRESULT SGL_DLLCALL SetData( unsigned int   _dataSize,
                                      const void*    data,
-                                     Buffer::USAGE  usage )
+                                     Buffer::USAGE  usage_ )
     {
         // set buffer data
         GLuint oldBuffer = GuardedBind(glTarget, glBuffer);
-        glBufferDataARB(glTarget, _dataSize, data, BIND_GL_USAGE[usage]);
+        glBufferDataARB(glTarget, _dataSize, data, BIND_GL_USAGE[usage = usage_]);
     
     #ifndef SGL_NO_STATUS_CHECK
         GLenum error = glGetError();
@@ -311,14 +317,122 @@ public:
     unsigned int SGL_DLLCALL Size() const { return dataSize; }
 
 protected:
-    GLDevice*    device;
+    GLDevice*      device;
 
     // data
-    GLuint  glTarget;
-    GLuint  glUsage;
-    GLuint  glBuffer;
-    GLuint  oldBuffer;
-    size_t  dataSize;
+    GLuint         glTarget;
+    Buffer::USAGE  usage;
+    GLuint         glBuffer;
+    GLuint         oldBuffer;
+    size_t         dataSize;
+};
+
+template<typename Interface>
+class GLBufferModern :
+    public GLBuffer<Interface>
+{
+protected:
+    GLBufferModern( GLDevice*  device,
+                    GLuint     glTarget ) 
+    :   GLBuffer<Interface>(device, glTarget)
+    {
+    }
+
+public:
+    SGL_HRESULT SGL_DLLCALL CopyTo( Buffer* target ) const
+    {
+        assert(target);
+        if (target->Size() != dataSize) 
+        {
+            SGL_HRESULT hr = target->SetData(dataSize, 0);
+            if (hr != S_OK) {
+                return hr;
+            }
+        }
+
+        return CopyTo(target, 0, 0, dataSize);
+    }
+
+    SGL_HRESULT SGL_DLLCALL CopyTo( Buffer*      target,
+                                    unsigned int offsetSrc,
+                                    unsigned int offsetDst,
+                                    unsigned int size ) const
+    {
+        // hack
+        GLBufferModern<Interface>* targetBuf = static_cast<GLBufferModern<Interface>*>(target);
+
+        glBindBuffer(GL_COPY_READ_BUFFER, glBuffer);
+        glBindBuffer(GL_COPY_WRITE_BUFFER, targetBuf->glBuffer);
+        glCopyBufferSubData( GL_COPY_READ_BUFFER, 
+                             GL_COPY_WRITE_BUFFER,
+                             offsetSrc,
+                             offsetDst,
+                             size );
+
+#ifndef SGL_NO_STATUS_CHECK
+        GLenum error = glGetError();
+        if (error != GL_NO_ERROR) {
+            return CheckGLError("GLBuffer::CopyTo failed: ", error);
+        }
+#endif
+
+        return SGL_OK;
+    }
+};
+
+template<typename Interface>
+class GLBufferDefault :
+    public GLBuffer<Interface>
+{
+protected:
+    GLBufferDefault( GLDevice*  device,
+                     GLuint     glTarget ) 
+    :   GLBuffer<Interface>(device, glTarget)
+    {
+    }
+
+public:
+    SGL_HRESULT SGL_DLLCALL CopyTo( Buffer* target ) const
+    {
+        assert(target);
+
+        void* data = 0;
+        SGL_HRESULT hr = const_cast<GLBufferDefault*>(this)->Map(Buffer::MAP_READ_BIT, &data);
+        {
+            if (hr != SGL_OK) {
+                return hr;
+            }
+            hr = target->SetData(dataSize, data);
+        }
+        const_cast<GLBufferDefault*>(this)->Unmap();
+
+        return hr;
+    }
+
+    SGL_HRESULT SGL_DLLCALL CopyTo( Buffer*      target,
+                                              unsigned int offsetSrc,
+                                              unsigned int offsetDst,
+                                              unsigned int size ) const
+    {
+        assert(target);
+    #ifndef SGL_NO_STATUS_CHECK
+        if ( offsetSrc + size > dataSize || offsetDst + size > target->Size() ) {
+            return EInvalidCall("GLBuffer::CopyTo failed: trying to access outside buffer bounds");
+        }
+    #endif
+
+        void* data = 0;
+        SGL_HRESULT hr = const_cast<GLBufferDefault*>(this)->Map(Buffer::MAP_READ_BIT, &data);
+        {
+            if (hr != SGL_OK) {
+                return hr;
+            }
+            hr = target->SetData(dataSize, data);
+        }
+        const_cast<GLBufferDefault*>(this)->Unmap();
+
+        return hr;
+    }
 };
 
 } // namespace sgl
