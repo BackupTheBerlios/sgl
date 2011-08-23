@@ -410,9 +410,9 @@ public:
     }
 
     SGL_HRESULT SGL_DLLCALL CopyTo( Buffer*      target,
-                                              unsigned int offsetSrc,
-                                              unsigned int offsetDst,
-                                              unsigned int size ) const
+                                    unsigned int offsetSrc,
+                                    unsigned int offsetDst,
+                                    unsigned int size ) const
     {
         assert(target);
     #ifndef SGL_NO_STATUS_CHECK
