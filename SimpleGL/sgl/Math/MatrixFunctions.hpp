@@ -139,16 +139,16 @@ inline bool to_euler_xzy(const Matrix<T, 3, 3>& mat, Matrix<T, 3, 1>& res)
     // | r10 r11 r12 | = |  sx*sy+cx*cy*sz   cx*cz  -cy*sx+cx*sy*sz |
     // | r20 r21 r22 |   | -cx*sy+cy*sx*sz   cz*sx   cx*cy+sx*sy*sz |
     // +-           -+   +-                                        -+
-    if (mat(1) < (Real)1)
+    if (mat(1) < (T)1)
     {
-        if (mat(1) > -(Real)1)
+        if (mat(1) > -(T)1)
         {
             // z_angle = asin(-r01)
             // x_angle = atan2(r21,r11)
             // y_angle = atan2(r02,r00)
-            zAngle = (T)asin(-(double)mat(1));
-            xAngle = atan2(mat(7), mat(4));
-            yAngle = atan2(mat(2), mat(0));
+            res[2] = (T)asin(-(double)mat(1));
+            res[0] = atan2(mat(7), mat(4));
+            res[1] = atan2(mat(2), mat(0));
             return true;
         }
         else
@@ -156,9 +156,9 @@ inline bool to_euler_xzy(const Matrix<T, 3, 3>& mat, Matrix<T, 3, 1>& res)
             // z_angle = +pi/2
             // y_angle - x_angle = atan2(-r20,r22)
             // WARNING.  The solution is not unique.  Choosing y_angle = 0.
-            zAngle = HALF_PI;
-            xAngle = -atan2(-mat(6) ,mat(8));
-            yAngle = (T)0;
+            res[2] = HALF_PI;
+            res[0] = -atan2(-mat(6) ,mat(8));
+            res[1] = (T)0;
             return false;
         }
     }
@@ -167,9 +167,9 @@ inline bool to_euler_xzy(const Matrix<T, 3, 3>& mat, Matrix<T, 3, 1>& res)
         // z_angle = -pi/2
         // y_angle + x_angle = atan2(-r20,r22)
         // WARNING.  The solution is not unique.  Choosing y_angle = 0.
-        zAngle = -HALF_PI;
-        xAngle = atan2(-mat(6), mat(8));
-        yAngle = (T)0;
+        res[2] = -HALF_PI;
+        res[0] = atan2(-mat(6), mat(8));
+        res[1] = (T)0;
         return false;
     }
 }
@@ -178,9 +178,9 @@ inline bool to_euler_xzy(const Matrix<T, 3, 3>& mat, Matrix<T, 3, 1>& res)
 template <typename T>
 T get_determinant(const Matrix<T, 3, 3>& mat)
 {
-    Real co00 = mat(4)*mat(8) - mat(5)*mat(7);
-    Real co10 = mat(5)*mat(6) - mat(3)*mat(8);
-    Real co20 = mat(3)*mat(7) - mat(4)*mat(6);
+    T co00 = mat(4)*mat(8) - mat(5)*mat(7);
+    T co10 = mat(5)*mat(6) - mat(3)*mat(8);
+    T co20 = mat(3)*mat(7) - mat(4)*mat(6);
 
     return mat(0)*co00 + mat(1)*co10 + mat(2)*co20;
 }
@@ -293,20 +293,20 @@ inline bool invert( const math::Matrix<T, 3, 3>& mat, math::Matrix<T, 3, 3>& inv
 template<typename T>
 inline Matrix<T, 4, 4> invert(const Matrix<T, 4, 4>& mat)
 {
-    Real a0 = mat( 0)*mat( 5) - mat( 1)*mat( 4);
-    Real a1 = mat( 0)*mat( 6) - mat( 2)*mat( 4);
-    Real a2 = mat( 0)*mat( 7) - mat( 3)*mat( 4);
-    Real a3 = mat( 1)*mat( 6) - mat( 2)*mat( 5);
-    Real a4 = mat( 1)*mat( 7) - mat( 3)*mat( 5);
-    Real a5 = mat( 2)*mat( 7) - mat( 3)*mat( 6);
-    Real b0 = mat( 8)*mat(13) - mat( 9)*mat(12);
-    Real b1 = mat( 8)*mat(14) - mat(10)*mat(12);
-    Real b2 = mat( 8)*mat(15) - mat(11)*mat(12);
-    Real b3 = mat( 9)*mat(14) - mat(10)*mat(13);
-    Real b4 = mat( 9)*mat(15) - mat(11)*mat(13);
-    Real b5 = mat(10)*mat(15) - mat(11)*mat(14);
+    T a0 = mat( 0)*mat( 5) - mat( 1)*mat( 4);
+    T a1 = mat( 0)*mat( 6) - mat( 2)*mat( 4);
+    T a2 = mat( 0)*mat( 7) - mat( 3)*mat( 4);
+    T a3 = mat( 1)*mat( 6) - mat( 2)*mat( 5);
+    T a4 = mat( 1)*mat( 7) - mat( 3)*mat( 5);
+    T a5 = mat( 2)*mat( 7) - mat( 3)*mat( 6);
+    T b0 = mat( 8)*mat(13) - mat( 9)*mat(12);
+    T b1 = mat( 8)*mat(14) - mat(10)*mat(12);
+    T b2 = mat( 8)*mat(15) - mat(11)*mat(12);
+    T b3 = mat( 9)*mat(14) - mat(10)*mat(13);
+    T b4 = mat( 9)*mat(15) - mat(11)*mat(13);
+    T b5 = mat(10)*mat(15) - mat(11)*mat(14);
 
-    Real det = a0*b5 - a1*b4 + a2*b3 + a3*b2 - a4*b1 + a5*b0;
+    T det = a0*b5 - a1*b4 + a2*b3 + a3*b2 - a4*b1 + a5*b0;
 
     Matrix<T, 4, 4> inverse;
     inverse( 0) = + mat( 5)*b5 - mat( 6)*b4 + mat( 7)*b3;
@@ -349,22 +349,22 @@ inline Matrix<T, 4, 4> invert(const Matrix<T, 4, 4>& mat)
 
 /** Invert matrix if it can be inverted. Code taken from: http://www.geometrictools.com/LibMathematics/Algebra/Wm5Matrix4.inl */
 template<typename T>
-inline bool invert( const Matrix<T, 4, 4>& mat, Matrix<T, 4, 4>& inverse, T eps = T eps = std::numeric_limits<T>::min() )
+inline bool invert( const Matrix<T, 4, 4>& mat, Matrix<T, 4, 4>& inverse, T eps = std::numeric_limits<T>::min() )
 {
-    Real a0 = mat( 0)*mat( 5) - mat( 1)*mat( 4);
-    Real a1 = mat( 0)*mat( 6) - mat( 2)*mat( 4);
-    Real a2 = mat( 0)*mat( 7) - mat( 3)*mat( 4);
-    Real a3 = mat( 1)*mat( 6) - mat( 2)*mat( 5);
-    Real a4 = mat( 1)*mat( 7) - mat( 3)*mat( 5);
-    Real a5 = mat( 2)*mat( 7) - mat( 3)*mat( 6);
-    Real b0 = mat( 8)*mat(13) - mat( 9)*mat(12);
-    Real b1 = mat( 8)*mat(14) - mat(10)*mat(12);
-    Real b2 = mat( 8)*mat(15) - mat(11)*mat(12);
-    Real b3 = mat( 9)*mat(14) - mat(10)*mat(13);
-    Real b4 = mat( 9)*mat(15) - mat(11)*mat(13);
-    Real b5 = mat(10)*mat(15) - mat(11)*mat(14);
+    T a0 = mat( 0)*mat( 5) - mat( 1)*mat( 4);
+    T a1 = mat( 0)*mat( 6) - mat( 2)*mat( 4);
+    T a2 = mat( 0)*mat( 7) - mat( 3)*mat( 4);
+    T a3 = mat( 1)*mat( 6) - mat( 2)*mat( 5);
+    T a4 = mat( 1)*mat( 7) - mat( 3)*mat( 5);
+    T a5 = mat( 2)*mat( 7) - mat( 3)*mat( 6);
+    T b0 = mat( 8)*mat(13) - mat( 9)*mat(12);
+    T b1 = mat( 8)*mat(14) - mat(10)*mat(12);
+    T b2 = mat( 8)*mat(15) - mat(11)*mat(12);
+    T b3 = mat( 9)*mat(14) - mat(10)*mat(13);
+    T b4 = mat( 9)*mat(15) - mat(11)*mat(13);
+    T b5 = mat(10)*mat(15) - mat(11)*mat(14);
 
-    Real det = a0*b5 - a1*b4 + a2*b3 + a3*b2 - a4*b1 + a5*b0;
+    T det = a0*b5 - a1*b4 + a2*b3 + a3*b2 - a4*b1 + a5*b0;
     if ( abs(det) > eps)
     {
         inverse( 0) = + mat( 5)*b5 - mat( 6)*b4 + mat( 7)*b3;
