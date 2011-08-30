@@ -87,6 +87,7 @@ SET ( TARGET_UTILITY_HEADERS
     ${TARGET_HEADER_PATH}/Utility/Containers.hpp
 	${TARGET_HEADER_PATH}/Utility/DLLInterface.h
 	${TARGET_HEADER_PATH}/Utility/Error.h
+	${TARGET_HEADER_PATH}/Utility/IfThenElse.h
 	${TARGET_HEADER_PATH}/Utility/Meta.h
 	${TARGET_HEADER_PATH}/Utility/Referenced.h
 )

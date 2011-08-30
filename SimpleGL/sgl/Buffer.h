@@ -57,8 +57,11 @@ public:
     /** End work with buffer data */
     virtual SGL_HRESULT SGL_DLLCALL Unmap() = 0;
 
-    /** Check wether buffer is mapped */
+    /** Check whether buffer is mapped */
     virtual bool SGL_DLLCALL Mapped() const = 0;
+
+    /** Get buffer usage */
+    virtual USAGE SGL_DLLCALL Usage() const = 0;
 
     /** Send data in the GPU buffer.
      * @param dataSize - size of the data
@@ -82,12 +85,32 @@ public:
 
     /** Get data from the buffer.
      * @param data[out] - memory to store the data.
-     * @param offset - offset from the beginning of the buffer for retreiving data.
+     * @param offset - offset from the beginning of the buffer for retrieving data.
      * @param dataSize - size of the buffer chunk for retrieving.
      */
     virtual SGL_HRESULT SGL_DLLCALL GetData( void*         data,
                                              unsigned int  offset,
                                              unsigned int  dataSize ) const = 0;
+
+    /** Copy content of the buffer to another buffer. Resize target buffer to the size of this buffer.
+     * @param target - buffer where to copy data.
+     * @return the result of the operation. Can be SGLERR_OUT_OF_VIDEO_MEMORY if can't allocate
+     * target buffer.
+     */
+    virtual SGL_HRESULT SGL_DLLCALL CopyTo(Buffer* target) const = 0;
+
+    /** Copy content of the buffer to another buffer. Destination buffer must be of sufficient size.
+     * @param target - buffer where to copy data.
+     * @param offsetSrc - offset from the beginning of the buffer in this where to copy from.
+     * @param offsetDst - offset from the beginning of the buffer in this where to copy to.
+     * @param size - number of bytes to copy.
+     * @return the result of the operation. Can be SGLERR_INVALID_CALL if operation is not in the 
+     * range of specified buffers or buffer are mapped. 
+     */
+    virtual SGL_HRESULT SGL_DLLCALL CopyTo( Buffer*      target,
+                                            unsigned int offsetSrc,
+                                            unsigned int offsetDst,
+                                            unsigned int size ) const = 0;
 
     /** Get size of the data stored in the buffer
 	 * @return size of the data buffer

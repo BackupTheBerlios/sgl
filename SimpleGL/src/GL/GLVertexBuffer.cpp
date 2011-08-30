@@ -10,34 +10,41 @@ namespace sgl {
 using namespace std;
 using namespace math;
 
-GLVertexBuffer::GLVertexBuffer(GLDevice* device) :
-    GLBuffer<VertexBuffer>(device, GL_ARRAY_BUFFER)
+template<typename BufferImpl>
+GLVertexBuffer<BufferImpl>::GLVertexBuffer(GLDevice* device) :
+    BufferImpl(device, GL_ARRAY_BUFFER)
 {
 }
 
-GLVertexBuffer::~GLVertexBuffer()
+template<typename BufferImpl>
+GLVertexBuffer<BufferImpl>::~GLVertexBuffer()
 {
     Unbind();
 }
 
 // other
-void GLVertexBuffer::Bind(const VertexLayout* layout) const
+template<typename BufferImpl>
+void GLVertexBuffer<BufferImpl>::Bind(const VertexLayout* layout) const
 {
-    glBindBufferARB(GL_ARRAY_BUFFER, glBuffer);
-    device->SetVertexBuffer(this);
+    glBindBufferARB(GL_ARRAY_BUFFER, BufferImpl::glBuffer);
+    BufferImpl::device->SetVertexBuffer(this);
 
     if (layout) {
         layout->Bind();
     }
 }
 
-void GLVertexBuffer::Unbind() const
+template<typename BufferImpl>
+void GLVertexBuffer<BufferImpl>::Unbind() const
 {
-    if (device->CurrentVertexBuffer() == this)
+    if (BufferImpl::device->CurrentVertexBuffer() == this)
     {
         glBindBufferARB(GL_ARRAY_BUFFER, 0);
-        device->SetVertexBuffer(0);
+        BufferImpl::device->SetVertexBuffer(0);
     }
 }
+
+template class GLVertexBuffer< GLBufferDefault<VertexBuffer> >;
+template class GLVertexBuffer< GLBufferModern<VertexBuffer> >;
 
 } // namespace sgl

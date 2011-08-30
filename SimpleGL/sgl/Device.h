@@ -42,7 +42,8 @@ struct device_traits<DV_OPENGL_1_3>
 	static const bool support_generic_attributes	= false;
 	static const bool support_fixed_attributes		= true;
 	static const bool support_display_lists			= true;
-	static const bool support_render_target			= false;
+    static const bool support_render_target			= false;
+    static const bool support_buffer_copies			= false;
 };
 
 template<>
@@ -53,7 +54,8 @@ struct device_traits<DV_OPENGL_1_4>
     static const bool support_generic_attributes	= false;
     static const bool support_fixed_attributes		= true;
 	static const bool support_display_lists			= true;
-	static const bool support_render_target			= false;
+    static const bool support_render_target			= false;
+    static const bool support_buffer_copies			= false;
 };
 
 template<>
@@ -64,7 +66,8 @@ struct device_traits<DV_OPENGL_1_5>
 	static const bool support_generic_attributes	= false;
 	static const bool support_fixed_attributes		= true;
 	static const bool support_display_lists			= true;
-	static const bool support_render_target			= false;
+    static const bool support_render_target			= false;
+    static const bool support_buffer_copies			= false;
 };
 
 template<>
@@ -75,7 +78,8 @@ struct device_traits<DV_OPENGL_2_0>
 	static const bool support_generic_attributes	= true;
 	static const bool support_fixed_attributes		= true;
 	static const bool support_display_lists			= true;
-	static const bool support_render_target			= true;
+    static const bool support_render_target			= true;
+    static const bool support_buffer_copies			= false;
 };
 
 template<>
@@ -86,7 +90,8 @@ struct device_traits<DV_OPENGL_2_1>
 	static const bool support_generic_attributes	= true;
 	static const bool support_fixed_attributes		= true;
 	static const bool support_display_lists			= true;
-	static const bool support_render_target			= true;
+    static const bool support_render_target			= true;
+    static const bool support_buffer_copies			= false;
 };
 
 template<>
@@ -97,7 +102,8 @@ struct device_traits<DV_OPENGL_3_0>
 	static const bool support_generic_attributes	= true;
 	static const bool support_fixed_attributes		= true;
 	static const bool support_display_lists			= false;
-	static const bool support_render_target			= true;
+    static const bool support_render_target			= true;
+    static const bool support_buffer_copies			= false;
 };
 
 template<>
@@ -108,7 +114,8 @@ struct device_traits<DV_OPENGL_3_1>
 	static const bool support_generic_attributes	= true;
 	static const bool support_fixed_attributes		= false;
 	static const bool support_display_lists			= false;
-	static const bool support_render_target			= true;
+    static const bool support_render_target			= true;
+    static const bool support_buffer_copies			= true;
 };
 
 template<>
@@ -119,7 +126,8 @@ struct device_traits<DV_OPENGL_3_2>
 	static const bool support_generic_attributes	= true;
 	static const bool support_fixed_attributes		= false;
 	static const bool support_display_lists			= false;
-	static const bool support_render_target			= true;
+    static const bool support_render_target			= true;
+    static const bool support_buffer_copies			= true;
 };
 
 /** Device class wraps graphics functions */

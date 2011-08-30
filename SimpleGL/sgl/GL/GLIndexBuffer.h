@@ -5,8 +5,9 @@
 
 namespace sgl {
 
+template<typename BufferImpl>
 class GLIndexBuffer :
-    public GLBuffer<IndexBuffer>
+    public BufferImpl
 {
 public:
     GLIndexBuffer(GLDevice* device);

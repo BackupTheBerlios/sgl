@@ -360,7 +360,7 @@ void SGL_DLLCALL IlImage::Clear()
 {
     // remove mipmap data
     for (size_t i = 0; i<mipData.size(); ++i) {
-        delete mipData[i];
+        free(mipData[i]);
     }
     mipData.clear();
 
