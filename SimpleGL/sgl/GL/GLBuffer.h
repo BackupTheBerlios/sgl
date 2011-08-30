@@ -342,15 +342,15 @@ public:
     SGL_HRESULT SGL_DLLCALL CopyTo( Buffer* target ) const
     {
         assert(target);
-        if (target->Size() != dataSize) 
+        if (target->Size() != GLBuffer<Interface>::dataSize)
         {
-            SGL_HRESULT hr = target->SetData(dataSize, 0);
-            if (hr != S_OK) {
+            SGL_HRESULT hr = target->SetData(GLBuffer<Interface>::dataSize, 0);
+            if (hr != SGL_OK) {
                 return hr;
             }
         }
 
-        return CopyTo(target, 0, 0, dataSize);
+        return CopyTo(target, 0, 0, GLBuffer<Interface>::dataSize);
     }
 
     SGL_HRESULT SGL_DLLCALL CopyTo( Buffer*      target,
@@ -361,7 +361,7 @@ public:
         // hack
         GLBufferModern<Interface>* targetBuf = static_cast<GLBufferModern<Interface>*>(target);
 
-        glBindBuffer(GL_COPY_READ_BUFFER, glBuffer);
+        glBindBuffer(GL_COPY_READ_BUFFER, GLBuffer<Interface>::glBuffer);
         glBindBuffer(GL_COPY_WRITE_BUFFER, targetBuf->glBuffer);
         glCopyBufferSubData( GL_COPY_READ_BUFFER, 
                              GL_COPY_WRITE_BUFFER,
@@ -402,7 +402,7 @@ public:
             if (hr != SGL_OK) {
                 return hr;
             }
-            hr = target->SetData(dataSize, data);
+            hr = target->SetData(GLBuffer<Interface>::dataSize, data);
         }
         const_cast<GLBufferDefault*>(this)->Unmap();
 
@@ -416,7 +416,7 @@ public:
     {
         assert(target);
     #ifndef SGL_NO_STATUS_CHECK
-        if ( offsetSrc + size > dataSize || offsetDst + size > target->Size() ) {
+        if ( offsetSrc + size > GLBuffer<Interface>::dataSize || offsetDst + size > target->Size() ) {
             return EInvalidCall("GLBuffer::CopyTo failed: trying to access outside buffer bounds");
         }
     #endif
@@ -427,7 +427,7 @@ public:
             if (hr != SGL_OK) {
                 return hr;
             }
-            hr = target->SetData(dataSize, data);
+            hr = target->SetData(GLBuffer<Interface>::dataSize, data);
         }
         const_cast<GLBufferDefault*>(this)->Unmap();
 

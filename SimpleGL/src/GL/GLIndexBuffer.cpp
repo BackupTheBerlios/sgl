@@ -27,7 +27,7 @@ void GLIndexBuffer<BufferImpl>::Unbind() const
     if (BufferImpl::device->CurrentIndexBuffer() == this)
     {
         glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
-        BufferImpl::device->SetIndexBuffer(0, UINT_8);
+        BufferImpl::device->SetIndexBuffer(0, IndexBuffer::UINT_8);
     }
 }
 
