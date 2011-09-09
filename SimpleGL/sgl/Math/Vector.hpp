@@ -1159,7 +1159,7 @@ inline bool equal( const Matrix<T, n, 1>& a,
 {
     for(int i = 0; i<n; ++i)
     {
-        if ( abs(a[i] - b[i]) >= threshold ) {
+        if ( math::abs(a[i] - b[i]) >= threshold ) {
             return false;
         }
     }
@@ -1175,7 +1175,7 @@ inline bool equal( const Matrix<T, 1, n>& a,
 {
     for(int i = 0; i<n; ++i)
     {
-        if ( abs(a[i] - b[i]) >= threshold ) {
+        if ( math::abs(a[i] - b[i]) >= threshold ) {
             return false;
         }
     }
