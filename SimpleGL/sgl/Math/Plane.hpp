@@ -30,7 +30,6 @@ public:
 
     Plane(value_type A, value_type B, value_type C, value_type D)
     {
-        value_type l = ::sqrt(A*A + B*B + C*C + D*D);
         distance = D;
         normal   = vec_type(A, B, C);
     }
