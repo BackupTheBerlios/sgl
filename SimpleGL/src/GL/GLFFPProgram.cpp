@@ -2,7 +2,7 @@
 #include "GL/GLDevice.h"
 #include "GL/GLFFPProgram.h"
 #include "GL/GLFFPUniform.h"
-#include "Math/MatrixFunctions.hpp"
+#include "Math/Matrix.hpp"
 #include <algorithm>
 #include <functional>
 

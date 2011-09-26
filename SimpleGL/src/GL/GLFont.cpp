@@ -2,7 +2,7 @@
 #include "GL/GLDevice.h"
 #include "GL/GLFont.h"
 #include "Math/Containers.hpp"
-#include "Math/MatrixFunctions.hpp"
+#include "Math/Matrix.hpp"
 
 namespace {
 
@@ -168,9 +168,9 @@ SGL_HRESULT GLFontFixed::Bind(int width, int height, const math::Vector4f& color
 	modelViewMatrix  = modelViewMatrixUniform->Value();
 
 	rectangle vp = device->Viewport();
-	projectionMatrixUniform->Set( make_ortho( 0.0f, vp.width / (width / charHeight),
-		vp.height / (height / charHeight), 0.0f,
-		-1.0f, 1.0f ) );
+    projectionMatrixUniform->Set( Matrix4f::ortho( 0.0f, vp.width / (width / charHeight),
+		                                           vp.height / (height / charHeight), 0.0f,
+		                                           -1.0f, 1.0f ) );
 
     device->PushState(State::RASTERIZER_STATE);
 	device->PushState(State::DEPTH_STENCIL_STATE);
@@ -206,31 +206,31 @@ void GLFontFixed::Print(float x, float y, const char* str) const
 	float scaleY = charHeight / height;
 
 	math::Matrix4f modelViewMatrix;
-	modelViewMatrixUniform->Set( modelViewMatrix = make_translation(x * scaleX, y * scaleY, 0.0f) );
+    modelViewMatrixUniform->Set( modelViewMatrix = Matrix4f::translation(x * scaleX, y * scaleY, 0.0f) );
 	for(int lines = 0; *str; str++)
 	{
 		if(*str == '\n')
 		{
 			lines++;
-			modelViewMatrixUniform->Set( modelViewMatrix = make_translation(x * scaleX, y * scaleY + charHeight * lines, 0.0f) );
+			modelViewMatrixUniform->Set( modelViewMatrix = Matrix4f::translation(x * scaleX, y * scaleY + charHeight * lines, 0.0f) );
 		}
 		else if(*str == '\r')
 		{
-			modelViewMatrixUniform->Set( modelViewMatrix = make_translation(x * scaleX, y * scaleY + charHeight * lines, 0.0f) );
+			modelViewMatrixUniform->Set( modelViewMatrix = Matrix4f::translation(x * scaleX, y * scaleY + charHeight * lines, 0.0f) );
 		}
 		else if(*str == '\t')
 		{
-			modelViewMatrixUniform->Set( modelViewMatrix *= make_translation(charHeight * 2.0f, 0.0f, 0.0f) );
+			modelViewMatrixUniform->Set( modelViewMatrix *= Matrix4f::translation(charHeight * 2.0f, 0.0f, 0.0f) );
 		}
 		else if(*str == ' ')
 		{
-			modelViewMatrixUniform->Set( modelViewMatrix *= make_translation(charHeight * 0.5f, 0.0f, 0.0f) );
+			modelViewMatrixUniform->Set( modelViewMatrix *= Matrix4f::translation(charHeight * 0.5f, 0.0f, 0.0f) );
 		}
 		else
 		{
 			unsigned char i = *reinterpret_cast<const unsigned char*>(str);
 			device->Draw(QUADS, 4*i, 4);
-			modelViewMatrixUniform->Set( modelViewMatrix *= make_translation(static_cast<float>(charWidth), 0.0f, 0.0f) );
+			modelViewMatrixUniform->Set( modelViewMatrix *= Matrix4f::translation(float(charWidth), 0.0f, 0.0f) );
 		}
 	}
 }

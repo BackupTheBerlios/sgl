@@ -37,12 +37,12 @@ SET ( TARGET_INTERFACE_HEADERS
 SET ( TARGET_MATH_HEADERS
 	${TARGET_HEADER_PATH}/Math/AABB.hpp
 	${TARGET_HEADER_PATH}/Math/Base.hpp
-    ${TARGET_HEADER_PATH}/Math/Containers.hpp
+	${TARGET_HEADER_PATH}/Math/Containers.hpp
+	${TARGET_HEADER_PATH}/Math/FPT.hpp
 	${TARGET_HEADER_PATH}/Math/Frustum.hpp
 	${TARGET_HEADER_PATH}/Math/KDop.hpp
 	${TARGET_HEADER_PATH}/Math/Intersection.hpp
 	${TARGET_HEADER_PATH}/Math/Matrix.hpp
-	${TARGET_HEADER_PATH}/Math/MatrixFunctions.hpp
 	${TARGET_HEADER_PATH}/Math/Plane.hpp
 	${TARGET_HEADER_PATH}/Math/Ray.hpp
 	${TARGET_HEADER_PATH}/Math/Sphere.hpp

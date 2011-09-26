@@ -41,17 +41,19 @@
 SGL_BEGIN_MATH_NAMESPACE
 
 // Forward
-template<typename ValueType, int n, int m>
+template<typename T, int n, int m>
 class Matrix;
 
 /** Vector column. */
 template<typename ValueType, int n>
-class Matrix<ValueType, n, 1> :
-    public MatrixBase<ValueType, n, 1>
+class Matrix<ValueType, n, 1>
 {
 public:
-    typedef MatrixBase<ValueType, n, 1> base_type;
-    typedef Matrix<ValueType, n, 1>     this_type;
+    typedef Matrix<ValueType, n, 1> this_type;
+
+    static const int num_rows     = n;
+    static const int num_columns  = 1;
+    static const int num_elements = n;
 
 public:
     Matrix() {}
@@ -86,12 +88,14 @@ public:
 
 /** Vector row. */
 template<typename ValueType, int m>
-class Matrix<ValueType, 1, m> :
-    public MatrixBase<ValueType, 1, m>
+class Matrix<ValueType, 1, m>
 {
 public:
-    typedef MatrixBase<ValueType, 1, m> base_type;
-    typedef Matrix<ValueType, 1, m>     this_type;
+    typedef Matrix<ValueType, 1, m> this_type;
+
+    static const int num_rows     = 1;
+    static const int num_columns  = m;
+    static const int num_elements = m;
 
 public:
     Matrix() {}
@@ -127,50 +131,17 @@ public:
 // ===================================== SSE ===================================== //
 #ifdef SIMPLE_GL_USE_SSE
 
-template<>
-class MatrixBase<float, 4, 1> :
-    public sgl::Aligned<0x10>
-{
-public:
-    typedef float       value_type;
-    typedef int         matrix_tag;
-    typedef int         vector_tag;
-
-    static const int    num_elements = 4;
-    static const int    num_rows     = 4;
-    static const int    num_columns  = 1;
-
-protected:
-    /** Don't delete MatrixBase. */
-    inline ~MatrixBase() {}
-};
-
-template<>
-class MatrixBase<float, 1, 4> :
-    public sgl::Aligned<0x10>
-{
-public:
-    typedef float       value_type;
-    typedef int         matrix_tag;
-    typedef int         vector_tag;
-
-    static const int    num_elements = 4;
-    static const int    num_rows     = 1;
-    static const int    num_columns  = 4;
-
-protected:
-    /** Don't delete MatrixBase. */
-    inline ~MatrixBase() {}
-};
-
 /** Vector column. */
 template<>
 class Matrix<float, 4, 1> :
-    public MatrixBase<float, 4, 1>
+    public sgl::Aligned<0x10>
 {
 public:
-    typedef MatrixBase<float, 4, 1>     base_type;
-    typedef Matrix<float, 4, 1>         this_type;
+    typedef Matrix<float, 4, 1> this_type;
+
+    static const int num_rows     = 4;
+    static const int num_columns  = 1;
+    static const int num_elements = 4;
 
 public:
     Matrix() {}
@@ -235,11 +206,15 @@ public:
 /** Vector row. */
 template<>
 class Matrix<float, 1, 4> :
-    public MatrixBase<float, 1, 4>
+    public sgl::Aligned<0x10>
 {
 public:
     typedef MatrixBase<float, 1, 4>     base_type;
     typedef Matrix<float, 1, 4>         this_type;
+
+    static const int num_rows     = 1;
+    static const int num_columns  = 4;
+    static const int num_elements = 4;
 
 public:
     Matrix() {}
@@ -305,12 +280,14 @@ public:
 
 /** Vector column. */
 template<typename ValueType>
-class Matrix<ValueType, 4, 1> :
-    public MatrixBase<ValueType, 4, 1>
+class Matrix<ValueType, 4, 1>
 {
 public:
-    typedef MatrixBase<ValueType, 4, 1>     base_type;
-    typedef Matrix<ValueType, 4, 1>         this_type;
+    typedef Matrix<ValueType, 4, 1> this_type;
+
+    static const int num_rows     = 4;
+    static const int num_columns  = 1;
+    static const int num_elements = 4;
 
 public:
     Matrix() {}
@@ -368,12 +345,14 @@ public:
 
 /** Vector row. */
 template<typename ValueType>
-class Matrix<ValueType, 1, 4> :
-    public MatrixBase<ValueType, 1, 4>
+class Matrix<ValueType, 1, 4>
 {
 public:
-    typedef MatrixBase<ValueType, 1, 4>     base_type;
-    typedef Matrix<ValueType, 1, 4>         this_type;
+    typedef Matrix<ValueType, 1, 4> this_type;
+
+    static const int num_rows     = 1;
+    static const int num_columns  = 4;
+    static const int num_elements = 4;
 
 public:
     Matrix() {}
@@ -431,12 +410,14 @@ public:
 
 /** Vector column. */
 template<typename ValueType>
-class Matrix<ValueType, 3, 1> :
-    public MatrixBase<ValueType, 3, 1>
+class Matrix<ValueType, 3, 1>
 {
 public:
-    typedef MatrixBase<ValueType, 3, 1>     base_type;
-    typedef Matrix<ValueType, 3, 1>         this_type;
+    typedef Matrix<ValueType, 3, 1> this_type;
+
+    static const int num_rows     = 3;
+    static const int num_columns  = 1;
+    static const int num_elements = 3;
 
 public:
     Matrix() {}
@@ -490,12 +471,14 @@ public:
 
 /** Vector row. */
 template<typename ValueType>
-class Matrix<ValueType, 1, 3> :
-    public MatrixBase<ValueType, 1, 3>
+class Matrix<ValueType, 1, 3>
 {
 public:
-    typedef MatrixBase<ValueType, 1, 3>     base_type;
-    typedef Matrix<ValueType, 1, 3>         this_type;
+    typedef Matrix<ValueType, 1, 3> this_type;
+
+    static const int num_rows     = 1;
+    static const int num_columns  = 3;
+    static const int num_elements = 3;
 
 public:
     Matrix() {}
@@ -549,12 +532,14 @@ public:
 
 /** Vector column. */
 template<typename ValueType>
-class Matrix<ValueType, 2, 1> :
-    public MatrixBase<ValueType, 2, 1>
+class Matrix<ValueType, 2, 1>
 {
 public:
-    typedef MatrixBase<ValueType, 2, 1>     base_type;
-    typedef Matrix<ValueType, 2, 1>         this_type;
+    typedef Matrix<ValueType, 2, 1> this_type;
+
+    static const int num_rows     = 2;
+    static const int num_columns  = 1;
+    static const int num_elements = 2;
 
 public:
     Matrix() {}
@@ -604,12 +589,14 @@ public:
 
 /** Vector row. */
 template<typename ValueType>
-class Matrix<ValueType, 1, 2> :
-    public MatrixBase<ValueType, 1, 2>
+class Matrix<ValueType, 1, 2>
 {
 public:
-    typedef MatrixBase<ValueType, 1, 2>     base_type;
-    typedef Matrix<ValueType, 1, 2>         this_type;
+    typedef Matrix<ValueType, 1, 2> this_type;
+
+    static const int num_rows     = 1;
+    static const int num_columns  = 2;
+    static const int num_elements = 2;
 
 public:
     Matrix() {}
@@ -1150,16 +1137,14 @@ inline Matrix<T, 1, n+m> make_vec(const Matrix<T, 1, n>& a, const Matrix<T, 1, m
     return res;
 }
 
-
-/** compare to vectors using threshold */
+/** compare vector components absolute differences with zero. */
 template<typename T, int n>
-inline bool equal( const Matrix<T, n, 1>& a,
-                   const Matrix<T, n, 1>& b,
-                   T threshold = std::numeric_limits<T>::epsilon() )
+inline bool fpt_small( const Matrix<T, n, 1>& a,
+                       T                      eps = std::numeric_limits<T>::epsilon() )
 {
     for(int i = 0; i<n; ++i)
     {
-        if ( math::abs(a[i] - b[i]) >= threshold ) {
+        if ( !fpt_small(a[i], eps) ) {
             return false;
         }
     }
@@ -1167,15 +1152,112 @@ inline bool equal( const Matrix<T, n, 1>& a,
     return true;
 }
 
-/** compare to vectors using threshold */
+/** compare vector components absolute differences with zero. */
 template<typename T, int n>
-inline bool equal( const Matrix<T, 1, n>& a,
-                   const Matrix<T, 1, n>& b,
-                   T threshold = std::numeric_limits<T>::epsilon() )
+inline bool fpt_small( const Matrix<T, 1, n>& a,
+                       T                      eps = std::numeric_limits<T>::epsilon() )
 {
     for(int i = 0; i<n; ++i)
     {
-        if ( math::abs(a[i] - b[i]) >= threshold ) {
+        if ( !fpt_small(a[i], eps) ) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+/** compare vector components absolute differences. */
+template<typename T, int n>
+inline bool fpt_close_abs( const Matrix<T, n, 1>& a,
+                           const Matrix<T, n, 1>& b,
+                           T                      eps = std::numeric_limits<T>::epsilon() )
+{
+    for(int i = 0; i<n; ++i)
+    {
+        if ( !fpt_close_abs(a[i], b[i], eps) ) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+/** compare vector components absolute differences. */
+template<typename T, int n>
+inline bool fpt_close_abs( const Matrix<T, 1, n>& a,
+                           const Matrix<T, 1, n>& b,
+                           T                      eps = std::numeric_limits<T>::epsilon() )
+{
+    for(int i = 0; i<n; ++i)
+    {
+        if ( !fpt_close_abs(a[i], b[i], eps) ) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+/** compare vector components relative differences. */
+template<typename T, int n>
+inline bool fpt_close_rel( const Matrix<T, n, 1>& a,
+                           const Matrix<T, n, 1>& b,
+                           T                      eps = std::numeric_limits<T>::epsilon() )
+{
+    for(int i = 0; i<n; ++i)
+    {
+        if ( !fpt_close_rel(a[i], b[i], eps) ) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+/** compare vector components relative differences. */
+template<typename T, int n>
+inline bool fpt_close_rel( const Matrix<T, 1, n>& a,
+                           const Matrix<T, 1, n>& b,
+                           T                      eps = std::numeric_limits<T>::epsilon() )
+{
+    for(int i = 0; i<n; ++i)
+    {
+        if ( !fpt_close_rel(a[i], b[i], eps) ) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+/** compare vector components both absolute and relative differences. */
+template<typename T, int n>
+inline bool fpt_close( const Matrix<T, n, 1>& a,
+                       const Matrix<T, n, 1>& b,
+                       T                      epsAbs = std::numeric_limits<T>::epsilon(),
+                       T                      epsRel = std::numeric_limits<T>::epsilon() )
+{
+    for(int i = 0; i<n; ++i)
+    {
+        if ( !fpt_close(a[i], b[i], epsAbs, epsRel) ) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+/** compare vector components both absolute and relative differences. */
+template<typename T, int n>
+inline bool fpt_close( const Matrix<T, 1, n>& a,
+                       const Matrix<T, 1, n>& b,
+                       T                      epsAbs = std::numeric_limits<T>::epsilon(),
+                       T                      epsRel = std::numeric_limits<T>::epsilon() )
+{
+    for(int i = 0; i<n; ++i)
+    {
+        if ( !fpt_close(a[i], b[i], epsAbs, epsRel) ) {
             return false;
         }
     }

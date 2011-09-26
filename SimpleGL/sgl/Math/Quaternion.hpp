@@ -1,5 +1,5 @@
-#ifndef GRAPHICS_MATH_QUATERNION_HPP
-#define GRAPHICS_MATH_QUATERNION_HPP
+#ifndef SIMPLE_GL_MATH_QUATERNION_HPP
+#define SIMPLE_GL_MATH_QUATERNION_HPP
 
 #include "Matrix.hpp"
 
@@ -14,7 +14,7 @@ public:
     Quaternion(const Quaternion& rhs) :
         x(rhs.x), y(rhs.y), z(rhs.z), w(rhs.w) {}
 
-    Quaternion(const Matrix<T, 3, 1>& vec, T _w) :
+    explicit Quaternion(const Matrix<T, 3, 1>& vec, T _w = T(0)) :
         x(vec.x), y(vec.y), z(vec.z), w(_w) {}
 
     Quaternion(T _x, T _y, T _z, T _w) :
@@ -62,7 +62,7 @@ public:
     Quaternion(const Quaternion& rhs) :
         x(rhs.x), y(rhs.y), z(rhs.z), w(rhs.w) {}
 
-    Quaternion(const Matrix<float, 3, 1>& vec, float _w) :
+    explicit Quaternion(const Matrix<float, 3, 1>& vec, float _w = 0.0f) :
         x(vec.x), y(vec.y), z(vec.z), w(_w) {}
 
     Quaternion(float _x, float _y, float _z, float _w) :
@@ -155,6 +155,21 @@ inline Quaternion<T>& operator *= (Quaternion<T>& lhs, const Quaternion<T>& rhs)
 }
 
 template<typename T>
+inline Quaternion<T>& operator *= (Quaternion<T>& lhs, const math::Matrix<T, 3, 1>& rhs)
+{
+    T tmpX = lhs.x;
+    T tmpY = lhs.y;
+    T tmpZ = lhs.z;
+
+    lhs.x = lhs.w * rhs.x + tmpY * rhs.z - tmpZ * rhs.y;
+    lhs.y = lhs.w * rhs.y + tmpZ * rhs.y - tmpX * rhs.z;
+    lhs.z = lhs.w * rhs.z + tmpX * rhs.y - tmpY * rhs.x;
+    lhs.w =  tmpX * rhs.x - tmpY * rhs.y - tmpZ * rhs.z;
+
+    return lhs;
+}
+
+template<typename T>
 inline Quaternion<T>& operator *= (Quaternion<T>& lhs, T rhs)
 {
     lhs.x *= rhs;
@@ -165,9 +180,17 @@ inline Quaternion<T>& operator *= (Quaternion<T>& lhs, T rhs)
 }
 
 template<typename T>
-inline Matrix<T, 3, 1> operator *= (Matrix<T, 3, 1>& lhs, const Quaternion<T>& rhs)
+inline Quaternion<T> operator * (Matrix<T, 3, 1>& lhs, const Quaternion<T>& rhs)
 {
-    return to_matrix(rhs) * lhs;
+    Quaternion<T> res(lhs);
+    return res *= rhs;
+}
+
+template<typename T>
+inline Quaternion<T> operator * (const Quaternion<T>& lhs, Matrix<T, 3, 1>& rhs)
+{
+    Quaternion<T> res(lhs);
+    return res *= rhs;
 }
 
 template<typename T>
@@ -182,9 +205,40 @@ inline Quaternion<T>& operator /= (Quaternion<T>& lhs, T rhs)
 
 // functions
 template<typename T>
-inline Matrix<T, 4, 1> as_vec(const Quaternion<T>& quat)
+inline Matrix<T, 3, 1> rotate(const Quaternion<T>&   quat, 
+                              const Matrix<T, 3, 1>& vec)
 {
-    return Matrix<T, 4, 1>(quat.x, quat.y, quat.z, quat.w);
+    // The actual formula is: rotate(q,v) = q*v*conj(q) = (2*q.w*q.w - 1)*v + 2*dot(q.v, v)*q.v + 2*q.w*cross(q.v, v)
+    T w2    = T(2) * quat.w;
+    T w21   = w2 * quat.w - T(1);
+    T v2Dot = T(2) * (quat.x * vec.x + quat.y * vec.y + quat.z * vec.z);
+
+    Matrix<T, 3, 1> res;
+    {
+        res.x = w21 * vec.x + v2Dot * quat.x + w2 * (quat.y * vec.z - vec.y * quat.z);
+        res.y = w21 * vec.y + v2Dot * quat.y + w2 * (quat.z * vec.x - vec.z * quat.x);
+        res.z = w21 * vec.z + v2Dot * quat.z + w2 * (quat.x * vec.y - vec.x * quat.y);
+    }
+    return res;
+}
+
+template<typename T>
+inline Matrix<T, 4, 1> rotate(const Quaternion<T>&   quat, 
+                              const Matrix<T, 4, 1>& vec)
+{
+    // The actual formula is: rotate(q,v) = q*v*conj(q) = (2*q.w*q.w - 1)*v + 2*dot(q.v, v)*q.v + 2*q.w*cross(q.v, v)
+    T w2    = T(2) * quat.w;
+    T w21   = w2 * quat.w - T(1);
+    T v2Dot = T(2) * (quat.x * vec.x + quat.y * vec.y + quat.z * vec.z);
+
+    Matrix<T, 4, 1> res;
+    {
+        res.x = w21 * vec.x + v2Dot * quat.x + w2 * (quat.y * vec.z - vec.y * quat.z);
+        res.y = w21 * vec.y + v2Dot * quat.y + w2 * (quat.z * vec.x - vec.z * quat.x);
+        res.z = w21 * vec.z + v2Dot * quat.z + w2 * (quat.x * vec.y - vec.x * quat.y);
+        res.w = vec.w
+    }
+    return res;
 }
 
 template<typename T>
@@ -292,12 +346,12 @@ inline Quaternion<T> from_matrix(const Matrix<T, n, n>& m)
 }
 
 template<typename T>
-inline Matrix<T, 3, 3> to_matrix(const Quaternion<T>& quat)
+inline Matrix<T, 3, 3> to_matrix_3x3(const Quaternion<T>& quat)
 {
     T wx, wy, wz, xx, yy, yz, xy, xz, zz, x2, y2, z2;
-    x2 = quat.x * static_cast<T>(2);
-    y2 = quat.y * static_cast<T>(2);
-    z2 = quat.z * static_cast<T>(2);
+    x2 = quat.x * T(2);
+    y2 = quat.y * T(2);
+    z2 = quat.z * T(2);
 
     xx = quat.x * x2;
     xy = quat.x * y2;
@@ -312,28 +366,30 @@ inline Matrix<T, 3, 3> to_matrix(const Quaternion<T>& quat)
     wz = quat.w * z2;
 
     Matrix<T, 3, 3> matrix;
-    matrix[0][0] = static_cast<T>(1) - (yy + zz);
-    matrix[1][0] = xy - wz;
-    matrix[2][0] = xz + wy;
+    {
+        matrix[0][0] = T(1) - (yy + zz);
+        matrix[1][0] = xy - wz;
+        matrix[2][0] = xz + wy;
 
-    matrix[0][1] = xy + wz;
-    matrix[1][1] = static_cast<T>(1) - (xx + zz);
-    matrix[2][1] = yz - wx;
+        matrix[0][1] = xy + wz;
+        matrix[1][1] = T(1) - (xx + zz);
+        matrix[2][1] = yz - wx;
 
-    matrix[0][2] = xz - wy;
-    matrix[1][2] = yz + wx;
-    matrix[2][2] = static_cast<T>(1) - (xx + yy);
-
+        matrix[0][2] = xz - wy;
+        matrix[1][2] = yz + wx;
+        matrix[2][2] = T(1) - (xx + yy);
+    }
     return matrix;
 }
 
 template<typename T>
-inline Matrix<T, 4, 4> to_matrix_4x4(const Quaternion<T>& quat)
+inline Matrix<T, 4, 4> to_matrix_4x4(const Quaternion<T>&   quat, 
+                                     const Matrix<T, 3, 1>& trans = Matrix<T, 3, 1>(T(0)))
 {
     T wx, wy, wz, xx, yy, yz, xy, xz, zz, x2, y2, z2;
-    x2 = quat.x * static_cast<T>(2);
-    y2 = quat.y * static_cast<T>(2);
-    z2 = quat.z * static_cast<T>(2);
+    x2 = quat.x * T(2);
+    y2 = quat.y * T(2);
+    z2 = quat.z * T(2);
 
     xx = quat.x * x2;
     xy = quat.x * y2;
@@ -348,114 +404,27 @@ inline Matrix<T, 4, 4> to_matrix_4x4(const Quaternion<T>& quat)
     wz = quat.w * z2;
 
     Matrix<T, 4, 4> matrix;
-    matrix[0][0] = static_cast<T>(1) - (yy + zz);
-    matrix[1][0] = xy - wz;
-    matrix[2][0] = xz + wy;
-    matrix[3][0] = T(0.0);
+    {
+        matrix[0][0] = T(1) - (yy + zz);
+        matrix[1][0] = xy - wz;
+        matrix[2][0] = xz + wy;
+        matrix[3][0] = T(0);
 
-    matrix[0][1] = xy + wz;
-    matrix[1][1] = static_cast<T>(1) - (xx + zz);
-    matrix[2][1] = yz - wx;
-    matrix[3][1] = T(0.0);
+        matrix[0][1] = xy + wz;
+        matrix[1][1] = T(1) - (xx + zz);
+        matrix[2][1] = yz - wx;
+        matrix[3][1] = T(0);
 
-    matrix[0][2] = xz - wy;
-    matrix[1][2] = yz + wx;
-    matrix[2][2] = static_cast<T>(1) - (xx + yy);
-    matrix[3][2] = T(0.0);
+        matrix[0][2] = xz - wy;
+        matrix[1][2] = yz + wx;
+        matrix[2][2] = T(1) - (xx + yy);
+        matrix[3][2] = T(0);
 
-    matrix[0][3] = T(0.0);
-    matrix[1][3] = T(0.0);
-    matrix[2][3] = T(0.0);
-    matrix[3][3] = T(1.0);
-
-    return matrix;
-}
-
-template<typename T>
-inline Matrix<T, 4, 4> to_matrix_4x4(const Quaternion<T>& quat, const Matrix<T, 4, 1>& trans)
-{
-    T wx, wy, wz, xx, yy, yz, xy, xz, zz, x2, y2, z2;
-    x2 = quat.x * static_cast<T>(2);
-    y2 = quat.y * static_cast<T>(2);
-    z2 = quat.z * static_cast<T>(2);
-
-    xx = quat.x * x2;
-    xy = quat.x * y2;
-    xz = quat.x * z2;
-
-    yy = quat.y * y2;
-    yz = quat.y * z2;
-    zz = quat.z * z2;
-
-    wx = quat.w * x2;
-    wy = quat.w * y2;
-    wz = quat.w * z2;
-
-    Matrix<T, 4, 4> matrix;
-    matrix[0][0] = static_cast<T>(1) - (yy + zz);
-    matrix[1][0] = xy - wz;
-    matrix[2][0] = xz + wy;
-    matrix[3][0] = T(0.0);
-
-    matrix[0][1] = xy + wz;
-    matrix[1][1] = static_cast<T>(1) - (xx + zz);
-    matrix[2][1] = yz - wx;
-    matrix[3][1] = T(0.0);
-
-    matrix[0][2] = xz - wy;
-    matrix[1][2] = yz + wx;
-    matrix[2][2] = static_cast<T>(1) - (xx + yy);
-    matrix[3][2] = T(0.0);
-
-    matrix[0][3] = trans[0];
-    matrix[1][3] = trans[1];
-    matrix[2][3] = trans[2];
-    matrix[3][3] = trans[3];
-
-    return matrix;
-}
-
-template<typename T>
-inline Matrix<T, 4, 4> to_matrix_4x4(const Quaternion<T>& quat, const Matrix<T, 3, 1>& trans)
-{
-    T wx, wy, wz, xx, yy, yz, xy, xz, zz, x2, y2, z2;
-    x2 = quat.x * static_cast<T>(2);
-    y2 = quat.y * static_cast<T>(2);
-    z2 = quat.z * static_cast<T>(2);
-
-    xx = quat.x * x2;
-    xy = quat.x * y2;
-    xz = quat.x * z2;
-
-    yy = quat.y * y2;
-    yz = quat.y * z2;
-    zz = quat.z * z2;
-
-    wx = quat.w * x2;
-    wy = quat.w * y2;
-    wz = quat.w * z2;
-
-    Matrix<T, 4, 4> matrix;
-    matrix[0][0] = static_cast<T>(1) - (yy + zz);
-    matrix[1][0] = xy - wz;
-    matrix[2][0] = xz + wy;
-    matrix[3][0] = T(0.0);
-
-    matrix[0][1] = xy + wz;
-    matrix[1][1] = static_cast<T>(1) - (xx + zz);
-    matrix[2][1] = yz - wx;
-    matrix[3][1] = T(0.0);
-
-    matrix[0][2] = xz - wy;
-    matrix[1][2] = yz + wx;
-    matrix[2][2] = static_cast<T>(1) - (xx + yy);
-    matrix[3][2] = T(0.0);
-
-    matrix[0][3] = trans[0];
-    matrix[1][3] = trans[1];
-    matrix[2][3] = trans[2];
-    matrix[3][3] = T(1.0);
-
+        matrix[0][3] = trans[0];
+        matrix[1][3] = trans[1];
+        matrix[2][3] = trans[2];
+        matrix[3][3] = T(1);
+    }
     return matrix;
 }
 
@@ -548,7 +517,6 @@ inline Quaternion<float>& operator /= (Quaternion<float>& lhs, float rhs)
     return lhs;
 }
 
-template<typename T>
 inline Matrix<float, 4, 1> as_vec(const Quaternion<float>& quat)
 {
     return Matrix<float, 4, 1>(quat.m128);
@@ -643,4 +611,4 @@ inline std::istream& operator >> (std::istream& is, math::Quaternion<T>& quat)
 
 SGL_END_MATH_NAMESPACE
 
-#endif // GRAPHICS_MATH_QUATERNION_HPP
+#endif // SIMPLE_GL_MATH_QUATERNION_HPP

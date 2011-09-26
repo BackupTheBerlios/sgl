@@ -1,7 +1,7 @@
 #ifndef SIMPLE_GL_MATH_AABB_H
 #define SIMPLE_GL_MATH_AABB_H
 
-#include "MatrixFunctions.hpp"
+#include "Matrix.hpp"
 
 SGL_BEGIN_MATH_NAMESPACE
 

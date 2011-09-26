@@ -2,7 +2,7 @@
 #define SIMPLE_GL_MATH_BASE_HPP
 
 #include "../Utility/Aligned.h"
-#include "Utility.hpp"
+#include "FPT.hpp"
 
 #ifdef SIMPLE_GL_USE_SSE
 #   ifdef _MSC_VER
