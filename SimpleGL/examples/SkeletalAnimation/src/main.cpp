@@ -1,6 +1,6 @@
 #include "Device.h"
 #include "Math/Containers.hpp"
-#include "Math/MatrixFunctions.hpp"
+#include "Math/Matrix.hpp"
 #include "Utility/FX/ShaderUtility.h"
 #include "SDL.h"
 #include "SDL_main.h"
@@ -292,7 +292,7 @@ private:
         for (size_t i = 1; i<bones.size(); ++i) 
         {
             orient  = math::normalize(orient * bones[i].orient);
-            origin += orient * bones[i].origin;
+            origin += math::rotate(orient, bones[i].origin);
             (*originIter++) = origin;
             (*orientIter++) = orient;
         }
@@ -361,7 +361,7 @@ void RenderScene()
     }
     
     // render robo hand
-    roboHand->render( math::make_ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f) );
+    roboHand->render( math::Matrix4f::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f) );
 }
 
 void HandleKeys()

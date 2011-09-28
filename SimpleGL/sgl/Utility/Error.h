@@ -53,7 +53,7 @@ namespace sgl {
 
 /** Error handler that logs errors to the cerr */
 class PrintErrorHandler :
-	public ReferencedImpl<ErrorHandler>
+	public ErrorHandler
 {
 public:
 	/** Print sgl error to the cerr

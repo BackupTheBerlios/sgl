@@ -1,4 +1,4 @@
-#include "Math/MatrixFunctions.hpp"
+#include "Math/Matrix.hpp"
 #include "Utility/FX/ShaderUtility.h"
 #include "SDL.h"
 #include "SDL_main.h"
@@ -21,8 +21,8 @@ enum FRACTAL_TYPE
     TAILOR
 };
 
-ref_ptr<Device>		        device;
-ref_ptr<PrintErrorHandler>  errorHandler;
+ref_ptr<Device>	   device;
+PrintErrorHandler  errorHandler;
 
 // quad for fractal
 ref_ptr<VertexBuffer>		quadVBO;
@@ -248,8 +248,7 @@ void CreateScene()
     device.reset( sglCreateDeviceFromCurrent(DV_OPENGL_2_1) );
 
     // Setup error handler
-    errorHandler.reset( new PrintErrorHandler() );
-    sglSetErrorHandler( errorHandler.get() );
+    sglSetErrorHandler(&errorHandler);
 
     CreateCommonScene();
     CreateJuliaScene();
@@ -388,9 +387,9 @@ void RenderJulia(float time)
     //vertexColorState->Setup();
     juliaProgram->Bind();
     {
-        juliaUniformMVP->Set( make_ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f) 
-                              * make_scaling(sceneScale.x, sceneScale.y, 1.0f)
-                              * make_translation(cameraPos.x, cameraPos.y, 0.0f) );
+        juliaUniformMVP->Set( Matrix4f::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f) 
+                              * Matrix4f::scaling(sceneScale.x, sceneScale.y, 1.0f)
+                              * Matrix4f::translation(cameraPos.x, cameraPos.y, 0.0f) );
         juliaUniformA->Set(paramA);
         juliaUniformB->Set(paramB);
         juliaUniformDensity->Set(density);
@@ -413,9 +412,9 @@ void RenderTailor(float time)
     //vertexColorState->Setup();
     tailorProgram->Bind();
     {
-        tailorUniformMVP->Set( make_ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f) 
-                               * make_scaling(sceneScale.x, sceneScale.y, 1.0f)
-                               * make_translation(cameraPos.x, cameraPos.y, 0.0f) );
+        tailorUniformMVP->Set( Matrix4f::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f) 
+                               * Matrix4f::scaling(sceneScale.x, sceneScale.y, 1.0f)
+                               * Matrix4f::translation(cameraPos.x, cameraPos.y, 0.0f) );
         tailorUniformA->Set(paramA);
         tailorUniformB->Set(paramB);
         tailorUniformC->Set(paramC);
@@ -631,6 +630,7 @@ int main(int argc, char** argv)
     SDL_SetTimer(100, Update);
     Run();
 
+    sglSetErrorHandler(0);
     SDL_Quit();
 
     return 0;
