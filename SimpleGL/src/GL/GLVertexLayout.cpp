@@ -65,16 +65,16 @@ void GLVertexLayoutMixed::Bind() const
         case VERTEX:
             glEnableClientState(GL_VERTEX_ARRAY);
             glVertexPointer( elements[i].size, 
-                                BIND_SCALAR_TYPE[ elements[i].type ], 
-                                elements[i].stride, 
-                                (GLvoid*)elements[i].offset );
+                             BIND_SCALAR_TYPE[ elements[i].type ], 
+                             elements[i].stride, 
+                             (GLvoid*)elements[i].offset );
             break;
 
         case NORMAL:
             glEnableClientState(GL_NORMAL_ARRAY);
             glNormalPointer( BIND_SCALAR_TYPE[ elements[i].type ], 
-                                elements[i].stride, 
-                                (GLvoid*)elements[i].offset );
+                             elements[i].stride, 
+                             (GLvoid*)elements[i].offset );
             break;
 
         case COLOR:
@@ -89,19 +89,19 @@ void GLVertexLayoutMixed::Bind() const
             glClientActiveTexture(GL_TEXTURE0 + elements[i].index);
             glEnableClientState(GL_TEXTURE_COORD_ARRAY);
             glTexCoordPointer( elements[i].size, 
-                                BIND_SCALAR_TYPE[ elements[i].type ], 
-                                elements[i].stride, 
-                                (GLvoid*)elements[i].offset );
+                               BIND_SCALAR_TYPE[ elements[i].type ], 
+                               elements[i].stride, 
+                               (GLvoid*)elements[i].offset );
             break;
 
         case ATTRIBUTE:
             glEnableVertexAttribArray(elements[i].index);
             glVertexAttribPointer( elements[i].index, 
-                                    elements[i].size, 
-                                    BIND_SCALAR_TYPE[ elements[i].type ], 
-                                    false, 
-                                    elements[i].stride, 
-                                    (GLvoid*)elements[i].offset );
+                                   elements[i].size, 
+                                   BIND_SCALAR_TYPE[ elements[i].type ], 
+                                   false, 
+                                   elements[i].stride, 
+                                   (GLvoid*)elements[i].offset );
             break;
 
         default:
@@ -189,11 +189,11 @@ void GLVertexLayoutAttribute::Bind() const
                     }
 
                     glVertexAttribPointer( index1,
-                                            elements[j].size,
-                                            BIND_SCALAR_TYPE[ elements[j].type ],
-                                            false,
-                                            elements[j].stride,
-                                            (GLvoid*)elements[j].offset );
+                                           elements[j].size,
+                                           BIND_SCALAR_TYPE[ elements[j].type ],
+                                           false,
+                                           elements[j].stride,
+                                           (GLvoid*)elements[j].offset );
                     ++i; ++j;
                 }
             }
@@ -207,11 +207,11 @@ void GLVertexLayoutAttribute::Bind() const
                 glEnableVertexAttribArray(elements[j].index);
 
                 glVertexAttribPointer( elements[j].index,
-                                        elements[j].size,
-                                        BIND_SCALAR_TYPE[ elements[j].type ],
-                                        false,
-                                        elements[j].stride,
-                                        (GLvoid*)elements[j].offset );
+                                       elements[j].size,
+                                       BIND_SCALAR_TYPE[ elements[j].type ],
+                                       false,
+                                       elements[j].stride,
+                                       (GLvoid*)elements[j].offset );
 
             }
 
@@ -225,11 +225,11 @@ void GLVertexLayoutAttribute::Bind() const
         {
             glEnableVertexAttribArray(elements[i].index);
             glVertexAttribPointer( elements[i].index, 
-                                    elements[i].size, 
-                                    BIND_SCALAR_TYPE[ elements[i].type ], 
-                                    false, 
-                                    elements[i].stride, 
-									(GLvoid*)elements[i].offset );
+                                   elements[i].size, 
+                                   BIND_SCALAR_TYPE[ elements[i].type ], 
+                                   false, 
+                                   elements[i].stride, 
+								   (GLvoid*)elements[i].offset );
 		}
 
 		device->SetVertexLayout(this);

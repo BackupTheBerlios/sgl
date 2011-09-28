@@ -528,31 +528,31 @@ void GLDevice::SetRenderTarget(const RenderTarget* renderTarget)
 // ============================ DRAW ============================ //
 
 void GLDevice::Draw( PRIMITIVE_TYPE primType,
-                                    unsigned       firstVertex,
-                                    unsigned       numVertices ) const
+                     unsigned       firstVertex,
+                     unsigned       numVertices ) const
 {
     glDrawArrays(BIND_PRIMITIVE_TYPE[primType], firstVertex, numVertices);
 }
 
 void GLDevice::DrawInstanced( PRIMITIVE_TYPE primType,
-                                             unsigned       firstVertex,
-                                             unsigned       numVertices,
-                                             unsigned       numInstances ) const
+                              unsigned       firstVertex,
+                              unsigned       numVertices,
+                              unsigned       numInstances ) const
 {
     glDrawArraysInstancedEXT(BIND_PRIMITIVE_TYPE[primType], firstVertex, numVertices, numInstances);
 }
 
 void GLDevice::DrawIndexed( PRIMITIVE_TYPE primType,
-                                           unsigned       firstIndex,
-                                           unsigned       numIndices ) const
+                            unsigned       firstIndex,
+                            unsigned       numIndices ) const
 {
     glDrawElements(BIND_PRIMITIVE_TYPE[primType], numIndices, glIndexType, (GLvoid*)(firstIndex * glIndexSize));
 }
 
 void GLDevice::DrawIndexedInstanced( PRIMITIVE_TYPE primType,
-                                                    unsigned       firstIndex,
-                                                    unsigned       numIndices,
-                                                    unsigned       numInstances ) const
+                                     unsigned       firstIndex,
+                                     unsigned       numIndices,
+                                     unsigned       numInstances ) const
 {
     glDrawElementsInstanced(BIND_PRIMITIVE_TYPE[primType], numIndices, glIndexType, (GLvoid*)(firstIndex * glIndexSize), numInstances);
 }

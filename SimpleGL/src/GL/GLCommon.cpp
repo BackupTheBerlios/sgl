@@ -12,10 +12,8 @@ SGL_HRESULT CheckGLError(const std::string& preMsg, GLenum error)
 
     case GL_INVALID_ENUM:
     case GL_INVALID_VALUE:
-        return EInvalidCall( (preMsg + "Invalid value").c_str() );
-
     case GL_INVALID_OPERATION:
-        return EInvalidCall( (preMsg + "Invalid opertation").c_str() );
+        return EInvalidCall( (preMsg + "Invalid value").c_str() );
 
     case GL_OUT_OF_MEMORY:
         return EOutOfMemory( (preMsg + "Out of memory").c_str() );
