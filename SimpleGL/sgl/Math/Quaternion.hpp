@@ -236,7 +236,7 @@ inline Matrix<T, 4, 1> rotate(const Quaternion<T>&   quat,
         res.x = w21 * vec.x + v2Dot * quat.x + w2 * (quat.y * vec.z - vec.y * quat.z);
         res.y = w21 * vec.y + v2Dot * quat.y + w2 * (quat.z * vec.x - vec.z * quat.x);
         res.z = w21 * vec.z + v2Dot * quat.z + w2 * (quat.x * vec.y - vec.x * quat.y);
-        res.w = vec.w
+        res.w = vec.w;
     }
     return res;
 }
