@@ -1,17 +1,7 @@
 #ifndef SIMPLE_GL_GL_DEVICE_H
 #define SIMPLE_GL_GL_DEVICE_H
 
-#ifdef WIN32
-#   ifndef NOMINMAX
-#   define NOMINMAX
-#   endif // disable mingw warning
-#   define WIN32_LEAN_AND_MEAN
-#   include <windows.h>
-#   include <GL/glew.h>
-#elif defined(__linux__)
-#   include <GL/glew.h>
-#   include <GL/glx.h>
-#endif
+#include "GL/GLCommon.h"
 
 #ifdef WIN32
 #   pragma push_macro("CreateFont")

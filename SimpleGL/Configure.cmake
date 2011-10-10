@@ -6,53 +6,59 @@ INCLUDE (StandartIncludes)
 INCLUDE (FindNecessaryLibraries.cmake)
 INCLUDE (OptionDependentOnPackage)
 
-# image library
-OPTION (SIMPLE_GL_USE_SDL_IMAGE "Set to ON to build SimpleGL using SDL_image library." OFF)
-MESSAGE ("Use SDL_image: " ${SIMPLE_GL_USE_SDL_IMAGE})
+IF (SIMPLE_GL_ANDROID)
+ELSE (SIMPLE_GL_ANDROID)
+	# image library
+	OPTION (SIMPLE_GL_USE_SDL_IMAGE "Set to ON to build SimpleGL using SDL_image library." OFF)
+	MESSAGE ("Use SDL_image: " ${SIMPLE_GL_USE_SDL_IMAGE})
 
-# image library #2
-OPTION_DEPENDENT_ON_PACKAGE (SIMPLE_GL_USE_DEVIL "Set to ON to build SimpleGL using DevIL library." DEVIL_FOUND)
-MESSAGE ("Use DevIL: " ${SIMPLE_GL_USE_DEVIL})
+	# image library #2
+	OPTION_DEPENDENT_ON_PACKAGE (SIMPLE_GL_USE_DEVIL "Set to ON to build SimpleGL using DevIL library." DEVIL_FOUND)
+	MESSAGE ("Use DevIL: " ${SIMPLE_GL_USE_DEVIL})
 
-IF (NOT SIMPLE_GL_CONFIGURE_INTRUSIVE)
-    # examples
-	OPTION_DEPENDENT_ON_PACKAGE (BUILD_EXAMPLES "Set to ON to build examples" SDL_FOUND)
-	MESSAGE ("Build examples: " ${BUILD_EXAMPLES})
-    
-    # documentation
-    OPTION_DEPENDENT_ON_PACKAGE (SIMPLE_GL_BUILD_DOCUMENTATION "Set to ON to build doxygen reference documentation" DOXYGEN_FOUND)
-    MESSAGE ("Build documentation: " ${BUILD_DOCUMENTATION})
-ENDIF (NOT SIMPLE_GL_CONFIGURE_INTRUSIVE)
+	IF (NOT SIMPLE_GL_CONFIGURE_INTRUSIVE)
+		# examples
+		OPTION_DEPENDENT_ON_PACKAGE (BUILD_EXAMPLES "Set to ON to build examples" SDL_FOUND)
+		MESSAGE ("Build examples: " ${BUILD_EXAMPLES})
+		
+		# documentation
+		OPTION_DEPENDENT_ON_PACKAGE (SIMPLE_GL_BUILD_DOCUMENTATION "Set to ON to build doxygen reference documentation" DOXYGEN_FOUND)
+		MESSAGE ("Build documentation: " ${BUILD_DOCUMENTATION})
+	ENDIF (NOT SIMPLE_GL_CONFIGURE_INTRUSIVE)
 
-# check settings
-IF (NOT SDL_FOUND AND BUILD_EXAMPLES)
-	MESSAGE (FATAL_ERROR "Can't build examples without SDL.") 
-ENDIF (NOT SDL_FOUND AND BUILD_EXAMPLES)
+	# check settings
+	IF (NOT SDL_FOUND AND BUILD_EXAMPLES)
+		MESSAGE (FATAL_ERROR "Can't build examples without SDL.") 
+	ENDIF (NOT SDL_FOUND AND BUILD_EXAMPLES)
 
-IF (NOT BUILD_EXAMPLES AND INSTALL_EXAMPLES)
-	MESSAGE (FATAL_ERROR "You must check in BUILD_EXAMPLES option in order to install them.") 
-ENDIF (NOT BUILD_EXAMPLES AND INSTALL_EXAMPLES)
+	IF (NOT BUILD_EXAMPLES AND INSTALL_EXAMPLES)
+		MESSAGE (FATAL_ERROR "You must check in BUILD_EXAMPLES option in order to install them.") 
+	ENDIF (NOT BUILD_EXAMPLES AND INSTALL_EXAMPLES)
 
-IF (NOT SIMPLE_GL_CONFIGURE_INTRUSIVE)
-	OPTION (BUILD_QT_EXAMPLES "Set to ON to build examples wich use QT" OFF)
-	MESSAGE ("Build QT examples: " ${BUILD_QT_EXAMPLES})
-ENDIF (NOT SIMPLE_GL_CONFIGURE_INTRUSIVE)
+	IF (NOT SIMPLE_GL_CONFIGURE_INTRUSIVE)
+		OPTION (BUILD_QT_EXAMPLES "Set to ON to build examples wich use QT" OFF)
+		MESSAGE ("Build QT examples: " ${BUILD_QT_EXAMPLES})
+	ENDIF (NOT SIMPLE_GL_CONFIGURE_INTRUSIVE)
 
-# check settings
-IF (BUILD_QT_EXAMPLES AND NOT QT_FOUND)
-	MESSAGE (FATAL_ERROR "QT examples can't be built without QT library.") 
-ENDIF (BUILD_QT_EXAMPLES AND NOT QT_FOUND)
+	# check settings
+	IF (BUILD_QT_EXAMPLES AND NOT QT_FOUND)
+		MESSAGE (FATAL_ERROR "QT examples can't be built without QT library.") 
+	ENDIF (BUILD_QT_EXAMPLES AND NOT QT_FOUND)
 
-OPTION (INSTALL_EXAMPLES "Set to ON to install examples" NO)
-MESSAGE ("Install examples: " ${INSTALL_EXAMPLES})
+	OPTION (INSTALL_EXAMPLES "Set to ON to install examples" NO)
+	MESSAGE ("Install examples: " ${INSTALL_EXAMPLES})
 
-# sse optimization
-OPTION (SIMPLE_GL_USE_SSE "Set to ON to enable sse optimizations for math lib" ON)
-MESSAGE ("Use SSE: " ${SIMPLE_GL_USE_SSE})
+	# android port
+	MESSAGE ("Android: " ${SIMPLE_GL_ANDROID})
 
-# this option moves creates sgl::math namespace, otherwise it will be simply math namespace
-OPTION (SIMPLEGL_MATH_IN_SGL_NAMESPACE "Set to ON to move math namespace to the sgl namespace" OFF)
-MESSAGE ("math in sgl namespace: " ${SIMPLE_GL_USE_SSE})
+	# sse optimization
+	OPTION (SIMPLE_GL_USE_SSE "Set to ON to enable sse optimizations for math lib" ON)
+	MESSAGE ("Use SSE: " ${SIMPLE_GL_USE_SSE})
+
+	# this option moves creates sgl::math namespace, otherwise it will be simply math namespace
+	OPTION (SIMPLEGL_MATH_IN_SGL_NAMESPACE "Set to ON to move math namespace to the sgl namespace" OFF)
+	MESSAGE ("math in sgl namespace: " ${SIMPLE_GL_USE_SSE})
+ENDIF (SIMPLE_GL_ANDROID)
 
 # check settings
 IF (INSTALL_EXAMPLES AND NOT BUILD_EXAMPLES)
@@ -119,10 +125,14 @@ IF (CMAKE_COMPILER_IS_GNUCC AND SIMPLE_GL_USE_SSE)
 ENDIF (CMAKE_COMPILER_IS_GNUCC AND SIMPLE_GL_USE_SSE)
 
 # global dir
-INCLUDE_DIRECTORIES (
-	${CMAKE_CURRENT_SOURCE_DIR}/sgl
-    ${OPENGL_INCLUDE_DIR}
-    ${GLEW_INCLUDE_DIR}
-)
-
-LINK_DIRECTORIES ( ${PROJECT_BINARY_DIR}/lib )
+IF (SIMPLE_GL_ANDROID)
+	INCLUDE_DIRECTORIES (
+		${CMAKE_CURRENT_SOURCE_DIR}/sgl
+	)
+ELSE (SIMPLE_GL_ANDROID)
+	INCLUDE_DIRECTORIES (
+		${CMAKE_CURRENT_SOURCE_DIR}/sgl
+		${OPENGL_INCLUDE_DIR}
+		${GLEW_INCLUDE_DIR}
+	)
+ENDIF (SIMPLE_GL_ANDROID)

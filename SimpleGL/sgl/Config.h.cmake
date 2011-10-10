@@ -17,6 +17,7 @@
 	#define SGL_DLLCALL
 #endif
 
+#cmakedefine SIMPLE_GL_ANDROID
 #cmakedefine SIMPLE_GL_USE_SDL_IMAGE
 #cmakedefine SIMPLE_GL_USE_DEVIL
 #cmakedefine SIMPLE_GL_USE_SSE2

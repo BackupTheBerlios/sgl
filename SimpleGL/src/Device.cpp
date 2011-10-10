@@ -5,6 +5,8 @@ using namespace sgl;
 
 extern "C" SGL_DLLEXPORT sgl::Device* SGL_DLLCALL sglCreateDevice(sgl::DEVICE_VERSION deviceVersion, const Device::VIDEO_DESC& desc)
 {
+#ifdef __ANDROID__
+#else
     try
     {
         switch (deviceVersion)
@@ -41,10 +43,13 @@ extern "C" SGL_DLLEXPORT sgl::Device* SGL_DLLCALL sglCreateDevice(sgl::DEVICE_VE
     {
         return 0;
     }
+#endif // !defined(__ANDROID__)
 }
 
 extern "C" SGL_DLLEXPORT sgl::Device* SGL_DLLCALL sglCreateDeviceFromCurrent(sgl::DEVICE_VERSION deviceVersion, bool force)
 {
+#ifdef __ANDROID__
+#else
     // init extensions
     static bool glewInitialized = false;
     if (!glewInitialized)
@@ -120,6 +125,7 @@ extern "C" SGL_DLLEXPORT sgl::Device* SGL_DLLCALL sglCreateDeviceFromCurrent(sgl
     {
         return 0;
     }
+#endif // !defined(__ANDROID__)
 }
 
 // define scalar type traits
