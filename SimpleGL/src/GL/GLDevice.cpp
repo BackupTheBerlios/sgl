@@ -30,7 +30,7 @@
 #   undef CreateFont
 #endif // WIN32
 
-#ifdef __linux__
+#if defined(__linux__) && !defined(__ANDROID__)
 Bool wait_for_notify( Display* /*pDisplay*/,
 					  XEvent*  pEvent,
 					  XPointer arg )
@@ -225,7 +225,7 @@ GLDevice::GLDevice() :
         throw gl_error("GLDevice::GLDevice() failed");
     }
 
-#elif defined(__linux__)
+#elif defined(__linux__) && !defined(__ANDROID__)
     display = glXGetCurrentDisplay();
     if (!display)
     {
@@ -251,6 +251,8 @@ GLDevice::GLDevice() :
 
     InitOpenGL();
 }
+
+#ifndef __ANDROID__
 
 GLDevice::GLDevice(const Device::VIDEO_DESC& desc)
 {
@@ -409,6 +411,8 @@ GLDevice::GLDevice(const Device::VIDEO_DESC& desc)
     InitOpenGL();
 }
 
+#endif // !defined(__ANDROID__)
+
 SGL_HRESULT GLDevice::InitOpenGL()
 {
     // defaults
@@ -445,7 +449,7 @@ GLDevice::~GLDevice()
         wglDeleteContext(hGLRC);
         wglMakeCurrent(0, 0);
         ReleaseDC(hWnd, hDC);
-    #elif defined(__linux__)
+    #elif defined(__linux__) && !defined(__ANDROID__)
         // If sgl created window by itself
         glXDestroyContext(display, glxContext);
         XUnmapWindow(display, window);
@@ -534,19 +538,20 @@ void GLDevice::Draw( PRIMITIVE_TYPE primType,
     glDrawArrays(BIND_PRIMITIVE_TYPE[primType], firstVertex, numVertices);
 }
 
-void GLDevice::DrawInstanced( PRIMITIVE_TYPE primType,
-                              unsigned       firstVertex,
-                              unsigned       numVertices,
-                              unsigned       numInstances ) const
-{
-    glDrawArraysInstancedEXT(BIND_PRIMITIVE_TYPE[primType], firstVertex, numVertices, numInstances);
-}
-
 void GLDevice::DrawIndexed( PRIMITIVE_TYPE primType,
                             unsigned       firstIndex,
                             unsigned       numIndices ) const
 {
     glDrawElements(BIND_PRIMITIVE_TYPE[primType], numIndices, glIndexType, (GLvoid*)(firstIndex * glIndexSize));
+}
+
+#ifndef SIMPLE_GL_ES
+void GLDevice::DrawInstanced( PRIMITIVE_TYPE primType,
+                              unsigned       firstVertex,
+                              unsigned       numVertices,
+                              unsigned       numInstances ) const
+{
+    glDrawArraysInstanced(BIND_PRIMITIVE_TYPE[primType], firstVertex, numVertices, numInstances);
 }
 
 void GLDevice::DrawIndexedInstanced( PRIMITIVE_TYPE primType,
@@ -556,6 +561,7 @@ void GLDevice::DrawIndexedInstanced( PRIMITIVE_TYPE primType,
 {
     glDrawElementsInstanced(BIND_PRIMITIVE_TYPE[primType], numIndices, glIndexType, (GLvoid*)(firstIndex * glIndexSize), numInstances);
 }
+#endif // defined(SIMPLE_GL_ES)
 
 void GLDevice::Clear(bool colorBuffer, bool depthBuffer, bool stencilBuffer) const
 {
@@ -565,11 +571,12 @@ void GLDevice::Clear(bool colorBuffer, bool depthBuffer, bool stencilBuffer) con
     glClear(mask);
 }
 
+#ifndef __ANDROID__
 void GLDevice::SwapBuffers() const
 {
 #ifdef WIN32
     ::SwapBuffers(hDC);
-#elif defined(__linux__)
+#elif defined(__linux__) && !defined(__ANDROID__)
     glXSwapBuffers(display, glxDrawable);
 #endif
 
@@ -596,6 +603,7 @@ void GLDevice::SwapBuffers() const
 #endif 
     //assert( GL_NO_ERROR == glGetError() );
 }
+#endif // !defined(__ANDROID__)
 
 void SGL_DLLCALL GLDevice::PushState(State::TYPE type)
 {
@@ -683,7 +691,7 @@ void GLDevice::SetClearColor(const math::Vector4f& color)
 
 void GLDevice::SetClearDepthStencil(double depthClear, int stencilClear)
 {
-    glClearDepth(depthClear);
+    glClearDepthf(depthClear);
     glClearStencil(stencilClear);
 }
 
@@ -697,7 +705,13 @@ math::Vector4f GLDevice::ClearColor() const
 double GLDevice::ClearDepth() const
 {
     double depth;
+#ifdef SIMPLE_GL_ES
+    float depthF;
+    glGetFloatv(GL_DEPTH_CLEAR_VALUE, &depthF);
+    depth = depthF;
+#else
     glGetDoublev(GL_DEPTH_CLEAR_VALUE, &depth);
+#endif
     return depth;
 }
 
@@ -753,6 +767,7 @@ VBORenderTarget* SGL_DLLCALL GLDevice::CreateVBORenderTarget() const
 namespace {
 
     template<bool toggle> struct support_fixed_pipeline         { static const bool value = toggle; };
+    template<bool toggle> struct support_separate_blending      { static const bool value = toggle; };
     template<bool toggle> struct support_programmable_pipeline  { static const bool value = toggle; };
     template<bool toggle> struct support_generic_attributes     { static const bool value = toggle; };
     template<bool toggle> struct support_fixed_attributes       { static const bool value = toggle; };
@@ -762,31 +777,29 @@ namespace {
 
     #define SUPPORT(Feature, DeviceVersion) support_##Feature<device_traits<DeviceVersion>::support_##Feature>()
 	
-	Shader* CreateShader(GLDevice* device, const Shader::DESC& desc)
+    Shader* CreateShader(GLDevice*           /*device*/,
+                         const Shader::DESC& /*desc*/,
+                         support_programmable_pipeline<false>)
 	{
-		if (!GLEW_VERSION_2_0) 
-		{
-			sglSetError(SGLERR_UNSUPPORTED, "Shaders are not supported");
-			return 0;
-		}
+        return 0;
+    }
 
-		if (desc.type == Shader::GEOMETRY && !GL_ARB_geometry_shader4) 
-		{
-			sglSetError(SGLERR_UNSUPPORTED, "Geometry shaders are not supported");
-			return 0;
-		}
-
+    Shader* CreateShader(GLDevice*           device,
+                         const Shader::DESC& desc,
+                         support_programmable_pipeline<true>)
+    {
 		return new GLShader(device, desc);
 	}
 
-	Program* CreateProgram(GLDevice* device)
-	{
-		if (!GLEW_VERSION_2_0) 
-		{
-			sglSetError(SGLERR_UNSUPPORTED, "Shaders are not supported");
-			return 0;
-		}
+    Program* CreateProgram(GLDevice* /*device*/,
+                           support_programmable_pipeline<false>)
+    {
+        return 0;
+    }
 
+    Program* CreateProgram(GLDevice* device,
+                           support_programmable_pipeline<true>)
+	{
 		return new GLProgram(device);
 	}
 
@@ -847,17 +860,29 @@ namespace {
 
 	Texture2D* CreateTexture2DMS(GLDevice* device, const Texture2D::DESC_MS& desc)
 	{
+    #ifdef SIMPLE_GL_ES
+        return 0;
+    #else
 		return new GLTexture2D(device, desc);
+    #endif
 	}
 
 	Texture3D* CreateTexture3D(GLDevice* device, const Texture3D::DESC& desc)
 	{
+    #ifdef SIMPLE_GL_ES
+        return 0;
+    #else
 		return new GLTexture3D(device, desc);
+    #endif
 	}
 
 	Texture3D* CreateTexture3DMS(GLDevice* device, const Texture3D::DESC_MS& desc)
 	{
+    #ifdef SIMPLE_GL_ES
+        return 0;
+    #else
 		return new GLTexture3D(device, desc);
+    #endif
 	}
 
 	TextureCube* CreateTextureCube(GLDevice* device, const TextureCube::DESC& desc)
@@ -883,6 +908,19 @@ namespace {
 		return new GLVertexLayoutAttribute(device, numElements, elements);
 	}
 
+#ifdef SIMPLE_GL_ES
+    VertexBuffer* CreateVertexBuffer(GLDevice* device,
+                                     support_buffer_copies<false>)
+    {
+        return new GLVertexBuffer<GLBufferDefault<VertexBuffer> >(device);
+    }
+
+    IndexBuffer* CreateIndexBuffer(GLDevice* device,
+                                   support_buffer_copies<false>)
+    {
+        return new GLIndexBuffer<GLBufferDefault<IndexBuffer> >(device);
+    }
+#else // !defined(SIMPLE_GL_ES)
     template<bool BufferCopies>
 	VertexBuffer* CreateVertexBuffer(GLDevice* device,
                                      support_buffer_copies<BufferCopies>)
@@ -904,6 +942,7 @@ namespace {
 
 		return new GLIndexBuffer<buffer_impl>(device);
 	}
+#endif // !defined(SIMPLE_GL_ES)
 	/*
 	UniformBufferView* SGL_DLLCALL GLDevice::CreateUniformBuffer()
 	{
@@ -912,50 +951,71 @@ namespace {
 	*/
 	// ============================ STATES ============================ //
 
+#ifndef SIMPLE_GL_ES
 	BlendState* SGL_DLLCALL CreateBlendState(GLDevice*					device, 
 											 const BlendState::DESC&	desc,
-											 support_display_lists<true>)
+                                             support_display_lists<true>,
+                                             support_separate_blending<false>)
 	{
-		if ( desc.destBlend != desc.destBlendAlpha 
+        if (    desc.destBlend != desc.destBlendAlpha
 			 || desc.srcBlend != desc.srcBlendAlpha
 			 || desc.blendOp != desc.blendOpAlpha )
 		{
-			if (!GL_ARB_draw_buffers_blend) 
-			{
-				sglSetError(SGLERR_UNSUPPORTED, "Separate blending is not supported");
-				return 0;
-			}
+            sglSetError(SGLERR_UNSUPPORTED, "Separate blending is not supported");
+            return 0;
 		}
 
 		return new GLBlendStateDisplayLists(device, desc);
 	}
 
+    BlendState* SGL_DLLCALL CreateBlendState(GLDevice*					device,
+                                             const BlendState::DESC&	desc,
+                                             support_display_lists<true>,
+                                             support_separate_blending<true>)
+    {
+        return new GLBlendStateDisplayLists(device, desc);
+    }
+#endif // !defined(SIMPLE_GL_ES)
+
 	BlendState* SGL_DLLCALL CreateBlendState(GLDevice*					device, 
 											 const BlendState::DESC&	desc,
-											 support_display_lists<false>)
+                                             support_display_lists<false>,
+                                             support_separate_blending<false>)
 	{
-		if ( desc.destBlend != desc.destBlendAlpha 
+        if ( desc.destBlend  != desc.destBlendAlpha
 			|| desc.srcBlend != desc.srcBlendAlpha
-			|| desc.blendOp != desc.blendOpAlpha )
+            || desc.blendOp  != desc.blendOpAlpha )
 		{
-			if (!GL_ARB_draw_buffers_blend) 
-			{
-				sglSetError(SGLERR_UNSUPPORTED, "Separate blending is not supported");
-				return 0;
-			}
-
-			return new GLBlendStateSeparate(device, desc);
+            sglSetError(SGLERR_UNSUPPORTED, "Separate blending is not supported");
+            return 0;
 		}
 
 		return new GLBlendStateDefault(device, desc);
 	}
 
+    BlendState* SGL_DLLCALL CreateBlendState(GLDevice*					device,
+                                             const BlendState::DESC&	desc,
+                                             support_display_lists<false>,
+                                             support_separate_blending<true>)
+    {
+        if (   desc.destBlend != desc.destBlendAlpha
+            || desc.srcBlend  != desc.srcBlendAlpha
+            || desc.blendOp   != desc.blendOpAlpha )
+        {
+            return new GLBlendStateSeparate(device, desc);
+        }
+
+        return new GLBlendStateDefault(device, desc);
+    }
+
+#ifndef SIMPLE_GL_ES
 	DepthStencilState* CreateDepthStencilState(GLDevice* device, 
 											   const DepthStencilState::DESC& desc,
 											   support_display_lists<true>)
 	{
 		return new GLDepthStencilStateDisplayLists(device, desc);
 	}
+#endif
 
 	DepthStencilState* CreateDepthStencilState(GLDevice* device, 
 											   const DepthStencilState::DESC& desc,
@@ -1019,6 +1079,7 @@ GLDeviceConcrete<DeviceVersion>::GLDeviceConcrete()
     assert( GL_NO_ERROR == glGetError() );
 }
 
+#ifndef __ANDROID__
 template<DEVICE_VERSION DeviceVersion>
 GLDeviceConcrete<DeviceVersion>::GLDeviceConcrete(const Device::VIDEO_DESC& desc)
 :	GLDevice(desc)
@@ -1060,6 +1121,7 @@ GLDeviceConcrete<DeviceVersion>::GLDeviceConcrete(const Device::VIDEO_DESC& desc
 	ffpProgram.reset( CreateFFPProgram( this, SUPPORT(fixed_pipeline, DeviceVersion) ) );
 	assert( GL_NO_ERROR == glGetError() );
 }
+#endif // !defined(__ANDROID__)
 
 // ============================ TEXTURES ============================ //
 
@@ -1127,7 +1189,10 @@ IndexBuffer* GLDeviceConcrete<DeviceVersion>::CreateIndexBuffer()
 template<DEVICE_VERSION DeviceVersion>
 BlendState* GLDeviceConcrete<DeviceVersion>::CreateBlendState(const BlendState::DESC& desc)
 {
-	return ::CreateBlendState( this, desc, SUPPORT(display_lists, DeviceVersion) );
+    return ::CreateBlendState( this,
+                               desc,
+                               SUPPORT(display_lists, DeviceVersion),
+                               SUPPORT(separate_blending, DeviceVersion) );
 }
 
 template<DEVICE_VERSION DeviceVersion>
@@ -1153,13 +1218,13 @@ SamplerState* GLDeviceConcrete<DeviceVersion>::CreateSamplerState(const SamplerS
 template<DEVICE_VERSION DeviceVersion>
 Shader* GLDeviceConcrete<DeviceVersion>::CreateShader(const Shader::DESC& desc)
 {
-	return ::CreateShader(this, desc);
+    return ::CreateShader( this, desc, SUPPORT(programmable_pipeline, DeviceVersion) );
 }
 
 template<DEVICE_VERSION DeviceVersion>
 Program* GLDeviceConcrete<DeviceVersion>::CreateProgram()
 {
-	return ::CreateProgram(this);
+    return ::CreateProgram( this, SUPPORT(programmable_pipeline, DeviceVersion) );
 }
 
 template<DEVICE_VERSION DeviceVersion>
@@ -1177,14 +1242,20 @@ RenderTarget* GLDeviceConcrete<DeviceVersion>::CreateRenderTarget()
 #undef SUPPORT
 
 // explicit template instantiation
-template class GLDeviceConcrete<DV_OPENGL_1_3>;
-template class GLDeviceConcrete<DV_OPENGL_1_4>;
-template class GLDeviceConcrete<DV_OPENGL_1_5>;
-template class GLDeviceConcrete<DV_OPENGL_2_0>;
-template class GLDeviceConcrete<DV_OPENGL_2_1>;
-template class GLDeviceConcrete<DV_OPENGL_3_0>;
-template class GLDeviceConcrete<DV_OPENGL_3_1>;
-template class GLDeviceConcrete<DV_OPENGL_3_2>;
+#ifndef SIMPLE_GL_ES
+    template class GLDeviceConcrete<DV_OPENGL_1_3>;
+    template class GLDeviceConcrete<DV_OPENGL_1_4>;
+    template class GLDeviceConcrete<DV_OPENGL_1_5>;
+    template class GLDeviceConcrete<DV_OPENGL_2_0>;
+    template class GLDeviceConcrete<DV_OPENGL_2_1>;
+    template class GLDeviceConcrete<DV_OPENGL_3_0>;
+    template class GLDeviceConcrete<DV_OPENGL_3_1>;
+    template class GLDeviceConcrete<DV_OPENGL_3_2>;
+#else
+    template class GLDeviceConcrete<DV_OPENGL_ES_1_0>;
+    template class GLDeviceConcrete<DV_OPENGL_ES_1_1>;
+    template class GLDeviceConcrete<DV_OPENGL_ES_2_0>;
+#endif
 
 } // namespace sgl
 

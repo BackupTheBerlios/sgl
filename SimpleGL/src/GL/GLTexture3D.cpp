@@ -1,6 +1,8 @@
 #include "GL/GLCommon.h"
 #include "GL/GLTexture3D.h"
 
+#ifndef SIMPLE_GL_ES
+
 namespace sgl {
 
 GLTexture3D::GLTexture3D(GLDevice* device_, const Texture3D::DESC& desc) :
@@ -280,3 +282,5 @@ void GLTexture3D::Unbind() const
 }
 
 } // namespace sgl
+
+#endif // !defined(SIMPLE_GL_ES)

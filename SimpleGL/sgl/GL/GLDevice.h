@@ -24,8 +24,10 @@ protected:
     typedef std::stack< ref_ptr<const State> > state_stack;
 
 public:
-    GLDevice(const Device::VIDEO_DESC& desc);
     GLDevice();
+#ifndef __ANDROID__
+    GLDevice(const Device::VIDEO_DESC& desc);
+#endif
 
     // setup
     virtual rectangle           SGL_DLLCALL Viewport() const;
@@ -58,20 +60,21 @@ public:
                                           unsigned       firstVertex, 
                                           unsigned       numVertices ) const;
 
-    void                SGL_DLLCALL DrawInstanced( PRIMITIVE_TYPE primType, 
-                                                   unsigned       firstIndex, 
-                                                   unsigned       numIndices,
-                                                   unsigned       numInstances ) const;
-
     void                SGL_DLLCALL DrawIndexed( PRIMITIVE_TYPE primType,
                                                  unsigned       firstIndex,
                                                  unsigned       numIndices ) const;
 
+#ifndef SIMPLE_GL_ES
+    void                SGL_DLLCALL DrawInstanced( PRIMITIVE_TYPE primType,
+                                                   unsigned       firstIndex,
+                                                   unsigned       numIndices,
+                                                   unsigned       numInstances ) const;
 
     void                SGL_DLLCALL DrawIndexedInstanced( PRIMITIVE_TYPE primType, 
                                                           unsigned       firstIndex,
                                                           unsigned       numIndices,
                                                           unsigned       numInstances ) const;
+#endif // !defined(SIMPLE_GL_ES)
 
     void                SGL_DLLCALL Clear(bool colorBuffer = true, bool depthBuffer = true, bool stencilBuffer = true) const;
 
@@ -138,7 +141,7 @@ protected:
     HDC			hDC;
     HGLRC		hGLRC;
     HWND		hWnd;
-#elif defined(__linux__)
+#elif defined(__linux__) && !defined(__ANDROID__)
     Display*    display;
     Window      window;
     GLXDrawable glxDrawable;
@@ -156,7 +159,9 @@ class GLDeviceConcrete :
 {
 public:
 	GLDeviceConcrete();
+#ifndef __ANDROID__
 	GLDeviceConcrete(const Device::VIDEO_DESC& desc);
+#endif
 
 	// ============================ TEXTURES ============================ //
 

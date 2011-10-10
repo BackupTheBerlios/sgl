@@ -241,6 +241,7 @@ AbstractUniform* GLProgram::CreateUniform( GLProgram*   program,
                                 glLocation,
                                 size );
 
+#ifndef SIMPLE_GL_ES
     case GL_SAMPLER_1D_SHADOW:
     case GL_INT_SAMPLER_1D_EXT:
     case GL_SAMPLER_1D:
@@ -252,9 +253,12 @@ AbstractUniform* GLProgram::CreateUniform( GLProgram*   program,
                                        glIndex,
                                        glLocation );
     }
+#endif
 
+#ifndef SIMPLE_GL_ES
     case GL_SAMPLER_2D_SHADOW:
     case GL_INT_SAMPLER_2D_EXT:
+#endif
     case GL_SAMPLER_2D:
     {
         return new sampler_uniform_2d( device,
@@ -265,6 +269,7 @@ AbstractUniform* GLProgram::CreateUniform( GLProgram*   program,
                                        glLocation );
     }
 
+#ifndef SIMPLE_GL_ES
     case GL_INT_SAMPLER_3D_EXT:
     case GL_SAMPLER_3D:
     {
@@ -275,6 +280,7 @@ AbstractUniform* GLProgram::CreateUniform( GLProgram*   program,
                                        glIndex,
                                        glLocation );
     }
+#endif
 
     case GL_SAMPLER_CUBE:
     {
@@ -355,12 +361,14 @@ SGL_HRESULT GLProgram::Dirty(bool force)
 
     // link
     {
+    #ifndef SIMPLE_GL_ES
         if (glProgramParameteriEXT)
         {
             glProgramParameteriEXT(glProgram, GL_GEOMETRY_INPUT_TYPE_EXT,   BIND_PRIMITIVE_TYPE[inputType]);
             glProgramParameteriEXT(glProgram, GL_GEOMETRY_OUTPUT_TYPE_EXT,  BIND_PRIMITIVE_TYPE[outputType]);
             glProgramParameteriEXT(glProgram, GL_GEOMETRY_VERTICES_OUT_EXT, numVerticesOut);
         }
+    #endif
         glLinkProgram(glProgram);
 
         // error
@@ -630,6 +638,7 @@ AbstractUniform* GLProgram::GetUniform(const char* name) const
         case AbstractUniform::VEC4F:
             location = static_cast< GLUniform<math::Vector4f>& >(*uniforms[i]).Location();
             break;
+    #ifndef SIMPLE_GL_ES
         case AbstractUniform::MAT2x2F:
             location = static_cast< GLUniform<math::Matrix2x2f>& >(*uniforms[i]).Location();
             break;
@@ -642,9 +651,11 @@ AbstractUniform* GLProgram::GetUniform(const char* name) const
         case AbstractUniform::MAT3x2F:
             location = static_cast< GLUniform<math::Matrix3x2f>& >(*uniforms[i]).Location();
             break;
+    #endif
         case AbstractUniform::MAT3x3F:
             location = static_cast< GLUniform<math::Matrix3x3f>& >(*uniforms[i]).Location();
             break;
+    #ifndef SIMPLE_GL_ES
         case AbstractUniform::MAT3x4F:
             location = static_cast< GLUniform<math::Matrix3x4f>& >(*uniforms[i]).Location();
             break;
@@ -654,6 +665,7 @@ AbstractUniform* GLProgram::GetUniform(const char* name) const
         case AbstractUniform::MAT4x3F:
             location = static_cast< GLUniform<math::Matrix4x3f>& >(*uniforms[i]).Location();
             break;
+    #endif
         case AbstractUniform::MAT4x4F:
             location = static_cast< GLUniform<math::Matrix4x4f>& >(*uniforms[i]).Location();
             break;

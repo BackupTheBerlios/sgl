@@ -1,6 +1,7 @@
 #ifndef SIMPLE_GL_GL_COMMON_H
 #define SIMPLE_GL_GL_COMMON_H
 
+#include "../Config.h"
 #ifdef WIN32
 #   ifndef NOMINMAX
 #   define NOMINMAX
@@ -11,6 +12,8 @@
 #ifdef __ANDROID__
 #   include <GLES2/gl2.h>
 #   include <GLES2/gl2ext.h>
+#   include <GLES/gl.h>
+#   include <GLES/glext.h>
 #else
 #   include <GL/glew.h>
 #endif
@@ -25,8 +28,11 @@ extern const GLsizei    BIND_GL_INDEX_SIZE[IndexBuffer::__NUM_OF_INDEX_TYPES__];
 
 // Misc
 SGL_HRESULT CheckGLError(const std::string& preMsg, GLenum error);
-SGL_HRESULT CheckGLUError(const std::string& preMsg, GLenum error);
 SGL_HRESULT CheckGLFramebufferStatus(const std::string& preMsg, GLenum status);
+
+#ifndef SIMPLE_GL_ES
+SGL_HRESULT CheckGLUError(const std::string& preMsg, GLenum error);
+#endif
 
 class gl_error :
     public std::runtime_error

@@ -9,14 +9,14 @@ namespace {
     {
         GLuint oldFBO;
 	    glGetIntegerv(GL_FRAMEBUFFER_BINDING, (GLint*)&oldFBO);
-	    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo);
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
         return oldFBO;
     }
 
     void GuardedUnbind(GLuint oldFBO)
     {
-	    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, oldFBO);
+        glBindFramebuffer(GL_FRAMEBUFFER, oldFBO);
     }
 
 } // anonymous namespace
@@ -33,18 +33,18 @@ GLRenderTarget::GLRenderTarget(GLDevice* device_) :
 {
     attachments.resize(Device::NUM_TEXTURE_STAGES);
 
-    glGenFramebuffersEXT(1, &fbo);
-    glGenRenderbuffersEXT(1, &dsRenderBuffer);
+    glGenFramebuffers(1, &fbo);
+    glGenRenderbuffers(1, &dsRenderBuffer);
 }
 
 GLRenderTarget::~GLRenderTarget()
 {
     Unbind();
     if (fbo) {
-        glDeleteFramebuffersEXT(1, &fbo);
+        glDeleteFramebuffers(1, &fbo);
     }
     if (dsRenderBuffer) {
-        glDeleteRenderbuffersEXT(1, &dsRenderBuffer);
+        glDeleteRenderbuffers(1, &dsRenderBuffer);
     }
 }
 
@@ -87,6 +87,9 @@ SGL_HRESULT GLRenderTarget::SetColorAttachment( unsigned int    mrtIndex,
                                                 unsigned int    level,
                                                 unsigned int    layer )
 {
+#ifdef SIMPLE_GL_ES
+    return EUnsupported("GLFBO::SetColorAttachment failed. 3D textures are not supported in GLES.");
+#else
 #ifndef SGL_NO_STATUS_CHECK
     if ( mrtIndex >= attachments.size() ) {
         return EInvalidCall("GLFBO::SetColorAttachment failed. MRT index is too large.");
@@ -97,6 +100,7 @@ SGL_HRESULT GLRenderTarget::SetColorAttachment( unsigned int    mrtIndex,
 	attachments[mrtIndex] = attachment(static_cast<GLTexture<Texture3D>*>(texture), level, layer);
 
     return SGL_OK;
+#endif
 }
 
 SGL_HRESULT GLRenderTarget::SetDepthStencilAttachment( Texture2D*   depthStencilTexture,
@@ -173,21 +177,23 @@ SGL_HRESULT GLRenderTarget::Dirty(bool force)
             case GL_TEXTURE_CUBE_MAP_NEGATIVE_Y:
             case GL_TEXTURE_CUBE_MAP_POSITIVE_Z:
             case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z:
-                glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT,
-                                           GL_COLOR_ATTACHMENT0 + i,
-                                           attachment.glTarget,
-                                           attachment.glTexture,
-                                           attachment.level );
+                glFramebufferTexture2D( GL_FRAMEBUFFER,
+                                        GL_COLOR_ATTACHMENT0 + i,
+                                        attachment.glTarget,
+                                        attachment.glTexture,
+                                        attachment.level );
                 break;
 
+            #ifndef SIMPLE_GL_ES
             case GL_TEXTURE_3D:
-                glFramebufferTexture3DEXT( GL_FRAMEBUFFER_EXT,
-                                           GL_COLOR_ATTACHMENT0 + i,
-                                           attachment.glTarget,
-                                           attachment.glTexture,
-                                           attachment.level,
-                                           attachment.layer );
+                glFramebufferTexture3D( GL_FRAMEBUFFER,
+                                        GL_COLOR_ATTACHMENT0 + i,
+                                        attachment.glTarget,
+                                        attachment.glTexture,
+                                        attachment.level,
+                                        attachment.layer );
                 break;
+            #endif
 
             default:
                 assert(!"Can't get here");
@@ -207,11 +213,11 @@ SGL_HRESULT GLRenderTarget::Dirty(bool force)
     // attach depth buffer
     if (dsAttachment.glTarget)
     {
-        glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT,
-                                   GL_DEPTH_ATTACHMENT_EXT,
-                                   dsAttachment.glTarget,
-                                   dsAttachment.glTexture,
-                                   dsAttachment.level );
+        glFramebufferTexture2D( GL_FRAMEBUFFER,
+                                GL_DEPTH_ATTACHMENT,
+                                dsAttachment.glTarget,
+                                dsAttachment.glTexture,
+                                dsAttachment.level );
 
 #ifndef SGL_NO_STATUS_CHECK
         error = glGetError();
@@ -224,21 +230,25 @@ SGL_HRESULT GLRenderTarget::Dirty(bool force)
     }
     else if (useDepthStencilRenderbuffer)
     {
-        glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, dsRenderBuffer);
+        glBindRenderbuffer(GL_RENDERBUFFER, dsRenderBuffer);
         if ( dsRenderBufferAttachment.samples > 0 )
         {
-            glRenderbufferStorageMultisampleEXT( GL_RENDERBUFFER_EXT,
-                                                 dsRenderBufferAttachment.samples,
-                                                 BIND_GL_FORMAT[dsRenderBufferAttachment.format],
-                                                 maxAttachmentWidth,
-                                                 maxAttachmentHeight );
+        #ifdef SIMPLE_GL_ES
+            return EUnsupported("Multisample render buffers are not supported in GLES.");
+        #else
+            glRenderbufferStorageMultisample( GL_RENDERBUFFER,
+                                              dsRenderBufferAttachment.samples,
+                                              BIND_GL_FORMAT[dsRenderBufferAttachment.format],
+                                              maxAttachmentWidth,
+                                              maxAttachmentHeight );
+        #endif
         }
         else
         {
-            glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT,
-                                      BIND_GL_FORMAT[dsRenderBufferAttachment.format],
-                                      maxAttachmentWidth,
-                                      maxAttachmentHeight );
+            glRenderbufferStorage( GL_RENDERBUFFER,
+                                   BIND_GL_FORMAT[dsRenderBufferAttachment.format],
+                                   maxAttachmentWidth,
+                                   maxAttachmentHeight );
         }
 
 #ifndef SGL_NO_STATUS_CHECK
@@ -250,15 +260,15 @@ SGL_HRESULT GLRenderTarget::Dirty(bool force)
         }
 #endif
 
-        glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
-        glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT,
-                                      GL_DEPTH_ATTACHMENT_EXT,
-                                      GL_RENDERBUFFER_EXT,
-                                      dsRenderBuffer );
-        glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT,
-                                      GL_STENCIL_ATTACHMENT_EXT,
-                                      GL_RENDERBUFFER_EXT,
-                                      dsRenderBuffer );
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+        glFramebufferRenderbuffer( GL_FRAMEBUFFER,
+                                   GL_DEPTH_ATTACHMENT,
+                                   GL_RENDERBUFFER,
+                                   dsRenderBuffer );
+        glFramebufferRenderbuffer( GL_FRAMEBUFFER,
+                                   GL_STENCIL_ATTACHMENT,
+                                   GL_RENDERBUFFER,
+                                   dsRenderBuffer );
 
 #ifndef SGL_NO_STATUS_CHECK
         error = glGetError();
@@ -272,8 +282,8 @@ SGL_HRESULT GLRenderTarget::Dirty(bool force)
 
 #ifndef SGL_NO_STATUS_CHECK
     {
-        GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-        if (status != GL_FRAMEBUFFER_COMPLETE_EXT)
+        GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+        if (status != GL_FRAMEBUFFER_COMPLETE)
         {
             GuardedUnbind(oldFBO);
             return CheckGLFramebufferStatus("GLRenderTarget<DeviceVersion>::Dirty failed: ", status);
@@ -288,10 +298,14 @@ SGL_HRESULT GLRenderTarget::Dirty(bool force)
 SGL_HRESULT GLRenderTarget::SetDrawBuffer(unsigned int drawBuffer)
 {
     drawBuffers.resize(1);
-    drawBuffers[0] = GL_COLOR_ATTACHMENT0_EXT + drawBuffer;
+    drawBuffers[0] = GL_COLOR_ATTACHMENT0 + drawBuffer;
+#ifdef SIMPLE_GL_ES
+    assert(false);
+#else
     if ( device->CurrentRenderTarget() == this ) {
         glDrawBuffer(drawBuffers[0]);
     }
+#endif
 
     return SGL_OK;
 }
@@ -304,7 +318,9 @@ SGL_HRESULT GLRenderTarget::SetDrawBuffers(unsigned int numTargets, unsigned int
                     targets + numTargets,
                     drawBuffers.begin(),
                     std::bind1st(std::plus<int>(), GL_COLOR_ATTACHMENT0) );
-
+#ifdef SIMPLE_GL_ES
+    assert(false);
+#else
     // setup to openGL
     if ( device->CurrentRenderTarget() == this )
     {
@@ -315,6 +331,7 @@ SGL_HRESULT GLRenderTarget::SetDrawBuffers(unsigned int numTargets, unsigned int
             glDrawBuffers(drawBuffers.size(), &drawBuffers[0]);
         }
     }
+#endif
 
     return SGL_OK;
 }
@@ -322,16 +339,19 @@ SGL_HRESULT GLRenderTarget::SetDrawBuffers(unsigned int numTargets, unsigned int
 SGL_HRESULT GLRenderTarget::SetReadBuffer(unsigned int _readBuffer)
 {
     readBuffer = _readBuffer + GL_COLOR_ATTACHMENT0;
+#ifdef SIMPLE_GL_ES
+    assert(false);
+#else
     if ( device->CurrentRenderTarget() == this ) {
         glReadBuffer(readBuffer);
     }
-
+#endif
     return SGL_OK;
 }
 
 unsigned int GLRenderTarget::ReadBuffer() const
 {
-    return readBuffer - GL_COLOR_ATTACHMENT0_EXT;
+    return readBuffer - GL_COLOR_ATTACHMENT0;
 }
 
 unsigned int GLRenderTarget::DrawBuffers(unsigned int* targets) const
@@ -355,8 +375,9 @@ SGL_HRESULT GLRenderTarget::Bind() const
     }
 #endif
 
+#ifndef SIMPLE_GL_ES
     // bind buffer
-    glBindFramebufferEXT(GL_FRAMEBUFFER, fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     if ( drawBuffers.empty() ) {
         glDrawBuffer(GL_NONE);
     }
@@ -364,8 +385,9 @@ SGL_HRESULT GLRenderTarget::Bind() const
         glDrawBuffers(drawBuffers.size(), &drawBuffers[0]);
     }
     glReadBuffer(readBuffer);
-    device->SetRenderTarget(this);
+#endif
 
+    device->SetRenderTarget(this);
     return SGL_OK;
 }
 
@@ -373,9 +395,11 @@ void GLRenderTarget::Unbind() const
 {
     if ( device->CurrentRenderTarget() == this )
     {
-        glBindFramebufferEXT(GL_FRAMEBUFFER, 0);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    #ifndef SIMPLE_GL_ES
         glDrawBuffer(GL_BACK);
         glReadBuffer(GL_BACK);
+    #endif
         device->SetRenderTarget(0);
     }
 }

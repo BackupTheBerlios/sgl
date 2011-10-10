@@ -11,8 +11,10 @@ namespace {
     GLenum SHADER_TYPE_BINDINGS[] =
     {
         GL_VERTEX_SHADER,
-        GL_FRAGMENT_SHADER,
-        GL_GEOMETRY_SHADER_EXT
+        GL_FRAGMENT_SHADER
+    #ifndef SIMPLE_GL_ES
+        , GL_GEOMETRY_SHADER
+    #endif
     };
 
 } // anonymous namespace
@@ -29,7 +31,7 @@ GLShader::GLShader( GLDevice*	device_,
 
     // set data
     GLsizei size = strlen(desc.source);
-    glShaderSource(shader, 1, (const GLchar**)&desc.source, &size);
+    glShaderSource(shader, 1, (const char**)&desc.source, &size);
 
     // compile
     GLint compileStatus;

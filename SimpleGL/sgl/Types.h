@@ -7,6 +7,7 @@ namespace sgl {
 /// Device type according to the library used for rendering
 enum DEVICE_VERSION
 {
+#ifndef __ANDROID__
     DV_OPENGL_1_3,
     DV_OPENGL_1_4,
     DV_OPENGL_1_5,
@@ -14,7 +15,12 @@ enum DEVICE_VERSION
     DV_OPENGL_2_1,
     DV_OPENGL_3_0,
     DV_OPENGL_3_1,
-    DV_OPENGL_3_2
+    DV_OPENGL_3_2,
+#else
+    DV_OPENGL_ES_1_0,
+    DV_OPENGL_ES_1_1,
+    DV_OPENGL_ES_2_0
+#endif
 };
 
 /** Type of the scalar value used for texture formats or

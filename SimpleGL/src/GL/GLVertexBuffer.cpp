@@ -7,9 +7,6 @@
 
 namespace sgl {
 
-using namespace std;
-using namespace math;
-
 template<typename BufferImpl>
 GLVertexBuffer<BufferImpl>::GLVertexBuffer(GLDevice* device) :
     BufferImpl(device, GL_ARRAY_BUFFER)
@@ -26,7 +23,7 @@ GLVertexBuffer<BufferImpl>::~GLVertexBuffer()
 template<typename BufferImpl>
 void GLVertexBuffer<BufferImpl>::Bind(const VertexLayout* layout) const
 {
-    glBindBufferARB(GL_ARRAY_BUFFER, BufferImpl::glBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, BufferImpl::glBuffer);
     BufferImpl::device->SetVertexBuffer(this);
 
     if (layout) {
@@ -39,12 +36,14 @@ void GLVertexBuffer<BufferImpl>::Unbind() const
 {
     if (BufferImpl::device->CurrentVertexBuffer() == this)
     {
-        glBindBufferARB(GL_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
         BufferImpl::device->SetVertexBuffer(0);
     }
 }
 
 template class GLVertexBuffer< GLBufferDefault<VertexBuffer> >;
+#ifndef SIMPLE_GL_ES
 template class GLVertexBuffer< GLBufferModern<VertexBuffer> >;
+#endif
 
 } // namespace sgl

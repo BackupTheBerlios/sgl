@@ -6,6 +6,11 @@
 #include <algorithm>
 #include <functional>
 
+#ifdef SIMPLE_GL_ES
+#   include <GLES/gl.h>
+#   include <GLES/glext.h>
+#endif
+
 using namespace sgl;
 
 namespace {
@@ -13,13 +18,20 @@ namespace {
     void set_modelview_matrix(const math::Matrix4f* matrices, unsigned int)
     {
         glMatrixMode(GL_MODELVIEW);
+    #ifdef SIMPLE_GL_ES
+        math::Matrix4f transposed = math::transpose(matrices[0]);
+        glLoadMatrixf( transposed.data() );
+    #else
         glLoadTransposeMatrixf( matrices[0].data() );
+    #endif
     }
 
+#ifndef SIMPLE_GL_ES
     void set_modelview_matrix_direct(const math::Matrix4f* matrices, unsigned int)
     {
         glMatrixLoadTransposefEXT( GL_MODELVIEW, matrices[0].data() );
     }
+#endif
 
     void get_modelview_matrix(math::Matrix4f* matrices, unsigned int)
     {
@@ -30,13 +42,20 @@ namespace {
     void set_projection_matrix(const math::Matrix4f* matrices, unsigned int)
     {
         glMatrixMode(GL_PROJECTION);
-        glLoadTransposeMatrixf( matrices[0].data() );
+        #ifdef SIMPLE_GL_ES
+            math::Matrix4f transposed = math::transpose(matrices[0]);
+            glLoadMatrixf( transposed.data() );
+        #else
+            glLoadTransposeMatrixf( matrices[0].data() );
+        #endif
     }
 
+#ifndef SIMPLE_GL_ES
     void set_projection_matrix_direct(const math::Matrix4f* matrices, unsigned int)
     {
         glMatrixLoadTransposefEXT( GL_PROJECTION, matrices[0].data() );
     }
+#endif
 
     void get_projection_matrix(math::Matrix4f* matrices, unsigned int)
     {
@@ -50,10 +69,16 @@ namespace {
         for (unsigned int i = 0; i<quantity; ++i)
         {
             glActiveTexture(GL_TEXTURE0 + i);
+        #ifdef SIMPLE_GL_ES
+            math::Matrix4f transposed = math::transpose(matrices[i]);
+            glLoadMatrixf( transposed.data() );
+        #else
             glLoadTransposeMatrixf( matrices[i].data() );
+        #endif
         }
     }
 
+#ifndef SIMPLE_GL_ES
     void set_texture_matrix_direct(const math::Matrix4f* matrices, unsigned int quantity)
     {
         for (unsigned int i = 0; i<quantity; ++i)
@@ -62,6 +87,7 @@ namespace {
             glMatrixLoadTransposefEXT( GL_TEXTURE0 + i, matrices[i].data() );
         }
     }
+#endif
 
     void get_texture_matrix(math::Matrix4f* matrices, unsigned int quantity)
     {
@@ -250,11 +276,14 @@ GLFFPProgram::GLFFPProgram(GLDevice* device_) :
     using namespace math;
 
     // create uniforms
+#ifndef SIMPLE_GL_ES
     bool   directStateAccess = (glewIsSupported("GL_EXT_direct_state_access") == GL_TRUE);
+#endif
     size_t offset            = 0;
 
     // modelview
     size_t uniformSize = sizeof(Matrix4f);
+#ifndef SIMPLE_GL_ES
     if (directStateAccess)
     {
         modelViewMatrixUniform.reset( new GLFFPUniform4x4F( this,
@@ -263,7 +292,9 @@ GLFFPProgram::GLFFPProgram(GLDevice* device_) :
                                                             get_modelview_matrix,
                                                             uniformSize ) );
     }
-    else {
+    else
+#endif
+    {
         modelViewMatrixUniform.reset( new GLFFPUniform4x4F( this,
                                                             "ModelViewMatrix",
                                                             set_modelview_matrix,
@@ -274,6 +305,7 @@ GLFFPProgram::GLFFPProgram(GLDevice* device_) :
 
     // projection
     uniformSize = sizeof(Matrix4f);
+#ifndef SIMPLE_GL_ES
     if (directStateAccess)
     {
         projectionMatrixUniform.reset( new GLFFPUniform4x4F( this,
@@ -282,7 +314,9 @@ GLFFPProgram::GLFFPProgram(GLDevice* device_) :
                                                              get_projection_matrix,
                                                              uniformSize ) );
     }
-    else {
+    else
+#endif
+    {
         projectionMatrixUniform.reset( new GLFFPUniform4x4F( this,
                                                              "ProjectionMatrix",
                                                              set_projection_matrix,
@@ -293,6 +327,7 @@ GLFFPProgram::GLFFPProgram(GLDevice* device_) :
 
     // texture
     uniformSize = sizeof(Matrix4f) * Device::NUM_TEXTURE_STAGES;
+#ifndef SIMPLE_GL_ES
     if (directStateAccess)
     {
         textureMatrixUniform.reset( new GLFFPUniform4x4F( this,
@@ -301,7 +336,9 @@ GLFFPProgram::GLFFPProgram(GLDevice* device_) :
                                                           get_texture_matrix,
                                                           uniformSize ) );
     }
-    else {
+    else
+#endif
+    {
         textureMatrixUniform.reset( new GLFFPUniform4x4F( this,
                                                           "TextureMatrix",
                                                           set_texture_matrix,

@@ -16,7 +16,7 @@ public:
     enum FILL_MODE
     {
         SOLID,
-        WIREFRAME
+        WIREFRAME       /// N/A in OpenGL ES
     };
 
     /** Culling mode */

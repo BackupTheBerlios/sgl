@@ -19,8 +19,10 @@ public:
         ADD,
         SUBTRACT,
         REVERSE_SUBTRACT,
-        MIN,
-        MAX
+    #ifndef SIMPLE_GL_ES
+        , MIN /// N/A in OpenGL ES
+        , MAX /// N/A in OpenGL ES
+    #endif
     };
 
     /** blending function */

@@ -60,6 +60,7 @@ GLTexture2D::GLTexture2D(GLDevice* device, const Texture2D::DESC& desc) :
 #endif // SGL_NO_STATUS_CHECK
 }
 
+#ifndef SIMPLE_GL_ES
 GLTexture2D::GLTexture2D(GLDevice* device, const Texture2D::DESC_MS& desc) :
     GLTexture<Texture2D>(device, GL_TEXTURE_2D_MULTISAMPLE),
     format(desc.format),
@@ -96,6 +97,7 @@ GLTexture2D::GLTexture2D(GLDevice* device, const Texture2D::DESC_MS& desc) :
     }
 #endif // SGL_NO_STATUS_CHECK
 }
+#endif // !defined(SIMPLE_GL_ES)
 
 GLTexture2D::~GLTexture2D()
 {
@@ -163,6 +165,13 @@ SGL_HRESULT GLTexture2D::SetSubImage( unsigned int  mipmap,
     return SGL_OK;
 }
 
+#ifdef SIMPLE_GL_ES
+SGL_HRESULT GLTexture2D::GetImage( unsigned int  /*mipmap*/,
+                                   void*         /*data*/ )
+{
+    return EUnsupported("GLTexture2D::GetImage failed. Unsupported in GLES.");
+}
+#else
 SGL_HRESULT GLTexture2D::GetImage( unsigned int  mipmap,
                                    void*         data )
 {
@@ -206,6 +215,7 @@ SGL_HRESULT GLTexture2D::GetImage( unsigned int  mipmap,
 
     return SGL_OK;
 }
+#endif
 
 SGL_HRESULT GLTexture2D::GenerateMipmap()
 {
@@ -218,6 +228,9 @@ SGL_HRESULT GLTexture2D::GenerateMipmap()
     }
 #endif // SGL_NO_STATUS_CHECK
 
+#ifdef SIMPLE_GL_ES
+    glGenerateMipmap(glTarget);
+#else
     if (glGenerateMipmapEXT) {
         glGenerateMipmapEXT(glTarget);
     }
@@ -247,6 +260,7 @@ SGL_HRESULT GLTexture2D::GenerateMipmap()
         }
     #endif // SGL_NO_STATUS_CHECK
     }
+#endif
 
 #ifndef SGL_NO_STATUS_CHECK
     glError = glGetError();

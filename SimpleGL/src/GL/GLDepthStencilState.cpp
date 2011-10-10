@@ -32,6 +32,8 @@ namespace {
 
 namespace sgl {
 
+#ifndef SIMPLE_GL_ES
+
 GLDepthStencilStateDisplayLists::GLDepthStencilStateDisplayLists(GLDevice* device_, const DESC& desc_) :
     device(device_),
     desc(desc_)
@@ -87,6 +89,8 @@ void GLDepthStencilStateDisplayLists::Bind() const
     glCallList(bindDisplayList);
     device->SetDepthStencilState(this);
 }
+
+#endif // SIMPLE_GL_ES
 
 GLDepthStencilStateSeparate::GLDepthStencilStateSeparate(GLDevice* device_, const DESC& desc_) :
     device(device_),

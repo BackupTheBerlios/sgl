@@ -86,13 +86,17 @@ using namespace math;
     }
 
     DEFINE_MATRIX_UNIFORM(MAT2x2F,  Matrix2x2f, float, glUniformMatrix2fv,      glGetUniformfv)
+#ifndef SIMPLE_GL_ES
     DEFINE_MATRIX_UNIFORM(MAT2x3F,  Matrix2x3f, float, glUniformMatrix2x3fv,    glGetUniformfv)
     DEFINE_MATRIX_UNIFORM(MAT2x4F,  Matrix2x4f, float, glUniformMatrix2x4fv,    glGetUniformfv)
     DEFINE_MATRIX_UNIFORM(MAT3x2F,  Matrix3x2f, float, glUniformMatrix3x2fv,    glGetUniformfv)
+#endif
     DEFINE_MATRIX_UNIFORM(MAT3x3F,  Matrix3x3f, float, glUniformMatrix3fv,      glGetUniformfv)
+#ifndef SIMPLE_GL_ES
     DEFINE_MATRIX_UNIFORM(MAT3x4F,  Matrix3x4f, float, glUniformMatrix3x4fv,    glGetUniformfv)
     DEFINE_MATRIX_UNIFORM(MAT4x2F,  Matrix4x2f, float, glUniformMatrix4x2fv,    glGetUniformfv)
     DEFINE_MATRIX_UNIFORM(MAT4x3F,  Matrix4x3f, float, glUniformMatrix4x3fv,    glGetUniformfv)
+#endif
     DEFINE_MATRIX_UNIFORM(MAT4x4F,  Matrix4x4f, float, glUniformMatrix4fv,      glGetUniformfv)
 
 #undef DEFINE_MATRIX_UNIFORM

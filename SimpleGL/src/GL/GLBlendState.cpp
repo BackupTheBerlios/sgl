@@ -8,9 +8,11 @@ namespace {
     {
         GL_FUNC_ADD,
         GL_FUNC_SUBTRACT,
-        GL_FUNC_REVERSE_SUBTRACT,
-        GL_MIN,
-        GL_MAX
+        GL_FUNC_REVERSE_SUBTRACT
+    #ifndef SIMPLE_GL_ES
+        , GL_MIN
+        , GL_MAX
+    #endif
     };
 
     GLenum BIND_BLEND_FUNCTION[] =
@@ -36,8 +38,10 @@ namespace {
 
 namespace sgl {
 
-GLBlendStateDisplayLists::GLBlendStateDisplayLists(GLDevice*              device_, 
-												  const BlendState::DESC& desc_) :
+#ifndef __ANDROID__
+
+GLBlendStateDisplayLists::GLBlendStateDisplayLists(GLDevice*               device_,
+                                                   const BlendState::DESC& desc_) :
     device(device_),
     desc(desc_)
 {
@@ -83,6 +87,8 @@ void GLBlendStateDisplayLists::Bind() const
     glCallList(bindDisplayList);
     device->SetBlendState(this);
 }
+
+#endif // !defined(__ANDROID__)
 
 GLBlendStateSeparate::GLBlendStateSeparate(GLDevice*               device_, 
 										   const BlendState::DESC& desc_) :
@@ -143,29 +149,6 @@ void GLBlendStateDefault::Bind() const
     }
 
     device->SetBlendState(this);
-}
-
-template<DEVICE_VERSION DeviceVersion>
-sgl::BlendState* sglCreateBlendState(GLDevice* device, const BlendState::DESC& desc)
-{
-    if ( desc.destBlend != desc.destBlendAlpha 
-         || desc.srcBlend != desc.srcBlendAlpha
-         || desc.blendOp != desc.blendOpAlpha )
-    {
-        if (!GL_ARB_draw_buffers_blend) {
-            throw gl_error("Separate blending is not supported", SGLERR_UNSUPPORTED);
-        }
-
-        if ( device_traits<DeviceVersion>::support_display_lists() ) {
-            return new GLBlendStateDisplayLists(device, desc);
-        }
-        else {
-            return new GLBlendStateSeparate(device, desc);
-        }
-    }
-    else {
-        return new GLBlendStateDefault(device, desc);
-    }
 }
 
 } // namespace sgl

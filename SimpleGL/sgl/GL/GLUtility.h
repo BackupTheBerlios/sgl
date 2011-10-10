@@ -49,6 +49,7 @@ public:
         case GL_FLOAT_MAT4:
             return sizeof(math::Matrix4f);
 
+    #ifndef SIMPLE_GL_ES
         case GL_FLOAT_MAT2x3:
         case GL_FLOAT_MAT3x2:
             return 6 * sizeof(float);
@@ -60,6 +61,7 @@ public:
         case GL_FLOAT_MAT3x4:
         case GL_FLOAT_MAT4x3:
             return 12 * sizeof(float);
+    #endif
         }
 
         return 0;
@@ -73,38 +75,42 @@ public:
     {
         switch(type)
         {
-        case GL_BITMAP:
-            return BIT;
+        #ifndef SIMPLE_GL_ES
+            case GL_BITMAP:
+                return BIT;
+        #endif
 
-        case GL_BOOL:
-            return BOOL;
+            case GL_BOOL:
+                return BOOL;
 
-        case GL_BYTE:
-            return BYTE;
+            case GL_BYTE:
+                return BYTE;
 
-        case GL_UNSIGNED_BYTE:
-            return UBYTE;
+            case GL_UNSIGNED_BYTE:
+                return UBYTE;
 
-        case GL_SHORT:
-            return SHORT;
+            case GL_SHORT:
+                return SHORT;
 
-        case GL_UNSIGNED_SHORT:
-            return USHORT;
+            case GL_UNSIGNED_SHORT:
+                return USHORT;
 
-        case GL_INT:
-            return INT;
+            case GL_INT:
+                return INT;
 
-        case GL_UNSIGNED_INT:
-            return UINT;
+            case GL_UNSIGNED_INT:
+                return UINT;
 
-        case GL_FLOAT:
-            return FLOAT;
+            case GL_FLOAT:
+                return FLOAT;
 
-        case GL_DOUBLE:
-            return DOUBLE;
+        #ifndef SIMPLE_GL_ES
+            case GL_DOUBLE:
+                return DOUBLE;
+        #endif
 
-        default:
-            return __NUMBER_OF_SCALAR_TYPES__;
+            default:
+                return __NUMBER_OF_SCALAR_TYPES__;
         }
 
         return __NUMBER_OF_SCALAR_TYPES__;

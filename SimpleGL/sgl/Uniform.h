@@ -28,13 +28,17 @@ public:
         VEC3F,
         VEC4F,
         MAT2x2F,
+    #ifndef SIMPLE_GL_ES
         MAT2x3F,
         MAT2x4F,
         MAT3x2F,
+    #endif
         MAT3x3F,
+    #ifndef SIMPLE_GL_ES
         MAT3x4F,
         MAT4x2F,
         MAT4x3F,
+    #endif
         MAT4x4F,
         SAMPLER_1D,
         SAMPLER_2D,

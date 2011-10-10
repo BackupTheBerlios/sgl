@@ -34,10 +34,13 @@ namespace sgl {
 template <DEVICE_VERSION>
 struct device_traits;
 
+#ifndef SIMPLE_GL_ES
+
 template<>
 struct device_traits<DV_OPENGL_1_3>
 {
 	static const bool support_fixed_pipeline		= true;
+    static const bool support_separate_blending		= false;
 	static const bool support_programmable_pipeline	= false;
 	static const bool support_generic_attributes	= false;
 	static const bool support_fixed_attributes		= true;
@@ -50,6 +53,7 @@ template<>
 struct device_traits<DV_OPENGL_1_4>
 {
     static const bool support_fixed_pipeline		= true;
+    static const bool support_separate_blending		= true;
     static const bool support_programmable_pipeline	= false;
     static const bool support_generic_attributes	= false;
     static const bool support_fixed_attributes		= true;
@@ -62,6 +66,7 @@ template<>
 struct device_traits<DV_OPENGL_1_5>
 {
 	static const bool support_fixed_pipeline		= true;
+    static const bool support_separate_blending		= true;
 	static const bool support_programmable_pipeline	= false;
 	static const bool support_generic_attributes	= false;
 	static const bool support_fixed_attributes		= true;
@@ -74,6 +79,7 @@ template<>
 struct device_traits<DV_OPENGL_2_0>
 {
 	static const bool support_fixed_pipeline		= true;
+    static const bool support_separate_blending		= true;
 	static const bool support_programmable_pipeline	= true;
 	static const bool support_generic_attributes	= true;
 	static const bool support_fixed_attributes		= true;
@@ -86,6 +92,7 @@ template<>
 struct device_traits<DV_OPENGL_2_1>
 {
 	static const bool support_fixed_pipeline		= true;
+    static const bool support_separate_blending		= true;
 	static const bool support_programmable_pipeline	= true;
 	static const bool support_generic_attributes	= true;
 	static const bool support_fixed_attributes		= true;
@@ -98,6 +105,7 @@ template<>
 struct device_traits<DV_OPENGL_3_0>
 {
 	static const bool support_fixed_pipeline		= true;
+    static const bool support_separate_blending		= true;
 	static const bool support_programmable_pipeline	= true;
 	static const bool support_generic_attributes	= true;
 	static const bool support_fixed_attributes		= true;
@@ -110,6 +118,7 @@ template<>
 struct device_traits<DV_OPENGL_3_1>
 {
 	static const bool support_fixed_pipeline		= false;
+    static const bool support_separate_blending		= true;
 	static const bool support_programmable_pipeline	= true;
 	static const bool support_generic_attributes	= true;
 	static const bool support_fixed_attributes		= false;
@@ -122,6 +131,7 @@ template<>
 struct device_traits<DV_OPENGL_3_2>
 {
 	static const bool support_fixed_pipeline		= false;
+    static const bool support_separate_blending		= true;
 	static const bool support_programmable_pipeline	= true;
 	static const bool support_generic_attributes	= true;
 	static const bool support_fixed_attributes		= false;
@@ -129,6 +139,49 @@ struct device_traits<DV_OPENGL_3_2>
     static const bool support_render_target			= true;
     static const bool support_buffer_copies			= true;
 };
+
+#else // SIMPLE_GL_ES
+
+template<>
+struct device_traits<DV_OPENGL_ES_1_0>
+{
+    static const bool support_fixed_pipeline		= true;
+    static const bool support_separate_blending		= false;
+    static const bool support_programmable_pipeline	= true;
+    static const bool support_generic_attributes	= true;
+    static const bool support_fixed_attributes		= true;
+    static const bool support_display_lists			= false;
+    static const bool support_render_target			= true;
+    static const bool support_buffer_copies			= false;
+};
+
+template<>
+struct device_traits<DV_OPENGL_ES_1_1>
+{
+    static const bool support_fixed_pipeline		= true;
+    static const bool support_separate_blending		= true;
+    static const bool support_programmable_pipeline	= false;
+    static const bool support_generic_attributes	= false;
+    static const bool support_fixed_attributes		= true;
+    static const bool support_display_lists			= false;
+    static const bool support_render_target			= true;
+    static const bool support_buffer_copies			= false;
+};
+
+template<>
+struct device_traits<DV_OPENGL_ES_2_0>
+{
+    static const bool support_fixed_pipeline		= false;
+    static const bool support_separate_blending		= true;
+    static const bool support_programmable_pipeline	= true;
+    static const bool support_generic_attributes	= true;
+    static const bool support_fixed_attributes		= false;
+    static const bool support_display_lists			= false;
+    static const bool support_render_target			= true;
+    static const bool support_buffer_copies			= false;
+};
+
+#endif // SIMPLE_GL_ES
 
 /** Device class wraps graphics functions */
 class Device :
@@ -163,8 +216,6 @@ public:
     };
 
 public:
-
-
     /** Take screenshot of the device
      * @param image - image to store screenshot. Image is stored using back buffer format.
      */
@@ -213,23 +264,6 @@ public:
                                               unsigned       firstVertex, 
                                               unsigned       numVertices ) const = 0;
 
-    /** Draw vertices indexed. Doesn't perform any checks. Semantic is the following:
-     * \code
-     * for(int i=0; i<primcount ; i++) {
-     *     instanceID = i;
-     *     Draw(primType, firstVertex, numVertices);
-     * }
-     * \uncode
-     * @param primType - type of the primitives.
-     * @param firstVertex - offset in the vertex buffer to fetch vertices.
-     * @param numVertices - number of vertices to draw.
-     * @param numInstances - number of instances to draw.
-     */
-    virtual void            SGL_DLLCALL DrawInstanced( PRIMITIVE_TYPE primType, 
-                                                       unsigned       firstVertex, 
-                                                       unsigned       numVertices,
-                                                       unsigned       numInstances ) const = 0;
-
     /** Draw vertices indexed. Doesn't perform any checks.
      * @param primType - type of the primitives.
      * @param firstIndex - first index for primitive construction.
@@ -241,7 +275,24 @@ public:
                                                      unsigned       numIndices ) const = 0;
 
 
-    /** Draw range of elements. Doesn't perform any checks. Semantic is the following:
+#ifndef SIMPLE_GL_ES
+    /** (N/A in GLES). Draw vertices indexed. Doesn't perform any checks. Semantic is the following:
+     * \code
+     * for(int i=0; i<primcount ; i++) {
+     *     instanceID = i;
+     *     Draw(primType, firstVertex, numVertices);
+     * }
+     * \uncode
+     * @param primType - type of the primitives.
+     * @param firstVertex - offset in the vertex buffer to fetch vertices.
+     * @param numVertices - number of vertices to draw.
+     * @param numInstances - number of instances to draw.
+     */
+    virtual void            SGL_DLLCALL DrawInstanced( PRIMITIVE_TYPE primType,
+                                                       unsigned       firstVertex,
+                                                       unsigned       numVertices,
+                                                       unsigned       numInstances ) const = 0;
+    /** (N/A in GLES). Draw range of elements. Doesn't perform any checks. Semantic is the following:
      * \code
      * for(int i=0; i<primcount ; i++) {
      *     instanceID = i;
@@ -256,12 +307,15 @@ public:
                                                               unsigned       firstIndex,
                                                               unsigned       numIndices,
                                                               unsigned       numInstances ) const = 0;
+#endif // !defined(SIMPLE_GL_ES)
 
     /** Clear framebuffer | depth buffer | stencil buffer. */
     virtual void            SGL_DLLCALL Clear(bool colorBuffer = true, bool depthBuffer = true, bool stencilBuffer = true) const = 0;
 
-    /** Swap back & front buffers. */
+#ifndef __ANDROID__
+    /** Swap back & front buffers. N/A on Anroid, override GLSurfaceView.Renderer.onDrawFrame(...) in jave code. */
     virtual void            SGL_DLLCALL SwapBuffers() const = 0;
+#endif
 
     // ============================ TEXTURES ============================ //
 
@@ -277,13 +331,13 @@ public:
     /** Create 2d texture */
     virtual Texture2D*          SGL_DLLCALL CreateTexture2D(const Texture2D::DESC& desc) = 0;
 
-    /** Create 2d multisampled texture */
+    /** Create 2d multisampled texture. N/A in GLES. */
     virtual Texture2D*          SGL_DLLCALL CreateTexture2DMS(const Texture2D::DESC_MS& desc) = 0;
 
-    /** Create 3d texture */
+    /** Create 3d texture. N/A in GLES. */
     virtual Texture3D*          SGL_DLLCALL CreateTexture3D(const Texture3D::DESC& desc) = 0;
 
-    /** Create 3d multisampled texture */
+    /** Create 3d multisampled texture. N/A in GLES. */
     virtual Texture3D*          SGL_DLLCALL CreateTexture3DMS(const Texture3D::DESC_MS& desc) = 0;
 
     /** Create cube map texture */
@@ -360,10 +414,14 @@ public:
     /** Create render target. */
     virtual RenderTarget*   SGL_DLLCALL CreateRenderTarget() = 0;
 
-    /** Create shader. */
+    /** Create shader.
+     * @return pointer to shader object or 0 if not supported.
+     */
     virtual Shader*         SGL_DLLCALL CreateShader(const Shader::DESC& desc) = 0;
 
-    /** Create shader program */
+    /** Create shader program.
+     * @return pointer to shader program or 0 if not supported.
+     */
     virtual Program*        SGL_DLLCALL CreateProgram() = 0;
 
     /** Get program that uses(or emulates) fixed function pipeline */
@@ -401,18 +459,19 @@ public:
 
 } // namespace sgl
 
-/** Create device for rendering.
+#ifndef __ANDROID__
+/** Create device for rendering. N/A on Android, initialize GL from java code, then use sglCreateDeviceFromCurrent.
  * @param devType - device type(OPENGL_DEVICE).
  * @param desc - description of the device video mode.
  * @return fresh and hot device.
  */
 extern "C" SGL_DLLEXPORT sgl::Device* SGL_DLLCALL sglCreateDevice(sgl::DEVICE_VERSION devType, const sgl::Device::VIDEO_DESC& desc);
+#endif
 
 /** Create device for rendering and grab context from current window.
  * @param devType - device type(OPENGL_DEVICE).
- * @param force - force using specified version even if glew reports it is not supported.
  * @return fresh and hot device.
  */
-extern "C" SGL_DLLEXPORT sgl::Device* SGL_DLLCALL sglCreateDeviceFromCurrent(sgl::DEVICE_VERSION devType, bool force = false);
+extern "C" SGL_DLLEXPORT sgl::Device* SGL_DLLCALL sglCreateDeviceFromCurrent(sgl::DEVICE_VERSION devType);
 
 #endif // SIMPLE_GL_DEVICE_H

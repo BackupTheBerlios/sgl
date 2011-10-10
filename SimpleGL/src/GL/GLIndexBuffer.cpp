@@ -17,7 +17,7 @@ GLIndexBuffer<BufferImpl>::~GLIndexBuffer()
 template<typename BufferImpl>
 void GLIndexBuffer<BufferImpl>::Bind(IndexBuffer::INDEX_TYPE format) const
 {   
-    glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, BufferImpl::glBuffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BufferImpl::glBuffer);
     BufferImpl::device->SetIndexBuffer(this, format);
 }
 
@@ -26,12 +26,14 @@ void GLIndexBuffer<BufferImpl>::Unbind() const
 {
     if (BufferImpl::device->CurrentIndexBuffer() == this)
     {
-        glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         BufferImpl::device->SetIndexBuffer(0, IndexBuffer::UINT_8);
     }
 }
 
 template class GLIndexBuffer< GLBufferDefault<IndexBuffer> >;
+#ifndef SIMPLE_GL_ES
 template class GLIndexBuffer< GLBufferModern<IndexBuffer> >;
+#endif
 
 } // namespace sgl
