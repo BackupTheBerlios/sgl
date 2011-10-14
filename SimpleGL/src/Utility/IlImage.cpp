@@ -120,10 +120,34 @@ const char* SGL_DLLCALL IlImage::Data(unsigned int mipmap) const
     return mipmap >= mipData.size() ? 0 : mipData[mipmap];
 }
 
-SGL_HRESULT SGL_DLLCALL IlImage::LoadFromFile(const char* fileName, 
-                                              FILE_TYPE   type)
+SGL_HRESULT SGL_DLLCALL IlImage::LoadFromFile(const char*       fileName,
+                                              FILE_TYPE         type
+                                              #ifdef SIMPLE_GL_ANDROID
+                                              ,  AAssetManager* assetMgr = 0
+                                              #endif
+                                              )
 {
     Clear();
+
+#ifdef SIMPLE_GL_ANDROID
+    if (assetMgr)
+    {
+        AAsset* asset = AAssetManager_open(mgr, fileName, AASSET_MODE_STREAMING);
+        if (!asset) {
+            return EFileNotFound( (std::string("IlImage::LoadFromFile failed. Can't find image file: ") + fileName).c_str() );
+        }
+
+        off_t length = AAsset_getLength(asset);
+        std::string data(length);
+        size_t read = AAsset_read(asset, &data[0], length);
+        if (read != length) {
+            return EIOError( (std::string("IlImage::LoadFromFile failed. Error reading file: ") + fileName).c_str() );
+        }
+        AAsset_close(asset);
+
+        return LoadFromFileInMemory(length, &data[0], type);
+    }
+#endif
 
     // create image
     ILuint image;
@@ -190,9 +214,9 @@ SGL_HRESULT SGL_DLLCALL IlImage::LoadFromFile(const char* fileName,
 	return SGL_OK;
 }
 
-SGL_HRESULT SGL_DLLCALL IlImage::LoadFromFileInMemory(FILE_TYPE    type,
-                                                      unsigned int dataSize,
-                                                      const void*  data)
+SGL_HRESULT SGL_DLLCALL IlImage::LoadFromFileInMemory(unsigned int dataSize,
+                                                      const void*  data,
+                                                      FILE_TYPE    type)
 {
     Clear();
 
@@ -254,7 +278,7 @@ SGL_HRESULT SGL_DLLCALL IlImage::LoadFromFileInMemory(FILE_TYPE    type,
 	return SGL_OK;
 }
 
-SGL_HRESULT IlImage::SaveToFile(const char* fileName, 
+SGL_HRESULT IlImage::SaveToFile(const char* fileName,
                                 FILE_TYPE   type) const
 {
 #ifndef SGL_NO_STATUS_CHECK
@@ -308,9 +332,9 @@ SGL_HRESULT IlImage::SaveToFile(const char* fileName,
     return SGL_OK;
 }
 
-SGL_HRESULT IlImage::SaveToFileInMemory(FILE_TYPE    type,
-                                        unsigned int dataSize,
-                                        void*        data) const
+SGL_HRESULT IlImage::SaveToFileInMemory(unsigned int dataSize,
+                                        void*        data,
+                                        FILE_TYPE    type) const
 {
 #ifndef SGL_NO_STATUS_CHECK
     if ( mipData.empty() ) {

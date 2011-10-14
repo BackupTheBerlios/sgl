@@ -14,8 +14,9 @@ enum SGL_HRESULT
 	SGLERR_INVALID_CALL,	/// function call with invalid arguments
 	SGLERR_OUT_OF_MEMORY,	/// couldn't allocate memory
 	SGLERR_FILE_NOT_FOUND,	/// couldn't find specified file
+    SGLERR_IO,              /// error in input/output operation
 	SGLERR_UNSUPPORTED,		/// operation not supported by the hardware
-    SGLERR_UANAILABLE,      /// resource is unavailable at the moment
+    SGLERR_UNAVAILABLE,     /// resource is unavailable at the moment
 	SGLERR_UNKNOWN			/// unknow error
 };
 
@@ -102,6 +103,20 @@ inline SGL_HRESULT EFileNotFound(const char* msg)
 {
 	sglSetError(SGLERR_FILE_NOT_FOUND, msg);
 	return SGLERR_FILE_NOT_FOUND;
+}
+
+/** Error occured during IO operation */
+inline SGL_HRESULT EIOError()
+{
+    sglSetError(SGLERR_IO, "IO error");
+    return SGLERR_IO;
+}
+
+/** Error occured during IO operation */
+inline SGL_HRESULT EIOError(const char* msg)
+{
+    sglSetError(SGLERR_IO, msg);
+    return SGLERR_IO;
 }
 
 /** Error occurs when we are trying to perform operation unsupported by the hardware */

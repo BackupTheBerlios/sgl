@@ -4,7 +4,7 @@
 #include "../../Device.h"
 #include <cstdio>
 #include <string>
-#ifdef __ANDROID__
+#ifdef SIMPLE_GL_ANDROID
 #   include <android/asset_manager.h>
 #endif
 
@@ -13,16 +13,16 @@ namespace sgl {
 inline Shader* CreateShaderFromFile( Device*            device,
                                      Shader::TYPE       type,
                                      const char*        fileName
-                                     #ifdef __ANDROID__
+                                     #ifdef SIMPLE_GL_ANDROID
                                      ,  AAssetManager*  mgr = 0
                                      #endif
                                      )
 {
     std::string source;
-#ifdef __ANDROID__
+#ifdef SIMPLE_GL_ANDROID
     if (mgr)
     {
-        AAsset* asset  = AAssetManager_open(mgr, fileName, AASSET_MODE_STREAMING);
+        AAsset* asset = AAssetManager_open(mgr, fileName, AASSET_MODE_STREAMING);
         if (!asset)
         {
             sglSetError(SGLERR_FILE_NOT_FOUND, (std::string("CreateShaderFromFile failed. Can't open shader asset: ") + fileName).c_str() );
@@ -33,6 +33,8 @@ inline Shader* CreateShaderFromFile( Device*            device,
         source.resize(length);
         size_t read = AAsset_read(asset, &source[0], length);
         assert(read == length);
+
+        AAsset_close(asset);
     }
     else
     {
@@ -55,7 +57,7 @@ inline Shader* CreateShaderFromFile( Device*            device,
             source.resize(numRead);
             fclose(file);
         }
-#ifdef __ANDROID__
+#ifdef SIMPLE_GL_ANDROID
     }
 #endif
 
