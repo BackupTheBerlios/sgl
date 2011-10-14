@@ -16,7 +16,9 @@ GLVertexBuffer<BufferImpl>::GLVertexBuffer(GLDevice* device) :
 template<typename BufferImpl>
 GLVertexBuffer<BufferImpl>::~GLVertexBuffer()
 {
-    Unbind();
+    if (BufferImpl::device->Valid()) {
+    	Unbind();
+    }
 }
 
 // other

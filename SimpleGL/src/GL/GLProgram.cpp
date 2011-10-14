@@ -43,8 +43,12 @@ GLProgram::GLProgram(GLDevice* device_) :
 
 GLProgram::~GLProgram()
 {
-    Unbind();
-    glDeleteProgram(glProgram);
+	if ( device->Valid() )
+	{
+		Unbind();
+		glDeleteProgram(glProgram);
+	}
+
     if (uniforms) {
         delete[] uniforms;
     }

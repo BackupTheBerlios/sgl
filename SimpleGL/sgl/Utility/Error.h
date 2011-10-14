@@ -20,14 +20,14 @@ enum SGL_HRESULT
 };
 
 /** Handler to handle simple gl errors. For example log it into the file */
-class ErrorHandler
+class SGL_DLLEXPORT ErrorHandler
 {
 public:
 	/** Handle sgl error
 	 * @param result - type of the error
 	 * @param msg - error message
 	 */
-	virtual void HandleError(SGL_HRESULT result, const char* msg) = 0;
+    virtual void HandleError(SGL_HRESULT result, const char* msg) = 0;
 
 	virtual ~ErrorHandler() {}
 };
@@ -51,42 +51,15 @@ extern "C" SGL_DLLEXPORT void SGL_DLLCALL sglSetError(sgl::SGL_HRESULT _type, co
 
 namespace sgl {
 
-/** Error handler that logs errors to the cerr */
-class PrintErrorHandler :
+/** Error handler that logs errors to the platform specific log (cerr, android log, ...). */
+class SGL_DLLEXPORT PrintErrorHandler :
 	public ErrorHandler
 {
 public:
-	/** Print sgl error to the cerr
-	 * @param type of the error
-	 * @param error message
-	 */
-	void HandleError(SGL_HRESULT type, const char* msg)
-	{
-		switch(type)
-		{
-		case SGLERR_INVALID_CALL:
-			std::cerr << "Invalid call: " << msg << std::endl;
-			break;
+    // Override ErrorHandler
+    void HandleError(SGL_HRESULT type, const char* msg);
 
-		case SGLERR_OUT_OF_MEMORY:
-			std::cerr << "Out of memory: " << msg << std::endl;
-			break;
-
-		case SGLERR_FILE_NOT_FOUND:
-			std::cerr << "File not found: " << msg << std::endl;
-			break;
-
-		case SGLERR_UNSUPPORTED:
-			std::cerr << "Unsupported function: " << msg << std::endl;
-			break;
-
-		default:
-			std::cerr << "Unknown error: " << msg << std::endl;
-			break;
-		}
-	}
-
-	virtual ~PrintErrorHandler() { sglSetErrorHandler(0); }
+    virtual ~PrintErrorHandler() {}
 };
 
 /** Error occurs when calling function with invalid arguments */

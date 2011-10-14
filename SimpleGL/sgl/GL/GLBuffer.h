@@ -61,7 +61,9 @@ protected:
 
     ~GLBuffer()
     {
-        glDeleteBuffers(1, &glBuffer);
+    	if ( device->Valid() ) {
+    		glDeleteBuffers(1, &glBuffer);
+    	}
     }
 
 public:

@@ -54,7 +54,9 @@ GLVertexLayoutMixed::GLVertexLayoutMixed( GLDevice*    device_,
 
 GLVertexLayoutMixed::~GLVertexLayoutMixed()
 {
-    Unbind();
+    if (device->Valid()) {
+    	Unbind();
+    }
 }
 
 void GLVertexLayoutMixed::Bind() const

@@ -39,13 +39,16 @@ GLRenderTarget::GLRenderTarget(GLDevice* device_) :
 
 GLRenderTarget::~GLRenderTarget()
 {
-    Unbind();
-    if (fbo) {
-        glDeleteFramebuffers(1, &fbo);
-    }
-    if (dsRenderBuffer) {
-        glDeleteRenderbuffers(1, &dsRenderBuffer);
-    }
+	if ( device->Valid() )
+	{
+		Unbind();
+		if (fbo) {
+			glDeleteFramebuffers(1, &fbo);
+		}
+		if (dsRenderBuffer) {
+			glDeleteRenderbuffers(1, &dsRenderBuffer);
+		}
+	}
 }
 
 SGL_HRESULT GLRenderTarget::SetDepthStencil( bool             toggle,

@@ -244,7 +244,9 @@ SGL_HRESULT GLTextureCube::GenerateMipmap()
 
 GLTextureCube::~GLTextureCube()
 {
-    Unbind();
+    if (device->Valid()) {
+    	Unbind();
+    }
 }
 
 SGL_HRESULT GLTextureCube::BindSamplerState(SamplerState* _samplerState)

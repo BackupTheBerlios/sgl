@@ -13,7 +13,7 @@ GLTexture1D::GLTexture1D(Device* _pDevice) :
 
 GLTexture1D::~GLTexture1D()
 {
-    if (glTarget == GL_TEXTURE_1D && glTexture) {
+    if (device->Valid() && glTarget == GL_TEXTURE_1D && glTexture) {
         glDeleteTextures(1, &glTexture);
     }
 }

@@ -80,7 +80,9 @@ GLDepthStencilStateDisplayLists::GLDepthStencilStateDisplayLists(GLDevice* devic
 GLDepthStencilStateDisplayLists::~GLDepthStencilStateDisplayLists()
 {
     assert(device->CurrentDepthStencilState() != this);
-    glDeleteLists(bindDisplayList, 1);
+    if (device->Valid()) {
+        glDeleteLists(bindDisplayList, 1);
+    }
 }
 
 // Override State

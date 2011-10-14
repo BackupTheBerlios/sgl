@@ -18,7 +18,7 @@ public:
     {
         ADD,
         SUBTRACT,
-        REVERSE_SUBTRACT,
+        REVERSE_SUBTRACT
     #ifndef SIMPLE_GL_ES
         , MIN /// N/A in OpenGL ES
         , MAX /// N/A in OpenGL ES

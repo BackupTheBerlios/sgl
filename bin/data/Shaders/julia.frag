@@ -1,16 +1,25 @@
-uniform float a;
-uniform float b;
-uniform float density;
+precision mediump float;
+
+uniform float 	  a;
+uniform float     b;
+uniform float 	  density;
+uniform lowp vec4 color;
+
+varying vec2 fp_texcoord;
 
 vec4 julia(void)
 {
-    float x = gl_TexCoord[0].x;
-    float y = gl_TexCoord[0].y;
+    float x = fp_texcoord.x;
+    float y = fp_texcoord.y;
     float x2;
     float y2;
     float xy;
     float r = 1.0;
-    float k = density;
+#ifdef GL_ES
+    float k = 16.0;
+#else
+	float k = density;
+#endif
 
     while( (k > 0.0) && (r < 4.0) )
     {
@@ -23,11 +32,15 @@ vec4 julia(void)
         k--;
     }
     
+#ifdef GL_ES
+    float j = k / 16.0;
+#else
     float j = k / density;
+#endif
     return 1.0 - vec4(j, j*j, j*j*j, 0.0);
 }
 
 void main(void)
 {
-    gl_FragColor = julia() * gl_TexCoord[1];
+    gl_FragColor = julia() * color;
 }

@@ -107,7 +107,7 @@ public:
 protected:
     ~GLTexture()
     {
-        if (generateTexture) {
+        if (device->Valid() && generateTexture) {
             glDeleteTextures(1, &glTexture);
         }
     }

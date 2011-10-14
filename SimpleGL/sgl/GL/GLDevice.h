@@ -82,6 +82,10 @@ public:
 
     SGL_HRESULT         SGL_DLLCALL Sync() const;
 
+    void				SGL_DLLCALL Invalidate() { valid = false; }
+
+    bool				SGL_DLLCALL Valid() const { return valid; }
+
     // ============================ STATES ============================ //
 
 	void                SGL_DLLCALL PushState(State::TYPE type);
@@ -151,6 +155,7 @@ protected:
 
     // settings
     bool    makeCleanup;
+    bool	valid;
 };
 
 template<DEVICE_VERSION DeviceVersion>

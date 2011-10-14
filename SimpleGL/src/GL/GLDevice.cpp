@@ -199,7 +199,8 @@ void GLDevice::CreateWindow( unsigned     width,
 */
 
 GLDevice::GLDevice() :
-    makeCleanup(false)
+    makeCleanup(false),
+    valid(true)
 {
 #ifdef SIMPLE_GL_USE_DEVIL
     // init image library
@@ -255,6 +256,7 @@ GLDevice::GLDevice() :
 #ifndef __ANDROID__
 
 GLDevice::GLDevice(const Device::VIDEO_DESC& desc)
+:	valid(true)
 {
 #ifdef SIMPLE_GL_USE_DEVIL
     // init image library
@@ -691,7 +693,11 @@ void GLDevice::SetClearColor(const math::Vector4f& color)
 
 void GLDevice::SetClearDepthStencil(double depthClear, int stencilClear)
 {
+#ifdef SIMPLE_GL_ES
     glClearDepthf(depthClear);
+#else
+    glClearDepth(depthClear);
+#endif
     glClearStencil(stencilClear);
 }
 

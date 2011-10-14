@@ -101,7 +101,9 @@ GLTexture2D::GLTexture2D(GLDevice* device, const Texture2D::DESC_MS& desc) :
 
 GLTexture2D::~GLTexture2D()
 {
-    Unbind();
+    if (device->Valid()) {
+    	Unbind();
+    }
 }
 
 SGL_HRESULT GLTexture2D::SetSubImage( unsigned int  mipmap,

@@ -435,6 +435,12 @@ public:
      */
     virtual SGL_HRESULT     SGL_DLLCALL Sync() const = 0;
 
+    /** Invalidate device objects, so they won't be deleted (in the case of lost device). */
+    virtual void			SGL_DLLCALL Invalidate() = 0;
+
+    /** Check whether device is valid. If not it is useless (lost). */
+    virtual bool			SGL_DLLCALL Valid() const = 0;
+
     // ============================ RETRIEVE ============================ //
 
     /** Copy content of color attachment or depth stencil attachment ot the texture.

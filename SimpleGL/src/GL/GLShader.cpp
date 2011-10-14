@@ -56,7 +56,9 @@ GLShader::GLShader( GLDevice*	device_,
 
 GLShader::~GLShader()
 {
-    glDeleteShader(shader);
+	if ( device->Valid() ) {
+		glDeleteShader(shader);
+	}
 }
 
 } // namespace sgl

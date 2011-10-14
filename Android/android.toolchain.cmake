@@ -107,6 +107,7 @@ IF (WIN32)
 	SET (ANDROID_NDK 				"${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/windows/android-ndk-r6b")
 	SET (ANDROID_NDK_TOOLCHAIN_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/windows/android-ndk-r6b/toolchains/arm-linux-androideabi-4.4.3")
 	SET (BUILD_WITH_ANDROID_NDK		ON)
+	SET (ANDROID_API_LEVEL			9)
 ENDIF (WIN32)
 
 SET (CMAKE_SYSTEM_NAME 		Linux)
@@ -170,7 +171,9 @@ if( EXISTS "${ANDROID_NDK}" )
   message( FATAL_ERROR "Your platform is not supported" )
  endif()
 
- set( ANDROID_API_LEVEL $ENV{ANDROID_API_LEVEL} )
+ IF (NOT ANDROID_API_LEVEL)
+	set( ANDROID_API_LEVEL $ENV{ANDROID_API_LEVEL} )
+ ENDIF (NOT ANDROID_API_LEVEL)
  string( REGEX REPLACE "[\t ]*android-([0-9]+)[\t ]*" "\\1" ANDROID_API_LEVEL "${ANDROID_API_LEVEL}" )
  string( REGEX REPLACE "[\t ]*([0-9]+)[\t ]*" "\\1" ANDROID_API_LEVEL "${ANDROID_API_LEVEL}" )
 
@@ -186,7 +189,7 @@ if( EXISTS "${ANDROID_NDK}" )
 
  set( ANDROID_NDK_TOOLCHAIN_ROOT "${ANDROID_NDK}/toolchains/arm-linux-androideabi-4.4.3/prebuilt/${NDKSYSTEM}" )
  set( ANDROID_NDK_SYSROOT "${ANDROID_NDK}/platforms/android-${ANDROID_API_LEVEL}/arch-arm" )
- 
+
  __TOOLCHAIN_DETECT_API_LEVEL( "${ANDROID_NDK_SYSROOT}/usr/include/android/api-level.h" ${ANDROID_API_LEVEL} )
  
  #message( STATUS "Using android NDK from ${ANDROID_NDK}" )
@@ -265,20 +268,7 @@ Supported values are: \"armeabi\", \"armeabi-v7a\", \"armeabi-v7a with NEON\", \
  set( CMAKE_SYSTEM_PROCESSOR "armv7-a" )
 endif()
 
-#setup output directories
-set( LIBRARY_OUTPUT_PATH_ROOT ${CMAKE_SOURCE_DIR} CACHE PATH "root for library output, set this to change where android libs are installed to" )
-
-SET( DO_NOT_CHANGE_OUTPUT_PATHS_ON_FIRST_PASS OFF CACHE BOOL "")
-if( DO_NOT_CHANGE_OUTPUT_PATHS_ON_FIRST_PASS )
- if( EXISTS "${CMAKE_SOURCE_DIR}/jni/CMakeLists.txt" )
-  set( EXECUTABLE_OUTPUT_PATH "${LIBRARY_OUTPUT_PATH_ROOT}/bin/${ARMEABI_NDK_NAME}" CACHE PATH "Output directory for applications")
- else()
-  set( EXECUTABLE_OUTPUT_PATH "${LIBRARY_OUTPUT_PATH_ROOT}/bin" CACHE PATH "Output directory for applications")
- endif()
- set( LIBRARY_OUTPUT_PATH "${LIBRARY_OUTPUT_PATH_ROOT}/libs/${ARMEABI_NDK_NAME}" CACHE PATH "path for android libs")
- set( CMAKE_INSTALL_PREFIX "${ANDROID_NDK_TOOLCHAIN_ROOT}/user" CACHE STRING "path for installing" )
-endif()
-SET( DO_NOT_CHANGE_OUTPUT_PATHS_ON_FIRST_PASS ON CACHE INTERNAL "" FORCE)
+SET (RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/../libs/${ARMEABI_NDK_NAME})
 
 # where is the target environment 
 set( CMAKE_FIND_ROOT_PATH "${ANDROID_NDK_TOOLCHAIN_ROOT}/bin" "${ANDROID_NDK_TOOLCHAIN_ROOT}/arm-linux-androideabi" "${ANDROID_NDK_SYSROOT}" "${CMAKE_INSTALL_PREFIX}" "${CMAKE_INSTALL_PREFIX}/share" )

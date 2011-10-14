@@ -112,7 +112,9 @@ GLTexture3D::GLTexture3D(GLDevice* device_, const Texture3D::DESC_MS& desc) :
 
 GLTexture3D::~GLTexture3D()
 {
-    Unbind();
+    if (device->Valid()) {
+    	Unbind();
+    }
 }
 
 SGL_HRESULT GLTexture3D::SetSubImage( unsigned int  mipmap,

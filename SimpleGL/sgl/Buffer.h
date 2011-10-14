@@ -25,7 +25,7 @@ public:
     #ifndef SIMPLE_GL_ES
         , STREAM_READ   /// (N/A in GLES) data will be specified once by reading from OpenGL, used many times
         , STATIC_READ   /// (N/A in GLES) data will be specified once by reading from OpenGL, used many times
-        , STREAM_READ   /// (N/A in GLES) data will be specified many times by reading from OpenGL, used many times
+        , DYNAMIC_READ  /// (N/A in GLES) data will be specified many times by reading from OpenGL, used many times
         , STREAM_COPY   /// (N/A in GLES) data will be specified once by reading from OpenGL, used many times
         , STATIC_COPY   /// (N/A in GLES) data will be specified once by reading from OpenGL, used many times
         , DYNAMIC_COPY  /// (N/A in GLES) data will be specified many times  by reading from OpenGL, used many times
