@@ -122,8 +122,8 @@ void GLFont::Print(float x, float y, const char* str) const
             position[0] = math::Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
             position[1] = math::Vector4f(1.0f, 0.0f, 0.0f, 1.0f);
             position[2] = math::Vector4f(1.0f, 1.0f, 0.0f, 1.0f);
-            position[3] = math::Vector4f(1.0f, 1.0f, 0.0f, 1.0f);
-            position[4] = math::Vector4f(1.0f, 0.0f, 0.0f, 1.0f);
+            position[3] = math::Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
+            position[4] = math::Vector4f(1.0f, 1.0f, 0.0f, 1.0f);
             position[5] = math::Vector4f(0.0f, 1.0f, 0.0f, 1.0f);
         }
         math::Vector2f texcoord[6];
@@ -160,8 +160,8 @@ void GLFont::Print(float x, float y, const char* str) const
                 texcoord[0] = math::Vector2f(s,      t);
                 texcoord[1] = math::Vector2f(s + ds, t);
                 texcoord[2] = math::Vector2f(s + ds, t + dt);
-                texcoord[3] = math::Vector2f(s + ds, t + dt);
-                texcoord[4] = math::Vector2f(s + ds, t);
+                texcoord[3] = math::Vector2f(s,      t);
+                texcoord[4] = math::Vector2f(s + ds, t + dt);
                 texcoord[5] = math::Vector2f(s,      t + dt);
 
                 for (int j = 0; j<6; ++j)
