@@ -8,13 +8,19 @@ using namespace sgl;
 
 namespace {
 
-    Texture::FORMAT FindTextureFormat(ILuint type, ILuint format, ILuint dxtc)
+    Texture::FORMAT FindTextureFormat(ILuint& type, ILuint& format, ILuint dxtc)
     {
         bool compressed = (dxtc == IL_DXT1) || (dxtc == IL_DXT2) || (dxtc == IL_DXT3) || (dxtc == IL_DXT4) || (dxtc == IL_DXT5);
 
         switch(format)
         {
-        case GL_RGB:
+        case IL_COLOUR_INDEX:
+            // convert
+            type   = IL_UNSIGNED_BYTE;
+            format = IL_RGB;
+            return Texture::RGB8;
+
+        case IL_RGB:
             switch (type)
             {
             case GL_UNSIGNED_BYTE:
@@ -43,7 +49,7 @@ namespace {
                 return Texture::UNKNOWN;
             }
 
-        case GL_RGBA:
+        case IL_RGBA:
             switch (type)
             {
             case GL_UNSIGNED_BYTE:
@@ -202,6 +208,8 @@ SGL_HRESULT SGL_DLLCALL IlImage::LoadFromFile(const char*       fileName,
         }
         ilActiveMipmap(i);
         ilCopyPixels(0, 0, 0, width_, height_, depth_, ilFormat, ilType, mipData[i]);
+        assert(ilGetError() == IL_NO_ERROR);
+
 
         width_  >>= 1;
         height_ >>= 1;
@@ -266,6 +274,7 @@ SGL_HRESULT SGL_DLLCALL IlImage::LoadFromFileInMemory(unsigned int dataSize,
         }
         ilActiveMipmap(i);
         ilCopyPixels(0, 0, 0, width_, height_, depth_, ilFormat, ilType, mipData[i]);
+        assert(ilGetError() == IL_NO_ERROR);
 
         width_  >>= 1;
         height_ >>= 1;

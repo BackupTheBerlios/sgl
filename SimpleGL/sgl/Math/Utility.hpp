@@ -48,6 +48,12 @@ inline long double abs(long double val)
     return std::fabs(val);
 }
 
+template<typename T>
+inline T clamp(T val, T min, T max)
+{
+    return (val < min) ? min : (val > max ? max : val);
+}
+
 SGL_END_MATH_NAMESPACE
 
 #endif // GRAPHICS_MATH_UTILITY_HPP
