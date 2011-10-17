@@ -4,8 +4,8 @@
 #include <cassert>
 #include <limits>
 #include <malloc.h>
-#ifdef __GNUC__
-#include <mm_malloc.h>
+#if defined(__GNUC__) && !defined(__ANDROID__)
+#   include <mm_malloc.h>
 #endif
 #include <stdexcept>
 #include "Meta.h"
@@ -31,7 +31,16 @@ namespace sgl {
  */
 inline void* align_alloc(size_t size, size_t alignment = 0x10)
 {
-#ifdef __GNUC__
+#ifdef __ANDROID__
+    // hack around
+    size_t toAllocate = size + sizeof(size_t) + alignment;
+    char* mem = (char*)malloc(toAllocate);
+    size_t offset = alignment - ((size_t)mem + sizeof(size_t)) % alignment;
+    mem += offset - sizeof(size_t);
+    *((size_t*)mem) = offset;
+    mem += sizeof(size_t);
+    return mem;
+#elif defined(__GNUC__)
     return _mm_malloc(size, alignment);
 #else // MSVS
     return _aligned_malloc(size, alignment);
@@ -41,7 +50,14 @@ inline void* align_alloc(size_t size, size_t alignment = 0x10)
 /** Free aligned data */
 inline void align_free(void* data)
 {
-#ifdef __GNUC__
+#ifdef __ANDROID__
+    // hack around
+    char* mem = (char*)data;
+    mem -= sizeof(size_t);
+    size_t offset = *((size_t*)mem);
+    mem -= offset;
+    free(mem);
+#elif defined(__GNUC__)
     _mm_free(data);
 #else // MSVS
     _aligned_free(data);

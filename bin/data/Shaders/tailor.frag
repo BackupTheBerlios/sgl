@@ -1,7 +1,12 @@
-uniform float density;
-uniform float a;
-uniform float b;
-uniform float c;
+precision mediump float;
+
+uniform float 	  density;
+uniform float 	  a;
+uniform float 	  b;
+uniform float 	  c;
+uniform lowp vec4 color;
+
+varying vec2 fp_texcoord;
 
 // consts
 const float PI_2   =  6.2831853;
@@ -72,7 +77,7 @@ vec4 tailor()
 
     vec2  zSum        = vec2(0.0);
     float denominator = 1.0;
-    vec2  current     = map(gl_TexCoord[0].xy);
+    vec2  current     = map(fp_texcoord.xy);
     vec2  z           = exp_c(current);
 
     float count = 0.0;
@@ -83,9 +88,9 @@ vec4 tailor()
 
         denominator *= count + 1.0;
         float value = length( cot_c(sin_c(zSum + a) + b) + c );
-        vec3  vec = vec3( value * 0.1,
-                          value * 0.2,
-                          value * 0.4 );
+        vec3 vec = vec3( value * 0.1,
+								 value * 0.2,
+								 value * 0.4 );
 /*
         vec2  value = cot_c(zSum);
         vec3  vec = vec3( length( pow_c(value, a) ),
@@ -111,5 +116,5 @@ vec4 tailor()
 
 void main()
 {
-    gl_FragColor = tailor() * gl_TexCoord[1];
+    gl_FragColor = tailor() * color;
 }

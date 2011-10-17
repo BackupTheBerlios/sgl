@@ -29,9 +29,6 @@ extern const GLenum BIND_TEXTURE_MIN_FILTER[];
 /** bind glTexture filter to gl one */
 extern const GLenum BIND_TEXTURE_FILTER[];
 
-/** bind glTexture environment mode to gl one */
-extern const GLenum BIND_GL_TEXTURE_ENV_MODE[];
-
 /** Find openGL usage correspondign sgl format */
 GLenum FindGLUsage(Texture::FORMAT format);
 
@@ -110,7 +107,7 @@ public:
 protected:
     ~GLTexture()
     {
-        if (generateTexture) {
+        if (device->Valid() && generateTexture) {
             glDeleteTextures(1, &glTexture);
         }
     }

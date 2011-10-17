@@ -117,14 +117,16 @@ void GLFont::Print(float x, float y, const char* str) const
                                  0.0f,      charHeight, 0.0f,       y,
                                  0.0f,      0.0f,       1.0f,       0.0f,
                                  0.0f,      0.0f,       0.0f,       1.0f);
-        math::Vector4f position[4];
+        math::Vector4f position[6];
         {
             position[0] = math::Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
             position[1] = math::Vector4f(1.0f, 0.0f, 0.0f, 1.0f);
             position[2] = math::Vector4f(1.0f, 1.0f, 0.0f, 1.0f);
-            position[3] = math::Vector4f(0.0f, 1.0f, 0.0f, 1.0f);
+            position[3] = math::Vector4f(1.0f, 1.0f, 0.0f, 1.0f);
+            position[4] = math::Vector4f(1.0f, 0.0f, 0.0f, 1.0f);
+            position[5] = math::Vector4f(0.0f, 1.0f, 0.0f, 1.0f);
         }
-        math::Vector2f texcoord[4];
+        math::Vector2f texcoord[6];
         
 	    for(; *str; ++str)
 	    {
@@ -158,9 +160,11 @@ void GLFont::Print(float x, float y, const char* str) const
                 texcoord[0] = math::Vector2f(s,      t);
                 texcoord[1] = math::Vector2f(s + ds, t);
                 texcoord[2] = math::Vector2f(s + ds, t + dt);
-                texcoord[3] = math::Vector2f(s,      t + dt);
+                texcoord[3] = math::Vector2f(s + ds, t + dt);
+                texcoord[4] = math::Vector2f(s + ds, t);
+                texcoord[5] = math::Vector2f(s,      t + dt);
 
-                for (int j = 0; j<4; ++j)
+                for (int j = 0; j<6; ++j)
                 {
                     math::Vector4f pos = transform * position[j];
                     data.push_back(pos.x);
@@ -184,7 +188,7 @@ void GLFont::Print(float x, float y, const char* str) const
         vbo->SetSubData(0, bufSize, &data[0]);
     }
 
-	device->Draw(QUADS, 0, data.size() / 6);
+    device->Draw(TRIANGLES, 0, data.size() / 6);
 }
 
 sgl::Texture2D* GLFont::Texture() const

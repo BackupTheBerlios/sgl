@@ -11,14 +11,16 @@ namespace sgl {
 const GLuint BIND_GL_USAGE[] = 
 {
 	GL_STREAM_DRAW, 
-	GL_STREAM_READ, 
-	GL_STREAM_COPY, 
-    GL_STATIC_DRAW, 
-	GL_STATIC_READ, 
-	GL_STATIC_COPY, 
-    GL_DYNAMIC_DRAW, 
-	GL_DYNAMIC_READ, 
-	GL_DYNAMIC_COPY
+    GL_STATIC_DRAW,
+    GL_DYNAMIC_DRAW
+#ifndef SIMPLE_GL_ES
+    , GL_STREAM_READ
+    , GL_STATIC_READ
+    , GL_DYNAMIC_READ
+    , GL_STREAM_COPY
+    , GL_STATIC_COPY
+    , GL_DYNAMIC_COPY
+#endif
 };
 
 inline GLint GuardedBind(GLuint glTarget, GLuint glBuffer)
@@ -34,7 +36,7 @@ inline GLint GuardedBind(GLuint glTarget, GLuint glBuffer)
         oldBuffer = 0; // do nothing
     }
 
-    glBindBufferARB(glTarget, glBuffer);
+    glBindBuffer(glTarget, glBuffer);
     return oldBuffer;
 }
 
@@ -54,15 +56,19 @@ protected:
 	    glBuffer(0),
         dataSize(0)
     {
-        glGenBuffersARB(1, &glBuffer);
+        glGenBuffers(1, &glBuffer);
     }
 
     ~GLBuffer()
     {
-        glDeleteBuffersARB(1, &glBuffer);
+    	if ( device->Valid() ) {
+    		glDeleteBuffers(1, &glBuffer);
+    	}
     }
 
 public:
+#ifdef SIMPLE_GL_ES
+#else // !defined(SIMPLE_GL_ES)
     SGL_HRESULT SGL_DLLCALL Map(int     hint, 
                                 void**  data)
     {
@@ -171,6 +177,7 @@ public:
         }
         return SGL_OK;
     }
+#endif
 
     bool SGL_DLLCALL Mapped() const
     {
@@ -189,7 +196,7 @@ public:
     {
         // set buffer data
         GLuint oldBuffer = GuardedBind(glTarget, glBuffer);
-        glBufferDataARB(glTarget, _dataSize, data, BIND_GL_USAGE[usage = usage_]);
+        glBufferData(glTarget, _dataSize, data, BIND_GL_USAGE[usage = usage_]);
     
     #ifndef SGL_NO_STATUS_CHECK
         GLenum error = glGetError();
@@ -203,7 +210,7 @@ public:
 
         // restore
         if (oldBuffer != glBuffer) {
-            glBindBufferARB(glTarget, oldBuffer);
+            glBindBuffer(glTarget, oldBuffer);
         }
 	    return SGL_OK;
     }
@@ -214,7 +221,7 @@ public:
     {
         // set buffer data
         GLuint oldBuffer = GuardedBind(glTarget, glBuffer);
-        glBufferSubDataARB(glTarget, offset, chunkSize, data);
+        glBufferSubData(glTarget, offset, chunkSize, data);
     
     #ifndef SGL_NO_STATUS_CHECK
         GLenum error = glGetError();
@@ -227,11 +234,12 @@ public:
 
         // restore
         if (oldBuffer != glBuffer) {
-            glBindBufferARB(glTarget, oldBuffer);
+            glBindBuffer(glTarget, oldBuffer);
         }
 	    return SGL_OK;
     }
 
+#ifndef SIMPLE_GL_ES
     SGL_HRESULT SGL_DLLCALL GetData( void*         data,
                                      unsigned int  offset,
                                      unsigned int  dataSize ) const
@@ -268,10 +276,11 @@ public:
 
         // restore
         if (oldBuffer != glBuffer) {
-            glBindBufferARB(glTarget, oldBuffer);
+            glBindBuffer(glTarget, oldBuffer);
         }
         return SGL_OK;
     }
+#endif // defined(SIMPLE_GL_ES)
 
     unsigned int SGL_DLLCALL Size() const
     { 
@@ -289,6 +298,8 @@ protected:
     size_t         dataSize;
     bool           mapped;
 };
+
+#ifndef SIMPLE_GL_ES
 
 template<typename Interface>
 class GLBufferModern :
@@ -342,6 +353,8 @@ public:
     }
 };
 
+#endif // !defined(SIMPLE_GL_ES)
+
 template<typename Interface>
 class GLBufferDefault :
     public GLBuffer<Interface>
@@ -354,6 +367,7 @@ protected:
     }
 
 public:
+#ifndef SIMPLE_GL_ES
     SGL_HRESULT SGL_DLLCALL CopyTo( Buffer* target ) const
     {
         assert(target);
@@ -391,6 +405,7 @@ public:
 
         return hr;
     }
+#endif // !defined(SIMPLE_GL_ES)
 };
 
 } // namespace sgl

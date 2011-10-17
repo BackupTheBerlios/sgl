@@ -5,6 +5,9 @@
 #include "Texture3D.h"
 #include "TextureCube.h"
 #include <cmath>
+#ifdef SIMPLE_GL_ANDROID
+#   include <android/asset_manager.h>
+#endif
 
 namespace sgl {
 
@@ -38,37 +41,44 @@ public:
 public:
     /** Load image from file. Format is determined by extension.
      * @param fileName - name of the image file
+     * @param type - type of the image file.
+     * @param assetMgr - optional android asset manager to load from (can be NULL).
 	 * @return result of the operation. Can be SGLERR_OUT_OF_MEMORY, SGLERR_INVALID_CALL.
      */
-    virtual SGL_HRESULT SGL_DLLCALL LoadFromFile(const char* fileName, 
-                                                 FILE_TYPE   type = AUTO) = 0;
+    virtual SGL_HRESULT SGL_DLLCALL LoadFromFile(const char* 		fileName,
+                                                 FILE_TYPE   		type = AUTO
+												 #ifdef SIMPLE_GL_ANDROID
+												 ,  AAssetManager*  assetMgr = 0
+												 #endif
+    											 ) = 0;
 
     /** Load image from file in memory.
-     * @param type - type of the image file.
      * @param dataSize - size of the image file.
      * @param data - image file data.
+     * @param type - type of the image file.
      * @return result of the operation. Can be SGLERR_OUT_OF_MEMORY, SGLERR_INVALID_CALL.
      */
-    virtual SGL_HRESULT SGL_DLLCALL LoadFromFileInMemory(FILE_TYPE    type,
-                                                         unsigned int dataSize,
-                                                         const void*  data) = 0;
+    virtual SGL_HRESULT SGL_DLLCALL LoadFromFileInMemory(unsigned int dataSize,
+                                                         const void*  data,
+                                                         FILE_TYPE    type = AUTO) = 0;
 
     /** Save image to file. Format is determined by extension
      * @param fileName - name of the file with texture
+     * @param type - type of the image file (if AUTO - determine by extension).
 	 * @return result of the operation. Can be SGLERR_OUT_OF_MEMORY, SGLERR_INVALID_CALL.
      */
     virtual SGL_HRESULT SGL_DLLCALL SaveToFile(const char* fileName, 
                                                FILE_TYPE   type = AUTO) const = 0;
 
     /** Save image to file in memory.
-     * @param type - type of the image file to save.
      * @param dataSize - size of the data for storing image.
      * @param data - output data.
+     * @param type - type of the image file to save.
 	 * @return result of the operation. Can be SGLERR_OUT_OF_MEMORY, SGLERR_INVALID_CALL.
      */
-    virtual SGL_HRESULT SGL_DLLCALL SaveToFileInMemory(FILE_TYPE    type,
-                                                       unsigned int dataSize,
-                                                       void*        data) const = 0;
+    virtual SGL_HRESULT SGL_DLLCALL SaveToFileInMemory(unsigned int dataSize,
+                                                       void*        data,
+                                                       FILE_TYPE    type) const = 0;
 
     /** Free image data */
     virtual void SGL_DLLCALL Clear() = 0;
@@ -170,6 +180,7 @@ public:
 
             default:
                 assert(!"Can't get here");
+                break;
             }
 
             size = size_t( std::ceil(width / 4.0f) * std::ceil(height / 4.0f) * std::ceil(depth / 4.0f) * blockSize );

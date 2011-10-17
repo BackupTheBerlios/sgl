@@ -16,7 +16,9 @@ public:
 
 public:
     GLTexture2D(GLDevice* device, const Texture2D::DESC& desc);
+#ifndef SIMPLE_GL_ES
     GLTexture2D(GLDevice* device, const Texture2D::DESC_MS& desc);
+#endif
     ~GLTexture2D();
 
     // Override Texture2

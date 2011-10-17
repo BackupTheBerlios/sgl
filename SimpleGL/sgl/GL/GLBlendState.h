@@ -6,6 +6,8 @@
 
 namespace sgl {
 
+#ifndef __ANDROID__
+
 class GLBlendStateDisplayLists :
 	public ReferencedImpl<BlendState>
 {
@@ -23,6 +25,8 @@ private:
 	unsigned         bindDisplayList;
 	BlendState::DESC desc;
 };
+
+#endif // !defined(__ANDROID__)
 
 class GLBlendStateSeparate :
 	public ReferencedImpl<BlendState>

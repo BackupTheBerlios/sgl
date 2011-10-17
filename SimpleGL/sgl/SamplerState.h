@@ -15,7 +15,6 @@ public:
     enum WRAPPING
     {
         REPEAT,
-        CLAMP,
         CLAMP_TO_EDGE,
         __NUMBER_OF_CLAMP_MODES__
     };

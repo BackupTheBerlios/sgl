@@ -20,19 +20,23 @@ public:
     ~IlImage();
 
     // Creation
-    SGL_HRESULT SGL_DLLCALL LoadFromFile(const char* fileName, 
-                                         FILE_TYPE   type = AUTO);
+    SGL_HRESULT SGL_DLLCALL LoadFromFile(const char*        fileName,
+                                         FILE_TYPE          type = AUTO
+                                         #ifdef SIMPLE_GL_ANDROID
+                                         ,  AAssetManager*  assetMgr = 0
+                                         #endif
+                                         );
 
-    SGL_HRESULT SGL_DLLCALL LoadFromFileInMemory( FILE_TYPE    type,
-                                                  unsigned int dataSize,
-                                                  const void*  data );
+    SGL_HRESULT SGL_DLLCALL LoadFromFileInMemory(unsigned int dataSize,
+                                                 const void*  data,
+                                                 FILE_TYPE    type);
 
-    SGL_HRESULT SGL_DLLCALL SaveToFile(const char* fileName, 
-                                       FILE_TYPE   type = AUTO) const;
+    SGL_HRESULT SGL_DLLCALL SaveToFile(const char*  fileName,
+                                       FILE_TYPE    type) const;
 
-    SGL_HRESULT SGL_DLLCALL SaveToFileInMemory(FILE_TYPE    type,
-                                               unsigned int dataSize,
-                                               void*        data) const;
+    SGL_HRESULT SGL_DLLCALL SaveToFileInMemory(unsigned int dataSize,
+                                               void*        data,
+                                               FILE_TYPE    type) const;
 /*
     SGL_HRESULT SGL_DLLCALL SetImage(Texture::FORMAT   _format,
                                      unsigned          _width,
