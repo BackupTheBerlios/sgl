@@ -20,6 +20,8 @@ namespace {
             format = IL_RGB;
             return Texture::RGB8;
 
+        case IL_BGR:
+            format = IL_RGB;
         case IL_RGB:
             switch (type)
             {
@@ -49,6 +51,8 @@ namespace {
                 return Texture::UNKNOWN;
             }
 
+        case IL_BGRA:
+            format = IL_RGBA; 
         case IL_RGBA:
             switch (type)
             {
