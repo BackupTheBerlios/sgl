@@ -14,20 +14,21 @@ enum SGL_HRESULT
 	SGLERR_INVALID_CALL,	/// function call with invalid arguments
 	SGLERR_OUT_OF_MEMORY,	/// couldn't allocate memory
 	SGLERR_FILE_NOT_FOUND,	/// couldn't find specified file
+    SGLERR_IO,              /// error in input/output operation
 	SGLERR_UNSUPPORTED,		/// operation not supported by the hardware
-    SGLERR_UANAILABLE,      /// resource is unavailable at the moment
+    SGLERR_UNAVAILABLE,     /// resource is unavailable at the moment
 	SGLERR_UNKNOWN			/// unknow error
 };
 
 /** Handler to handle simple gl errors. For example log it into the file */
-class ErrorHandler
+class SGL_DLLEXPORT ErrorHandler
 {
 public:
 	/** Handle sgl error
 	 * @param result - type of the error
 	 * @param msg - error message
 	 */
-	virtual void HandleError(SGL_HRESULT result, const char* msg) = 0;
+    virtual void HandleError(SGL_HRESULT result, const char* msg) = 0;
 
 	virtual ~ErrorHandler() {}
 };
@@ -51,42 +52,15 @@ extern "C" SGL_DLLEXPORT void SGL_DLLCALL sglSetError(sgl::SGL_HRESULT _type, co
 
 namespace sgl {
 
-/** Error handler that logs errors to the cerr */
-class PrintErrorHandler :
+/** Error handler that logs errors to the platform specific log (cerr, android log, ...). */
+class SGL_DLLEXPORT PrintErrorHandler :
 	public ErrorHandler
 {
 public:
-	/** Print sgl error to the cerr
-	 * @param type of the error
-	 * @param error message
-	 */
-	void HandleError(SGL_HRESULT type, const char* msg)
-	{
-		switch(type)
-		{
-		case SGLERR_INVALID_CALL:
-			std::cerr << "Invalid call: " << msg << std::endl;
-			break;
+    // Override ErrorHandler
+    void HandleError(SGL_HRESULT type, const char* msg);
 
-		case SGLERR_OUT_OF_MEMORY:
-			std::cerr << "Out of memory: " << msg << std::endl;
-			break;
-
-		case SGLERR_FILE_NOT_FOUND:
-			std::cerr << "File not found: " << msg << std::endl;
-			break;
-
-		case SGLERR_UNSUPPORTED:
-			std::cerr << "Unsupported function: " << msg << std::endl;
-			break;
-
-		default:
-			std::cerr << "Unknown error: " << msg << std::endl;
-			break;
-		}
-	}
-
-	virtual ~PrintErrorHandler() { sglSetErrorHandler(0); }
+    virtual ~PrintErrorHandler() {}
 };
 
 /** Error occurs when calling function with invalid arguments */
@@ -129,6 +103,20 @@ inline SGL_HRESULT EFileNotFound(const char* msg)
 {
 	sglSetError(SGLERR_FILE_NOT_FOUND, msg);
 	return SGLERR_FILE_NOT_FOUND;
+}
+
+/** Error occured during IO operation */
+inline SGL_HRESULT EIOError()
+{
+    sglSetError(SGLERR_IO, "IO error");
+    return SGLERR_IO;
+}
+
+/** Error occured during IO operation */
+inline SGL_HRESULT EIOError(const char* msg)
+{
+    sglSetError(SGLERR_IO, msg);
+    return SGLERR_IO;
 }
 
 /** Error occurs when we are trying to perform operation unsupported by the hardware */

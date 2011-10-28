@@ -16,10 +16,10 @@ enum PRIMITIVE_TYPE
     LINE_LOOP,			
     TRIANGLES,
     TRIANGLE_STRIP,		
-    TRIANGLE_FAN,		
-    QUADS,				/// Deprecated since OpenGL 3.1
-    QUAD_STRIP,			/// Deprecated since OpenGL 3.1
-	POLYGON,			/// Deprecated since OpenGL 3.1
+    TRIANGLE_FAN,
+    /// QUADS,				/// Deprecated since OpenGL 3.1 and not supported in OpenGL 3.2, OpenGL ES
+    /// QUAD_STRIP,			/// Deprecated since OpenGL 3.1 and not supported in OpenGL 3.2, OpenGL ES
+    /// POLYGON,			/// Deprecated since OpenGL 3.1 and not supported in OpenGL 3.2, OpenGL ES
     __NUMBER_OF_PRIMITIVE_TYPES__
 };
 

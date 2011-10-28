@@ -24,7 +24,11 @@ namespace sgl {
 const unsigned BIND_SCALAR_TYPE[__NUMBER_OF_SCALAR_TYPES__] =
 {
 	0,
+#ifdef SIMPLE_GL_ES
+    0,
+#else
 	GL_BITMAP,
+#endif
 	GL_BOOL,
 	GL_BYTE,
 	GL_UNSIGNED_BYTE,
@@ -33,7 +37,11 @@ const unsigned BIND_SCALAR_TYPE[__NUMBER_OF_SCALAR_TYPES__] =
 	GL_INT,
 	GL_UNSIGNED_INT,
 	GL_FLOAT,
-	GL_DOUBLE
+#ifdef SIMPLE_GL_ES
+    0
+#else
+    GL_DOUBLE
+#endif
 };
 
 GLVertexLayoutMixed::GLVertexLayoutMixed( GLDevice*    device_, 
@@ -46,7 +54,9 @@ GLVertexLayoutMixed::GLVertexLayoutMixed( GLDevice*    device_,
 
 GLVertexLayoutMixed::~GLVertexLayoutMixed()
 {
-    Unbind();
+    if (device->Valid()) {
+    	Unbind();
+    }
 }
 
 void GLVertexLayoutMixed::Bind() const

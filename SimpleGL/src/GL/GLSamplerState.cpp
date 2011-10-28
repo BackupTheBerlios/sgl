@@ -19,7 +19,6 @@ namespace {
     const GLenum BIND_TEXTURE_CLAMP[] =
     {
         GL_REPEAT,
-        GL_CLAMP,
         GL_CLAMP_TO_EDGE
     };
 

@@ -16,20 +16,24 @@ public:
     static const int MAP_INVALIDATE_BUFFER_BIT = 1 << 3;
     static const int MAP_UNSYNCHRONIZED_BIT    = 1 << 4;
 
+    /// Hint for OpenGL to optimize buffer data storage
 	enum USAGE
-	{
-		STREAM_DRAW, 
-		STREAM_READ, 
-		STREAM_COPY, 
-        STATIC_DRAW, 
-		STATIC_READ, 
-		STATIC_COPY, 
-        DYNAMIC_DRAW, 
-		DYNAMIC_READ, 
-		DYNAMIC_COPY
+    {
+        STREAM_DRAW,    /// data will be specified once, used few times
+        STATIC_DRAW,    /// data will be specified once, used many times
+        DYNAMIC_DRAW    /// data will be specified many times, used many times
+    #ifndef SIMPLE_GL_ES
+        , STREAM_READ   /// (N/A in GLES) data will be specified once by reading from OpenGL, used many times
+        , STATIC_READ   /// (N/A in GLES) data will be specified once by reading from OpenGL, used many times
+        , DYNAMIC_READ  /// (N/A in GLES) data will be specified many times by reading from OpenGL, used many times
+        , STREAM_COPY   /// (N/A in GLES) data will be specified once by reading from OpenGL, used many times
+        , STATIC_COPY   /// (N/A in GLES) data will be specified once by reading from OpenGL, used many times
+        , DYNAMIC_COPY  /// (N/A in GLES) data will be specified many times  by reading from OpenGL, used many times
+    #endif
 	};
 
 public:
+#ifndef SIMPLE_GL_ES
     /** Gain access to the buffer data. Force buffer to be binded.
      * @param hint - data access hints.
      * @param data - pointer to the beginning of mapped data.
@@ -56,6 +60,7 @@ public:
 
     /** End work with buffer data */
     virtual SGL_HRESULT SGL_DLLCALL Unmap() = 0;
+#endif // !defined(SIMPLE_GL_ES)
 
     /** Check whether buffer is mapped */
     virtual bool SGL_DLLCALL Mapped() const = 0;
@@ -83,6 +88,7 @@ public:
                                                 unsigned int    dataSize,
                                                 const void*     data ) = 0;
 
+#ifndef SIMPLE_GL_ES
     /** Get data from the buffer.
      * @param data[out] - memory to store the data.
      * @param offset - offset from the beginning of the buffer for retrieving data.
@@ -111,6 +117,7 @@ public:
                                             unsigned int offsetSrc,
                                             unsigned int offsetDst,
                                             unsigned int size ) const = 0;
+#endif // !defined(SIMPLE_GL_ES)
 
     /** Get size of the data stored in the buffer
 	 * @return size of the data buffer

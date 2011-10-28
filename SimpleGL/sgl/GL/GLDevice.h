@@ -1,17 +1,7 @@
 #ifndef SIMPLE_GL_GL_DEVICE_H
 #define SIMPLE_GL_GL_DEVICE_H
 
-#ifdef WIN32
-#   ifndef NOMINMAX
-#   define NOMINMAX
-#   endif // disable mingw warning
-#   define WIN32_LEAN_AND_MEAN
-#   include <windows.h>
-#   include <GL/glew.h>
-#elif defined(__linux__)
-#   include <GL/glew.h>
-#   include <GL/glx.h>
-#endif
+#include "GL/GLCommon.h"
 
 #ifdef WIN32
 #   pragma push_macro("CreateFont")
@@ -34,8 +24,10 @@ protected:
     typedef std::stack< ref_ptr<const State> > state_stack;
 
 public:
-    GLDevice(const Device::VIDEO_DESC& desc);
     GLDevice();
+#ifndef __ANDROID__
+    GLDevice(const Device::VIDEO_DESC& desc);
+#endif
 
     // setup
     virtual rectangle           SGL_DLLCALL Viewport() const;
@@ -68,26 +60,31 @@ public:
                                           unsigned       firstVertex, 
                                           unsigned       numVertices ) const;
 
-    void                SGL_DLLCALL DrawInstanced( PRIMITIVE_TYPE primType, 
-                                                   unsigned       firstIndex, 
-                                                   unsigned       numIndices,
-                                                   unsigned       numInstances ) const;
-
     void                SGL_DLLCALL DrawIndexed( PRIMITIVE_TYPE primType,
                                                  unsigned       firstIndex,
                                                  unsigned       numIndices ) const;
 
+#ifndef SIMPLE_GL_ES
+    void                SGL_DLLCALL DrawInstanced( PRIMITIVE_TYPE primType,
+                                                   unsigned       firstIndex,
+                                                   unsigned       numIndices,
+                                                   unsigned       numInstances ) const;
 
     void                SGL_DLLCALL DrawIndexedInstanced( PRIMITIVE_TYPE primType, 
                                                           unsigned       firstIndex,
                                                           unsigned       numIndices,
                                                           unsigned       numInstances ) const;
+#endif // !defined(SIMPLE_GL_ES)
 
     void                SGL_DLLCALL Clear(bool colorBuffer = true, bool depthBuffer = true, bool stencilBuffer = true) const;
 
     void                SGL_DLLCALL SwapBuffers() const;
 
     SGL_HRESULT         SGL_DLLCALL Sync() const;
+
+    void				SGL_DLLCALL Invalidate() { valid = false; }
+
+    bool				SGL_DLLCALL Valid() const { return valid; }
 
     // ============================ STATES ============================ //
 
@@ -148,7 +145,7 @@ protected:
     HDC			hDC;
     HGLRC		hGLRC;
     HWND		hWnd;
-#elif defined(__linux__)
+#elif defined(__linux__) && !defined(__ANDROID__)
     Display*    display;
     Window      window;
     GLXDrawable glxDrawable;
@@ -158,6 +155,7 @@ protected:
 
     // settings
     bool    makeCleanup;
+    bool	valid;
 };
 
 template<DEVICE_VERSION DeviceVersion>
@@ -166,7 +164,9 @@ class GLDeviceConcrete :
 {
 public:
 	GLDeviceConcrete();
+#ifndef __ANDROID__
 	GLDeviceConcrete(const Device::VIDEO_DESC& desc);
+#endif
 
 	// ============================ TEXTURES ============================ //
 

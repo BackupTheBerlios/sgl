@@ -78,6 +78,22 @@ const Texture::format_desc Texture::FORMAT_TRAITS[] =
 const GLenum BIND_GL_FORMAT[] =
 {
     0,
+#ifdef SIMPLE_GL_ES
+    0,
+    0,
+    0,
+    GL_RGBA,
+    GL_RGB,
+    GL_ALPHA,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+#else
     GL_RGBA16,
     GL_RGB16,
     GL_ALPHA16,
@@ -92,6 +108,7 @@ const GLenum BIND_GL_FORMAT[] =
     GL_DEPTH32F_STENCIL8,
     GL_RGBA32F_ARB,
     GL_RGB32F_ARB,
+#endif
 #ifdef GL_VERSION_3_0
     GL_RG32F,
     GL_R32F,
@@ -99,9 +116,15 @@ const GLenum BIND_GL_FORMAT[] =
     0,
     0,
 #endif
+#ifdef SIMPLE_GL_ES
+    0,
+    0,
+    0,
+#else
     GL_ALPHA32F_ARB,
     GL_RGBA16F_ARB,
     GL_RGB16F_ARB,
+#endif
 #ifdef GL_VERSION_3_0
     GL_RG16F,
     GL_R16F,
@@ -109,6 +132,35 @@ const GLenum BIND_GL_FORMAT[] =
     0,
     0,
 #endif
+#ifdef SIMPLE_GL_ES
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+#else
     GL_ALPHA16F_ARB,
     GL_RGBA32UI_EXT,
     GL_RGB32UI_EXT,
@@ -136,6 +188,7 @@ const GLenum BIND_GL_FORMAT[] =
     GL_COMPRESSED_SIGNED_RED_RGTC1_EXT,
     GL_COMPRESSED_RED_GREEN_RGTC2_EXT,
     GL_COMPRESSED_SIGNED_RED_GREEN_RGTC2_EXT
+#endif
 };
 
 /* Bind sgl format usage gl one */
@@ -174,6 +227,26 @@ const GLenum BIND_GL_FORMAT_USAGE[] =
     0,
 #endif
     GL_ALPHA,
+#ifdef SIMPLE_GL_ES
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+#else
     GL_RGBA_INTEGER_EXT,
     GL_RGB_INTEGER_EXT,
     GL_ALPHA_INTEGER_EXT,
@@ -192,6 +265,7 @@ const GLenum BIND_GL_FORMAT_USAGE[] =
     GL_RGBA_INTEGER_EXT,
     GL_RGB_INTEGER_EXT,
     GL_ALPHA_INTEGER_EXT,
+#endif
     // dummy for compressed
     0,
     0,
@@ -224,11 +298,19 @@ const GLenum BIND_GL_FORMAT_PIXEL_TYPE[] =
     GL_FLOAT,
     GL_FLOAT,
     GL_FLOAT,
+#ifdef SIMPLE_GL_ES
+    0,
+    0,
+    0,
+    0,
+    0,
+#else
     GL_HALF_FLOAT_ARB,
     GL_HALF_FLOAT_ARB,
     GL_HALF_FLOAT_ARB,
     GL_HALF_FLOAT_ARB,
     GL_HALF_FLOAT_ARB,
+#endif
     GL_UNSIGNED_INT,
     GL_UNSIGNED_INT,
     GL_UNSIGNED_INT,
@@ -281,17 +363,7 @@ const GLenum BIND_TEXTURE_MIN_FILTER[] =
 const GLenum BIND_TEXTURE_CLAMP[] =
 {
     GL_REPEAT,
-    GL_CLAMP,
     GL_CLAMP_TO_EDGE
-};
-
-/* bind glTexture environment mode to gl one */
-const GLenum BIND_GL_TEXTURE_ENV_MODE[] =
-{
-    GL_DECAL,
-    GL_REPLACE,
-    GL_MODULATE,
-    GL_ADD
 };
 
 #ifdef SIMPLE_GL_USE_SDL_IMAGE

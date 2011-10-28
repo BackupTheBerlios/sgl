@@ -4,6 +4,8 @@
 #include "GLSamplerState.h"
 #include "GLTexture.h"
 
+#ifndef SIMPLE_GL_ES
+
 namespace sgl {
 
 class GLTexture3D :
@@ -53,5 +55,7 @@ private:
 };
 
 } // namespace sgl
+
+#endif // !defined(SIMPLE_GL_ES)
 
 #endif // SIMPLE_GL_GL_TEXTURE_3D_H

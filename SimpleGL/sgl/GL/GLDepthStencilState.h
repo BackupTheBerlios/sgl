@@ -6,6 +6,8 @@
 
 namespace sgl {
 
+#ifndef SIMPLE_GL_ES
+
 class GLDepthStencilStateDisplayLists :
 	public ReferencedImpl<DepthStencilState>
 {
@@ -22,6 +24,8 @@ private:
 	unsigned     bindDisplayList;
 	DESC         desc;
 };
+
+#endif // SIMPLE_GL_ES
 
 class GLDepthStencilStateSeparate :
 	public ReferencedImpl<DepthStencilState>

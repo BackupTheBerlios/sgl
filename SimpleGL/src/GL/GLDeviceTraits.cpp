@@ -6,6 +6,9 @@ using namespace sgl;
 GLDeviceTraits::GLDeviceTraits(Device* _device) :
     device(_device)
 {
+#ifdef SIMPLE_GL_ES
+    shaderModel = 200;
+#else
     // determine the shader model checking different extensions
     // according to http://ogltotd.blogspot.com/2006/12/checking-for-d3d-shader-version.html
     if ( glewIsSupported("GL_EXT_gpu_shader4") ) {
@@ -31,13 +34,16 @@ GLDeviceTraits::GLDeviceTraits(Device* _device) :
     else {
         shaderModel = 0;
     }
+#endif
 
 	// extenions
     //glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, (GLint*)&numVertexTIU);
     //glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, (GLint*)&numCombinedTIU);
 
+#ifndef SIMPLE_GL_ES
     // other extesions
     supportsSeparateStencil = ( glewIsSupported("GL_ATI_separate_stencil") != 0);
     supportsNPOT            = ( glewIsSupported("GL_ARB_texture_non_power_of_two") != 0);
     supportsHardwareMipmap  = ( glewIsSupported("GL_SGIS_generate_mipmap") != 0);
+#endif
 }

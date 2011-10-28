@@ -17,6 +17,7 @@
 	#define SGL_DLLCALL
 #endif
 
+#cmakedefine SIMPLE_GL_ANDROID
 #cmakedefine SIMPLE_GL_USE_SDL_IMAGE
 #cmakedefine SIMPLE_GL_USE_DEVIL
 #cmakedefine SIMPLE_GL_USE_SSE2
@@ -24,8 +25,12 @@
 #cmakedefine SIMPLE_GL_USE_SSE4
 #cmakedefine SIMPLEGL_MATH_IN_SGL_NAMESPACE
 
+#ifdef __ANDROID__
+#   define SIMPLE_GL_ES
+#endif
+
 #if defined(SIMPLE_GL_USE_SSE2) || defined(SIMPLE_GL_USE_SSE3) || defined (SIMPLE_GL_USE_SSE4)
-#define SIMPLE_GL_USE_SSE
+#   define SIMPLE_GL_USE_SSE
 #endif
 
 #endif // SIMPLE_GL_CONFIG_H

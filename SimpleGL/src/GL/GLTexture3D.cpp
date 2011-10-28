@@ -1,6 +1,8 @@
 #include "GL/GLCommon.h"
 #include "GL/GLTexture3D.h"
 
+#ifndef SIMPLE_GL_ES
+
 namespace sgl {
 
 GLTexture3D::GLTexture3D(GLDevice* device_, const Texture3D::DESC& desc) :
@@ -110,7 +112,9 @@ GLTexture3D::GLTexture3D(GLDevice* device_, const Texture3D::DESC_MS& desc) :
 
 GLTexture3D::~GLTexture3D()
 {
-    Unbind();
+    if (device->Valid()) {
+    	Unbind();
+    }
 }
 
 SGL_HRESULT GLTexture3D::SetSubImage( unsigned int  mipmap,
@@ -280,3 +284,5 @@ void GLTexture3D::Unbind() const
 }
 
 } // namespace sgl
+
+#endif // !defined(SIMPLE_GL_ES)

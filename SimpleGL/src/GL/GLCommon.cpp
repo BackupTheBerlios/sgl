@@ -23,25 +23,6 @@ SGL_HRESULT CheckGLError(const std::string& preMsg, GLenum error)
     }
 }
 
-SGL_HRESULT CheckGLUError(const std::string& preMsg, GLenum error)
-{
-    switch(error)
-    {
-    case GL_NO_ERROR:
-        return SGL_OK;
-
-    case GLU_INVALID_ENUM:
-    case GLU_INVALID_VALUE:
-        return EInvalidCall( (preMsg + "Invalid call").c_str() );
-
-    case GLU_OUT_OF_MEMORY:
-        return EOutOfMemory( (preMsg + "Out of memory").c_str() );
-
-    default:
-        return EUnknown( (preMsg + "Unknown error").c_str() );
-    }
-}
-
 SGL_HRESULT CheckGLFramebufferStatus(const std::string& preMsg, GLenum status)
 {
     switch(status)
@@ -63,6 +44,27 @@ SGL_HRESULT CheckGLFramebufferStatus(const std::string& preMsg, GLenum status)
     }
 }
 
+#ifndef SIMPLE_GL_ES
+SGL_HRESULT CheckGLUError(const std::string& preMsg, GLenum error)
+{
+    switch(error)
+    {
+    case GL_NO_ERROR:
+        return SGL_OK;
+
+    case GLU_INVALID_ENUM:
+    case GLU_INVALID_VALUE:
+        return EInvalidCall( (preMsg + "Invalid call").c_str() );
+
+    case GLU_OUT_OF_MEMORY:
+        return EOutOfMemory( (preMsg + "Out of memory").c_str() );
+
+    default:
+        return EUnknown( (preMsg + "Unknown error").c_str() );
+    }
+}
+#endif // SIMPLE_GL_ES
+
 // bind sgl primitive types to gl ones
 const GLenum BIND_PRIMITIVE_TYPE[__NUMBER_OF_PRIMITIVE_TYPES__] =
 {
@@ -72,10 +74,7 @@ const GLenum BIND_PRIMITIVE_TYPE[__NUMBER_OF_PRIMITIVE_TYPES__] =
     GL_LINE_LOOP,
     GL_TRIANGLES,
     GL_TRIANGLE_STRIP,
-    GL_TRIANGLE_FAN,
-    GL_QUADS,
-    GL_QUAD_STRIP,
-	GL_POLYGON
+    GL_TRIANGLE_FAN
 };
 
 const GLenum BIND_GL_INDEX_TYPE[] = 

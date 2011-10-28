@@ -125,6 +125,13 @@ SGL_HRESULT GLTextureCubeSide::SetSubImage( unsigned int  mipmap,
     return SGL_OK;
 }
 
+#ifdef SIMPLE_GL_ES
+SGL_HRESULT GLTextureCubeSide::GetImage( unsigned int  /*mipmap*/,
+                                         void*         /*data*/ )
+{
+    return EUnsupported("GLTextureCubeSide::GetImage failed. Not supported in GLES.");
+}
+#else
 SGL_HRESULT GLTextureCubeSide::GetImage( unsigned int  mipmap,
                                          void*         data )
 {
@@ -168,6 +175,7 @@ SGL_HRESULT GLTextureCubeSide::GetImage( unsigned int  mipmap,
 
     return SGL_OK;
 }
+#endif
 
 //================================= GLTextureCube =================================//
 
@@ -185,6 +193,9 @@ SGL_HRESULT GLTextureCube::GenerateMipmap()
 {
     guarded_binding_ptr guardedTexture( new guarded_binding(device, this, 0) );
 
+#ifdef SIMPLE_GL_ES
+    glGenerateMipmap(glTarget);
+#else
     if (glGenerateMipmapEXT) 
     {
         glGenerateMipmapEXT(glTarget);
@@ -226,13 +237,16 @@ SGL_HRESULT GLTextureCube::GenerateMipmap()
         #endif // SGL_NO_STATUS_CHECK
         }
     }
+#endif
 
     return SGL_OK;
 }
 
 GLTextureCube::~GLTextureCube()
 {
-    Unbind();
+    if (device->Valid()) {
+    	Unbind();
+    }
 }
 
 SGL_HRESULT GLTextureCube::BindSamplerState(SamplerState* _samplerState)
@@ -251,7 +265,7 @@ SGL_HRESULT GLTextureCube::BindSamplerState(SamplerState* _samplerState)
         //glTexParameterf( glTarget, GL_TEXTURE_LOD_BIAS,             desc.lodBias );
         glTexParameteri( glTarget, GL_TEXTURE_WRAP_S,               BIND_TEXTURE_CLAMP[ desc.wrapping[0] ] );
         glTexParameteri( glTarget, GL_TEXTURE_WRAP_T,               BIND_TEXTURE_CLAMP[ desc.wrapping[1] ] );
-        glTexParameteri( glTarget, GL_TEXTURE_WRAP_R,               BIND_TEXTURE_CLAMP[ desc.wrapping[2] ] );
+        //glTexParameteri( glTarget, GL_TEXTURE_WRAP_R,               BIND_TEXTURE_CLAMP[ desc.wrapping[2] ] );
         //glTexParameteri( glTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT,   desc.maxAnisotropy);
     }
 
